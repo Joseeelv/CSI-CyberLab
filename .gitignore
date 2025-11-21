@@ -22,3 +22,13 @@ lerna-debug.log*
 # temp directory
 .temp
 .tmp
+
+# Git
+.git/
+
+.frontendOld/
+
+# IDEs and editors
+.vscode/
+.idea/
+.continue/
