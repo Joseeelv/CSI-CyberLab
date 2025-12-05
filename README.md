@@ -1,61 +1,147 @@
-# CSI CyberLab Project
+# CSI-CyberLab
 
 ## Project Overview
 
-This is a full-stack application built using NestJS for the backend and React with Next.js for the frontend. The project follows a microservices architecture with clear separation of concerns and uses a pnpm workspace for dependency management.
+CSI-CyberLab is a comprehensive cybersecurity platform designed to provide advanced threat detection, analysis, and response capabilities. The platform consists of a modern web application with a NestJS backend and a Next.js frontend, integrated with PostgreSQL for data persistence.
 
 ## Architecture
 
-- **Backend**: NestJS (TypeScript, Node.js)
-- **Frontend**: React with Next.js (TypeScript)
-- **Database**: PostgreSQL and MongoDB
-- **Dependency Management**: pnpm workspace
-- **Containerization**: Docker with Docker Compose
+The platform follows a microservices architecture with the following components:
 
-## Getting Started
+- **Backend**: Built with NestJS (TypeScript) - RESTful API with authentication and data management
+- **Frontend**: Built with Next.js (React) - Modern, responsive user interface
+- **Database**: PostgreSQL - Relational database for storing security data and user information
+- **Infrastructure**: Dockerized services with docker-compose orchestration
 
-### Prerequisites
+## Features
 
-- Docker and Docker Compose installed
-- Node.js 20+ (for local development)
+- User authentication and authorization
+- Security threat detection and analysis
+- Real-time monitoring dashboard
+- Data visualization and reporting
+- API endpoints for security operations
+- Responsive web interface
 
-### Running with Docker (Recommended)
+## Technology Stack
 
-```bash
-# Build and start all services
-$ docker-compose up --build
-```
+### Backend
 
-The application will be available at:
-- Backend API: http://localhost:3000
-- Frontend: http://localhost:3001
-- PostgreSQL: localhost:5432
+- **NestJS** - Node.js framework for building efficient server-side applications
+- **TypeScript** - Typed JavaScript for better code quality
+- **PostgreSQL** - Relational database management system
+- **TypeORM** - Object-relational mapping for database operations
+- **JWT** - JSON Web Token for authentication
 
-### Development Notes
+### Frontend
 
-- The project uses a pnpm workspace to manage dependencies across both backend and frontend
-- Changes to source code are automatically reflected in running containers
-- Environment variables are stored in separate .env files
+- **Next.js** - React framework for production applications
+- **React** - JavaScript library for building user interfaces
+- **TypeScript** - Typed JavaScript for better code quality
+- **Tailwind CSS** - Utility-first CSS framework
+
+### Infrastructure
+
+- **Docker** - Containerization platform
+- **Docker Compose** - Multi-container Docker application orchestration
+- **Nginx** - Web server and reverse proxy
 
 ## Project Structure
 
 ```
 .
 ├── backend/           # NestJS backend application
+│   ├── src/           # Source code
+│   ├── dist/          # Built output
+│   ├── Dockerfile     # Backend Docker configuration
+│   └── package.json   # Backend dependencies
 ├── frontend/          # Next.js frontend application
+│   ├── app/           # App router pages
+│   ├── components/    # Reusable components
+│   ├── public/        # Static assets
+│   └── package.json   # Frontend dependencies
+├── nginx/             # Nginx configuration
+│   └── nginx.conf     # Nginx server configuration
 ├── docker-compose.yml # Docker orchestration
-├── pnpm-workspace.yaml # PNPM workspace configuration
-├── pnpmfile.js        # PNPM hooks
 └── README.md          # This file
 ```
 
-## Key Features
+## Getting Started
 
-- Microservices architecture
-- TypeScript support
-- Docker containerization
-- pnpm workspace for dependency management
-- PostgreSQL and MongoDB integration
+### Prerequisites
+
+- Docker and Docker Compose installed
+- Node.js (v16 or higher) for local development (optional)
+- pnpm package manager
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone <repository-url>
+cd CSI-CyberLab
+```
+
+2. Build and start the containers:
+
+```bash
+docker-compose up --build
+```
+
+3. The application will be available at:
+   - Frontend: http://localhost:3001
+   - Backend API: http://localhost:3000/api
+
+### Development
+
+For local development, you can run the services separately:
+
+#### Backend Development
+
+```bash
+cd backend
+pnpm install
+pnpm start:dev
+```
+
+#### Frontend Development
+
+```bash
+cd frontend
+pnpm install
+pnpm dev
+```
+
+## Environment Variables
+
+### Backend
+
+Create a `.env` file in the backend directory:
+
+```env
+DATABASE_URL=postgresql://user:password@localhost:5432/csi_cyberlab
+JWT_SECRET=your_jwt_secret_key
+PORT=3000
+```
+
+### Frontend
+
+Create a `.env` file in the frontend directory:
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:3000/api
+```
+
+## API Documentation
+
+The backend provides a RESTful API with endpoints for:
+
+- User authentication and management
+- Security threat data operations
+- System configuration
+- Monitoring and reporting
+
+API documentation is available at `/api` when the backend is running.
 
 ## Contributing
 
@@ -67,4 +153,18 @@ The application will be available at:
 
 ## License
 
-This project is licensed under the MIT License.
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+## Support
+
+For support, please open an issue in the repository or contact the maintainers.
+
+## Acknowledgments
+
+- Built with NestJS and Next.js
+- Inspired by modern cybersecurity practices
+- Developed with security best practices in mind
+
+```
+
+```
