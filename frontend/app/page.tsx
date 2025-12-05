@@ -11,22 +11,10 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-black">
       <HeaderSwitcher />
       <main >
-        <section>
-          <Hero />
-        </section>
-        <section>
-
-          <Features />
-        </section>
-        <section>
-
-          <CTA />
-        </section>
-
-        <section>
-          <Footer />
-        </section>
-
+        <Hero />
+        <Features />
+        <CTA />
+        <Footer />
       </main>
     </div>
   );

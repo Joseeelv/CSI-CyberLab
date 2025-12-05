@@ -1,4 +1,6 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn } from "typeorm";
+import { Container } from "src/containers/container.entity";
+import { Lab } from "src/labs/lab.entity";
 
 @Entity()
 export class User {
@@ -17,12 +19,24 @@ export class User {
   @Column()
   password: string;
 
+  //DEBE DE SER UNA RELACION CON LA CLASE ROLE
   @Column({ nullable: true })
   role: string; // admin, student, teacher
 
-  @Column({ nullable: true })
-  created: Date;
+  @ManyToMany(() => Container, (container) => container.user, {
+    nullable: false
+  })
+  @JoinColumn({ name: 'containerId' })
+  containers: Container[];
 
-  @Column({ nullable: true })
+  @ManyToMany(() => Lab, (lab) => lab.users, {
+    nullable: false
+  })
+  @JoinColumn({ name: 'labId' })
+  labs: Lab[];
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , nullable: false})
+  created: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated: Date;
 }
