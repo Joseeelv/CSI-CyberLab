@@ -19,6 +19,18 @@ lerna-debug.log*
 .env.test
 .env.production
 
+.DS_Store
+
 # temp directory
 .temp
 .tmp
+
+# Git
+.git/
+
+.frontendOld/
+
+# IDEs and editors
+.vscode/
+.idea/
+.continue/

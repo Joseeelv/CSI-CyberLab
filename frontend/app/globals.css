@@ -1,0 +1,199 @@
+@import "tailwindcss";
+
+:root {
+  /* Modern blue-black background */
+  --background: #071229; /* negro-azulado moderno */
+  --foreground: #e6eef8; /* texto claro sobre fondo oscuro */
+  --bg: var(--background);
+  --fg: var(--foreground);
+
+  /* Brand palette */
+  --brand-50: #eef6ff;
+  --brand-100: #d7e9ff;
+  --brand-300: #7fb4ff;
+  --brand-500: #0f62fe;
+  --brand-600: #0b57d0;
+  --accent: #00b894;
+  --muted: #9aa4b2;
+
+  /* Layout tokens */
+  --radius: 0.5rem;
+  --gap: 1rem;
+  --logo-size: 48px;
+  --logo-bg: rgba(255, 255, 255, 0.02);
+  --glass: rgba(255, 255, 255, 0.04);
+}
+
+@theme inline {
+  --color-background: var(--bg);
+  --color-foreground: var(--fg);
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue",
+    Arial;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono",
+    "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --background: #ffffff;
+    --foreground: #0f1724;
+    --bg: var(--background);
+    --fg: var(--foreground);
+    --logo-bg: #f8fafc;
+    --text-secondary: #d6dbe3;
+  }
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #071229; /* mantener negro-azulado en modo oscuro */
+    --foreground: #e6eef8;
+    --bg: var(--background);
+    --fg: var(--foreground);
+    --logo-bg: rgba(255, 255, 255, 0.02);
+    --glass: rgba(10, 12, 20, 0.6);
+    --text-secondary: #d6dbe3;
+  }
+}
+
+/* Base styles */
+html,
+body {
+  height: 100%;
+  overscroll-behavior: none;
+}
+body {
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Logo grid used in sponsor/carousel sections */
+.logos {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: var(--gap);
+  align-items: center;
+  justify-items: center;
+  padding: calc(var(--gap) * 0.75) 0;
+}
+
+.logo-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--logo-bg);
+  padding: 0.6rem;
+  border-radius: var(--radius);
+  transition: transform 180ms cubic-bezier(0.2, 0.9, 0.35, 1), box-shadow 180ms;
+  will-change: transform;
+}
+
+.logo-item:focus-within,
+.logo-item:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 20px rgba(2, 6, 23, 0.08);
+}
+
+.logo-img {
+  width: var(--logo-size);
+  height: var(--logo-size);
+  display: block;
+  object-fit: contain;
+}
+
+/* Header / nav */
+.site-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--gap);
+  padding: 0.75rem 1rem;
+  background: transparent;
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  backdrop-filter: blur(6px);
+}
+
+/* Evita que el scroll se propague cuando el cursor/gesto está sobre el header */
+.site-header,
+header {
+  overscroll-behavior: contain; /* evita scroll chaining */
+  touch-action: manipulation; /* mejora comportamiento táctil (evita gestos no deseados) */
+}
+
+.site-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.brand-title {
+  font-weight: 700;
+  color: var(--fg);
+  font-size: 1rem;
+}
+
+.nav-link {
+  color: var(--muted);
+  text-decoration: none;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.375rem;
+  transition: color 150ms, background-color 150ms, transform 150ms;
+}
+
+.nav-link:hover {
+  color: var(--brand-500);
+  transform: translateY(-1px);
+}
+
+/* Buttons / CTAs */
+.btn-primary {
+  background: linear-gradient(180deg, var(--brand-500), var(--brand-600));
+  color: white;
+  padding: 0.5rem 0.9rem;
+  border-radius: 0.5rem;
+  font-weight: 600;
+  box-shadow: 0 6px 18px rgba(12, 52, 128, 0.12);
+  transition: transform 160ms ease, box-shadow 160ms ease;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 30px rgba(12, 52, 128, 0.16);
+}
+
+/* Utilities */
+.card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.02), transparent);
+  border-radius: var(--radius);
+  padding: 1rem;
+}
+
+/* Small helpers for accessibility */
+.sr-only {
+  position: absolute !important;
+  height: 1px;
+  width: 1px;
+  overflow: hidden;
+  clip: rect(1px, 1px, 1px, 1px);
+  white-space: nowrap;
+  border: 0;
+  padding: 0;
+  margin: -1px;
+}
+
+/* Smooth image scaling when used as logo/icons */
+img.logo-img,
+svg.logo-img {
+  transition: transform 180ms cubic-bezier(0.2, 0.9, 0.35, 1);
+}
+
+/* Keep old variable names working in code */
+:root {
+  --background: var(--bg);
+  --foreground: var(--fg);
+}
