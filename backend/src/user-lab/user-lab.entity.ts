@@ -38,11 +38,11 @@ export class UserLab {
   @Column({ type: "boolean", default: false })
   isFinished: boolean;
 
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   started: Date;
 
   @Column({
-    type: "datetime",
+    type: "timestamp",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })

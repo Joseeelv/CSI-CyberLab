@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DifficultyModule } from "./difficulty.module";
@@ -21,8 +22,12 @@ describe("DifficultyModule", () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       imports: [
         TypeOrmModule.forRoot({
-          type: "sqlite",
-          database: ":memory:",
+          type: "postgres",
+          host: process.env.DATABASE_HOST,
+          port: +(process.env.DATABASE_PORT ?? 5432),
+          username: process.env.DATABASE_USER,
+          password: String(process.env.DATABASE_PASSWORD),
+          database: process.env.DATABASE_NAME,
           dropSchema: true,
           entities: [
             Difficulty,

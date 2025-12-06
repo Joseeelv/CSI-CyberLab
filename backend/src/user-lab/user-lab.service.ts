@@ -13,7 +13,7 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ["user", "lab"] });
@@ -31,36 +31,12 @@ export class UserLabService {
   }
 
   async create(userLab: UserLabDto): Promise<UserLab> {
-
-    const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
-    if (existingUserLab) {
-      throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
-
-    try {
-      const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
-      if (existingUserLab) {
-        throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
-      }
-      const newUserLab = this.userLabRepository.create({
-        ...userLab,
-        labId: parseInt(userLab.labId, 10),
-      });
-      return this.userLabRepository.save(newUserLab);
-    } catch (error) {
-      throw error;
-    }
-    const newUserLab = this.userLabRepository.create({
-      ...userLab,
-      labId: userLab.labId,
-    // Verificar si ya existe un UserLab para este usuario y lab
-    console.log("Creando UserLab con datos:", userLab);
     const existingUserLab = await this.userLabRepository.findOne({
       where: {
         userId: userLab.userId,
-        labId: userLab.labUuid
+        labId: userLab.labUuid,
       },
     });
-
     if (existingUserLab) {
       throw new ConflictException(
         `UserLab for userId ${userLab.userId} and labId ${userLab.labUuid} already exists`,

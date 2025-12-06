@@ -45,12 +45,11 @@ export class Image {
   @JoinColumn({ name: "operatingSystemId" })
   operatingSystemId: OperatingSystem | null;
 
-
-  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 
   @Column({
-    type: "datetime",
+    type: "timestamp",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })

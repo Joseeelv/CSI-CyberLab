@@ -7,7 +7,7 @@ import Image from 'next/image';
 import Home from '@/app/page';
 import { motion } from 'framer-motion';
 
-export default function Register() {
+export function Register() {
   const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -49,6 +49,7 @@ export default function Register() {
     try {
       await fetcher('/auth/register', {
         method: 'POST',
+        include: 'credentials',
         body: JSON.stringify({ username, email, password }),
       });
       router.push('/login');

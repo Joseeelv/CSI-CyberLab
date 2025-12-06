@@ -1,3 +1,4 @@
+require('dotenv').config();
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
@@ -18,7 +19,6 @@ import { Difficulty } from "../difficulty/difficulty.entity";
 import { AuthModule } from "../auth/auth.module";
 
 describe("ContainersModule", () => {
-
   jest.setTimeout(20000); // Aumenta el timeout a 20 segundos
   let module: ContainersModule;
 
@@ -28,8 +28,12 @@ describe("ContainersModule", () => {
         JwtModule.register({ secret: "test" }),
         AuthModule,
         TypeOrmModule.forRoot({
-          type: "sqlite",
-          database: ":memory:",
+          type: "postgres",
+          host: process.env.DATABASE_HOST,
+          port: +(process.env.DATABASE_PORT ?? 5432),
+          username: process.env.DATABASE_USER,
+          password: String(process.env.DATABASE_PASSWORD),
+          database: process.env.DATABASE_NAME,
           dropSchema: true,
           entities: [
             Container,

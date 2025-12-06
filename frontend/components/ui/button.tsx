@@ -26,7 +26,6 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       close: "relative top-4 left-115 p-2 rounded-full bg-gray-800/50 hover:bg-gray-700/50 transition-colors duration-300 hover:scale-110 hover:transition-transform duration-500 z-20 text-white",
       link: "absolute underline transition-colors duration-300 hover:scale-110 hover:transition-transform duration-500 z-20 text-white",
       linkselected: "absolute underline font-bold text-lg transition-colors duration-300 hover:scale-110 hover:transition-transform duration-500 z-20 text-cyan-400",
->>>>>>> c1c4440 (Revert "Backend lab entity fix")
     };
 
     const widthClass = fullWidth ? "w-full" : "";
