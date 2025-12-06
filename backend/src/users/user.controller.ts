@@ -10,18 +10,16 @@ export class UserController {
 
   // Endpoint para obtener todos los usuarios
   @Get()
-  findAll(): Promise<User[]> {
+  findAll(): Promise<{ data: User[]; total: number }> {
     return this.userService.findAll();
   }
 
-  //Endpoitn para obtener el número de estudiantes registrados
   @Get('count')
   async getCount() {
     const count = await this.userService.countUsers();
     return { count };
   }
-  
-  // Endpoint para actualizar un usuario por su ID
+
   @Put('/update-user/:id')
   updateUser(
     @Param('id') id: number,
@@ -30,26 +28,22 @@ export class UserController {
     return this.userService.updateUser(id, updateData);
   }
 
-  // Endpoint para buscar un usuario por su nombre de usuario
   @Get(':username')
   findOne(@Param('username') username: string): Promise<User | null> {
     return this.userService.findByUsername(username);
   }
 
-  // Endpoint para buscar un usuario por su correo electrónico
-  @Get('email/:email')
+  @Get(':email')
   findByEmail(@Param('email') email: string): Promise<User | null> {
     return this.userService.findByEmail(email);
   }
 
-  // Endpoint para crear un nuevo usuario
   @Post()
   createUser(@Body() userDto: RegisterUserDto): Promise<User> {
     return this.userService.createUser(userDto);
   }
 
-  // Endpoint para eliminar un usuario por su ID
-  @Delete('/delete/:id')
+  @Delete(':id')
   async deleteUser(@Param('id') id: number): Promise<void> {
     await this.userService.deleteUser(id);
   }

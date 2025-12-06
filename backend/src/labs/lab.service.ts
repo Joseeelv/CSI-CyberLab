@@ -1,62 +1,125 @@
-import { Injectable, BadRequestException } from '@nestjs/common';
-import { Lab } from './lab.entity';
-import { Repository } from 'typeorm';
+import {
+  Injectable,
+  NotFoundException,
+  BadRequestException,
+  Logger,
+} from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LabDto } from './lab.dto';
-import { json } from 'stream/consumers';
+import { Repository, FindOptionsWhere } from 'typeorm';
+import { Lab } from './lab.entity';
+import { CreateLabDto } from './dto/create-lab.dto';
+import { UpdateLabDto } from './dto/update-lab.dto';
+import { log } from 'console';
+
 @Injectable()
 export class LabService {
+  private readonly logger = new Logger(LabService.name);
+
   constructor(
     @InjectRepository(Lab)
     private readonly labRepository: Repository<Lab>,
   ) { }
 
-  async getAllLabs() {
-    return await this.labRepository.find({
-      relations: ['difficulty', 'operatingSystem', 'categories'],
+  async findAll(page = 1, limit = 10) {
+    const [data, total] = await this.labRepository.findAndCount({
+      relations: ['categories', 'operatingSystem', 'difficulty', 'status'],
+      skip: (page - 1) * limit,
+      take: limit,
+      order: { name: 'ASC' },
     });
+
+    return {
+      data,
+      meta: {
+        total,
+        page,
+        limit,
+        totalPages: Math.ceil(total / limit),
+      },
+    };
   }
 
-  async createLab(labData: LabDto): Promise<Lab> {
-    if (!labData?.name || typeof labData.name !== 'string' || labData.name.trim() === '') {
-      throw new BadRequestException('Field "name" is required');
-    }
-    const lab = {
-      name: labData.name.trim(),
-      description: labData.description,
-      status: labData.status,
-      categoryId: Number(labData.categoryId),
-      operatingSystemId: Number(labData.operatingSystemId),
-      difficultyId: Number(labData.difficultyId),
-      containerId: Number(labData.containerId),
-    };
+  async findOne(name: string): Promise<Lab> {
+    const lab = await this.labRepository.findOne({
+      where: { name } as FindOptionsWhere<Lab>,
+      relations: [
+        'categories',
+        'operatingSystem',
+        'difficulty',
+        'status',
+        'containers',
+      ],
+    });
 
+    if (!lab) {
+      throw new NotFoundException(`Lab with name ${name} not found`);
+    }
+
+    return lab;
+  }
+
+  async create(createLabDto: CreateLabDto): Promise<Lab> {
     try {
-      return await this.labRepository.save(lab);
+      const lab = {
+        name: createLabDto.name,
+        description: createLabDto.description,
+        categoryId: createLabDto.categoryId,
+        operatingSystemId: createLabDto.operatingSystemId,
+        difficultyId: createLabDto.difficultyId,
+        statusId: 1, // Default: inactive
+        containerId: createLabDto.containerId,
+      };
+
+      const savedLab = await this.labRepository.save(lab);
+      this.logger.log(`Lab created: ${savedLab.uuid}`);
+
+      return savedLab;
     } catch (error) {
+      this.logger.error(`Failed to create lab: ${error.message}`);
       throw new BadRequestException('Failed to create lab');
     }
-
   }
 
-  async findLabById(uuid: string): Promise<Lab | null> {
-    return await this.labRepository.findOne({ where: { uuid } });
-  }
+  async update(name: string, updateLabDto: UpdateLabDto): Promise<Lab> {
+    const lab = await this.findOne(name);
 
-  async updateLab(uuid: string, updateData: Partial<Lab>): Promise<Lab | null> {
-    const lab = await this.labRepository.findOne({ where: { uuid } });
-    if (!lab) {
-      throw new Error('Lab not found');
+    Object.assign(lab, updateLabDto);
+
+    try {
+      const updatedLab = await this.labRepository.save(lab);
+      this.logger.log(`Lab updated: ${name}`);
+      return updatedLab;
+    } catch (error) {
+      this.logger.error(`Failed to update lab ${name}: ${error.message}`);
+      throw new BadRequestException('Failed to update lab');
     }
-    Object.assign(lab, updateData);
-    return await this.labRepository.save(lab);
   }
 
-  async deleteLab(uuid: string): Promise<void> {
-    const lab = await this.labRepository.findOne({ where: { uuid } });
-    if (!lab) {
-      throw new Error('Lab not found');
+  async remove(name: string): Promise<void> {
+    try {
+      const result = await this.labRepository.delete(name);
+
+      if (result.affected === 0) {
+        throw new NotFoundException(`Lab with name ${name} not found`);
+      }
+
+      this.logger.log(`Lab deleted: ${name}`);
+    } catch (error) {
+      if (error instanceof NotFoundException) {
+        throw error;
+      }
+      this.logger.error(`Failed to delete lab ${name}: ${error.message}`);
+      throw new BadRequestException('Failed to delete lab');
     }
-    await this.labRepository.remove(lab);
+  }
+
+  async removeAll(): Promise<void> {
+    try {
+      await this.labRepository.deleteAll();
+      this.logger.log('All labs deleted');
+    } catch (error) {
+      this.logger.error(`Failed to delete all labs: ${error.message}`);
+      throw new BadRequestException('Failed to delete all labs');
+    }
   }
 }
