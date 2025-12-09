@@ -1,17 +1,25 @@
-"use client";
-
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { Button } from './ui/button';
 import Image from 'next/image';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import Home from '@/app/page';
+import { fetcher, ApiError } from '@/lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
   const router = useRouter();
+
+  useEffect(() => {
+    // Animación de entrada cuando el componente se monta
+    const timer = setTimeout(() => setIsVisible(true), 600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,60 +32,64 @@ export default function Login() {
       return;
     }
 
-    const res = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
-
-    console.log('Response status:', res.status);
-
-
-
     try {
-      const data = await res.json();
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      if (data.role === 'student') {
-        router.push('/dashboard');
-      } else if (data.role === 'admin') {
-        router.push('/admin');
-        console.log('Redirección a admin pendiente de implementación');
-      } else {
-        setError('No se ha podido ingresar');
-      }
+      const data = await fetcher('/auth/login', {
+        method: 'POST',
+        body: JSON.stringify({ email, password }),
+      });
+
+      if (data.role === 'student') router.push('/dashboard');
+      else if (data.role === 'admin') router.push('/admin');
+      else router.push('/dashboard');
     } catch (err) {
-      setError('Credenciales inválidas. Inténtalo de nuevo.');
+      const error = err as ApiError;
+      setError(error.message || 'Credenciales inválidas. Inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }
   };
 
+  const handleClose = () => {
+    // Inicia la animación de cierre
+    setIsClosing(true);
+
+    // Espera a que termine la animación antes de redirigir (coincide con duration: 500ms)
+    setTimeout(() => {
+      router.push('/');
+    }, 600);
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-4 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0">
-        <div className="absolute top-20 left-20 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl animate-pulse" />
-        <div className="absolute bottom-20 right-20 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="opacity-30">
+          <Home />
+        </div>
+        <div className="absolute inset-0 bg-black/20" />
       </div>
 
-      {/* Grid pattern */}
-      <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0"
-          style={{
-            backgroundImage: `
-              linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
-              linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px)
-            `,
-            backgroundSize: '50px 50px'
-          }}
-        />
-      </div>
-
-      <div className="w-full max-w-md relative z-10">
+      {/* El formulario con la animación aplicada */}
+      <div
+        id="login-form"
+        style={{ willChange: 'transform, opacity' }}
+        className={`w-full max-w-md relative z-10 ${isClosing
+          ? 'animate-fadeOutSlideDown'
+          : isVisible
+            ? 'animate-fadeInSlideUp'
+            : 'opacity-0'
+          }`}
+      >
         <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
+          {/* Close button */}
+          <Button
+            variant="close"
+            size="sm"
+            onClick={handleClose}
+            aria-label="Cerrar"
+          >
+            X
+          </Button>
+
           <div className="p-8">
             {/* Logo */}
             <div className="flex justify-center mb-8">
@@ -124,7 +136,6 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none" />
                 </div>
               </div>
 
@@ -144,7 +155,6 @@ export default function Login() {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                   />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none" />
                 </div>
               </div>
 

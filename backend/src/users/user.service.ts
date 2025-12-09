@@ -29,9 +29,14 @@ export class UserService {
     return await this.userRepository.findOne({ where: { username } });
   }
 
-  // Obtener todos los usuarios
+  // Obtener todos los usuarios 
   async findAll(): Promise<User[]> {
     return await this.userRepository.find();
+  }
+
+  //Obtener el conteo de usuarios (estudiantes)
+  async countUsers(): Promise<number> {
+    return await this.userRepository.count({ where: { role: 'student' } });
   }
 
   // Actualizar un usuario por su ID

@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Req, Res, Get, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
+import { Body, Controller, Post, Req, Res, Get, HttpCode, HttpStatus, UnauthorizedException, UseGuards, BadRequestException } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './register.dto';
@@ -16,23 +16,31 @@ export class AuthController {
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerData: RegisterUserDto) {
     if (!registerData.password) {
-      throw new Error('Password is required');
+      throw new BadRequestException('Password is required');
     }
-    return this.authService.register(registerData);
+    try {
+      return await this.authService.register(registerData);
+    } catch (error) {
+      throw new BadRequestException(error.message || 'Registration failed');
+    }
   }
 
   @Post('login')
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginData: LoginUserDto, @Res({ passthrough: true }) res: Response) {
-    const { accessToken, role } = await this.authService.login(loginData.email, loginData.password);
-    // Set cookie
-    res.cookie('jwt', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 3600000,
-    });
-    return { message: 'Login successful', accessToken, role };
+    try {
+      const { accessToken, role } = await this.authService.login(loginData.email, loginData.password);
+      // Set cookie
+      res.cookie('jwt', accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 3600000,
+      });
+      return { message: 'Login successful', accessToken, role };
+    } catch (error) {
+      throw new UnauthorizedException('Invalid credentials');
+    }
   }
 
   @Get('me')
@@ -40,13 +48,13 @@ export class AuthController {
   async me(@Req() req: Request) {
     const token = req.cookies?.jwt;
     if (!token) {
-      throw new UnauthorizedException('No token');
+      throw new UnauthorizedException('No token provided');
     }
     try {
       const payload = this.jwtService.verify(token);
       return { authenticated: true, payload };
     } catch (err) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException('Invalid or expired token');
     }
   }
 
