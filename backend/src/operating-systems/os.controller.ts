@@ -7,7 +7,7 @@ export class OperatingSystemsController {
   async getOperatingSystems() {
     return await this.operatingSystemsService.getAll();
   }
-  @Post('create')
+  @Post()
   async createOS(@Body() data) {
     return await this.operatingSystemsService.createOS(data);
   }
