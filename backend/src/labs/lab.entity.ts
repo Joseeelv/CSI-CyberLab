@@ -16,6 +16,15 @@ export class Lab {
   @Column({ type: 'varchar', length: 100, nullable: true })
   description: string;
 
+  @Column({ type: 'float', default: 0.0 })
+  points: number;
+
+  @Column({ type: 'int', default: 30 })
+  estimatedTime: number; // minutos
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  tags: string; 
+  
   @ManyToOne(() => Status, (status) => status.labs)
   @JoinColumn({ name: 'statusId' })
   status: Status;
