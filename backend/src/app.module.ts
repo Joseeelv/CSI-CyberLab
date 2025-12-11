@@ -20,6 +20,7 @@ import { DifficultyModule } from './difficulty/difficulty.module';
 import { RoleController } from './role/role.controller';
 import { RoleModule } from './role/role.module';
 import { SessionModule } from './session/session.module';
+import { DockerModule } from './docker/docker.module';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { SessionModule } from './session/session.module';
     DifficultyModule,
     RoleModule,
     SessionModule,
+    DockerModule,
   ],
   controllers: [AppController, RoleController],
   providers: [
@@ -73,4 +75,4 @@ import { SessionModule } from './session/session.module';
     },
   ],
 })
-export class AppModule {}
+export class AppModule { }

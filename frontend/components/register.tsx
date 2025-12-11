@@ -2,8 +2,8 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import Home from '@/app/page';
-import { fetcher, ApiError } from '@/lib/api';
+import { BackgroundGradient } from './backgroundGradient';
+import { fetcher, type ApiError } from '@/lib/api';
 import Image from 'next/image';
 
 export default function Register() {
@@ -15,14 +15,13 @@ export default function Register() {
   const [isVisible, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
   const router = useRouter();
-
   useEffect(() => {
     // Animación de entrada cuando el componente se monta
     const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -34,7 +33,7 @@ export default function Register() {
     }
 
     try {
-      await fetcher('/auth/register', {
+      await fetcher(`/auth/register`, {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
       });
@@ -58,12 +57,7 @@ export default function Register() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-4 relative overflow-hidden">
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="opacity-30">
-          <Home />
-        </div>
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
+      <BackgroundGradient />
 
       {/* El formulario con la animación aplicada */}
       <div

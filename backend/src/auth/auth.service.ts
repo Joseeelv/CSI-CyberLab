@@ -4,6 +4,7 @@ import {
   BadRequestException,
   InternalServerErrorException,
   ConflictException,
+  Logger,
 } from '@nestjs/common';
 import { UserService } from '../users/user.service';
 import { User } from '../users/user.entity';
@@ -16,6 +17,8 @@ import { RoleService } from 'src/role/role.service';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,
@@ -50,14 +53,19 @@ export class AuthService {
       throw new InternalServerErrorException('Failed to process password');
     }
 
+    // Obtener el rol por defecto (user)
+    const defaultRole = await this.roleService.findRoleById(2);
+    if (!defaultRole) {
+      throw new InternalServerErrorException('Default role not found. Please contact administrator.');
+    }
+
     // Crear nuevo usuario
     const newUser = {
       username: registerData.username,
       fullName: registerData.username,
       email: registerData.email,
       password: hashedPassword,
-      isPremium: false,
-      role: 2, // Default role (considera usar un enum o constante)
+      role: defaultRole,
       createdAt: new Date(),
       updatedAt: new Date(),
     };
@@ -65,6 +73,7 @@ export class AuthService {
     try {
       return await this.userService.createUser(newUser);
     } catch (error) {
+      this.logger.error(`Failed to create user: ${error.message}`);
       throw new InternalServerErrorException('Failed to create user');
     }
   }

@@ -9,6 +9,7 @@ import { Image } from 'src/images/image.entity';
 export class Container {
   @PrimaryGeneratedColumn()
   id: number;
+
   @Column({ type: 'varchar', length: 64, nullable: true })
   name: string;
 
@@ -20,11 +21,12 @@ export class Container {
   @JoinColumn({ name: 'labId' })
   lab: Lab;
 
-  @ManyToOne(() => Status, (status) => status.containers)
+  @ManyToOne(() => Status, (status) => status.containers, { nullable: true })
   @JoinColumn({ name: 'statusId' })
   status: Status;
 
   @ManyToOne(() => User, (user) => user.containers, { nullable: true })
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })

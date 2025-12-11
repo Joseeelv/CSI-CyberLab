@@ -31,14 +31,14 @@ export class Lab {
   @ManyToOne(() => OperatingSystem, (os) => os.labs, { nullable: true })
   @JoinColumn({ name: 'operatingSystemId' })
   operatingSystem: OperatingSystem;
-  @OneToMany(() => Container, (container) => container.lab, { nullable: false })
+  
+  @OneToMany(() => Container, (container) => container.lab, { nullable: true })
   containers: Container[];
 
-  @ManyToMany(() => User, (user) => user.labs, { nullable: false })
+  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
   @JoinTable()
   users: User[];
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
