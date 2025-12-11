@@ -9,29 +9,24 @@ import { Image } from 'src/images/image.entity';
 export class Container {
   @PrimaryGeneratedColumn()
   id: number;
-
   @Column({ type: 'varchar', length: 64, nullable: true })
   name: string;
-
-  @ManyToOne(() => Image, (image) => image.containers, { nullable: true })
+  
+  @ManyToOne(() => Image, (image) => image.containers, { nullable: false })
   @JoinColumn({ name: 'imageId' })
   image: Image;
 
-  @ManyToOne(() => Lab, (lab) => lab.containers, { nullable: true })
-  @JoinColumn({ name: 'labId' })
+  @ManyToOne(() => Lab, (lab) => lab.containers, { nullable: false })
   lab: Lab;
-
-  @ManyToOne(() => Status, (status) => status.containers, { nullable: true })
-  @JoinColumn({ name: 'statusId' })
+  
+  @ManyToOne(() => Status, (status) => status.containers, { nullable: false })
   status: Status;
-
-  @ManyToOne(() => User, (user) => user.containers, { nullable: true })
-  @JoinColumn({ name: 'userId' })
+  
+  @ManyToOne(() => User, (user) => user.containers, { nullable: false })
   user: User;
-
-  @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
-  created: Date;
-
-  @Column({ type: 'timestamp', nullable: true, default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  
+  @Column({ type: 'timestamp', nullable: false })
   lastActivity: Date;
+  @Column({ type: 'timestamp', nullable: false })
+  created: Date;
 }

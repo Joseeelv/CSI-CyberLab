@@ -1,67 +1,42 @@
 // backend/src/main.ts
 import { NestFactory } from '@nestjs/core';
-import { ValidationPipe, Logger } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import { ValidationPipe } from '@nestjs/common';
 import * as cookieParser from 'cookie-parser';
-import * as compression from 'compression';
-import helmet from 'helmet';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
-  const logger = new Logger('Bootstrap');
   const app = await NestFactory.create(AppModule);
-  const configService = app.get(ConfigService);
 
-  // Security
-  app.use(helmet());
-  app.use(compression());
+  // Parse cookies on incoming requests so controllers can read req.cookies
   app.use(cookieParser());
 
   // Global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      whitelist: true,
-      forbidNonWhitelisted: true,
-      transform: true,
-      transformOptions: {
-        enableImplicitConversion: true,
-      },
-    }),
-  );
+  app.useGlobalPipes(new ValidationPipe({
+    whitelist: true,
+    forbidNonWhitelisted: true,
+    transform: true,
+  }));
 
-  // API prefix
+  // Prefijo global (opcional pero recomendado)
   app.setGlobalPrefix('api');
 
-  // CORS configuration
+  // Habilitar CORS para tu frontend. Usa FRONTEND_URL de .env si está disponible.
   const allowedOrigins = [
     'http://localhost',
     'http://localhost:80',
     'http://localhost:3001',
-    'http://127.0.0.1:3001',
-    'http://localhost:3000',
-    'http://127.0.0.1:3000',
-    configService.get('FRONTEND_URL'),
+    process.env.FRONTEND_URL,
   ].filter(Boolean);
-  logger.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
 
   app.enableCors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
-    },
+    origin: allowedOrigins,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie'],
-    exposedHeaders: ['Set-Cookie', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
   });
 
-  const port = configService.get<number>('PORT', 3000);
+  const port = process.env.PORT || 3000;
   await app.listen(port, '0.0.0.0');
-
-  logger.log(`Backend running on http://localhost:${port}/api`);
-  logger.log(`Environment: ${configService.get('NODE_ENV')}`);
+  console.log(`Backend iniciado en http://0.0.0.0:${port}`);
 }
 bootstrap();

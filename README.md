@@ -155,6 +155,10 @@ API documentation is available at `/api` when the backend is running.
 
 This project is licensed under the MIT License - see the LICENSE file for details.
 
+## Support
+
+For support, please open an issue in the repository or contact the maintainers.
+
 ## Acknowledgments
 
 - Built with NestJS and Next.js
