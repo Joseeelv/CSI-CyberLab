@@ -2,8 +2,8 @@ import { Injectable, BadRequestException } from '@nestjs/common';
 import { Lab } from './lab.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LabDto } from './lab.dto';
-import { json } from 'stream/consumers';
+import { LabDto } from './dto/lab.dto';
+
 @Injectable()
 export class LabService {
   constructor(

@@ -2,6 +2,7 @@ import { Controller, Put } from '@nestjs/common';
 import { Get, Post, Param, Body} from '@nestjs/common';
 import { LabService } from './lab.service';
 import { Lab } from './lab.entity';
+import { LabDto } from './dto/lab.dto';
 
 @Controller('labs')
 export class LabsController {
