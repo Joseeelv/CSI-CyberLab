@@ -1,6 +1,7 @@
 "use client";
 
 import React from 'react';
+import { Card, CardHeader, CardTitle, CardDescription } from './ui/card';
 import Image from 'next/image';
 
 interface FeatureProps {
@@ -66,7 +67,7 @@ export const Features: React.FC = () => {
         alt="targer-user"
         width={40}
         height={40}
-      />,
+      ></Image>,
       title: "Retos Prácticos",
       description: "Aprende haciendo con desafíos reales de pentesting y CTF"
     },
@@ -76,7 +77,7 @@ export const Features: React.FC = () => {
         alt="laboratory"
         width={40}
         height={40}
-      />,
+      ></Image>,
       title: "Laboratorios Estructurados",
       description: "Contenido organizado desde nivel básico hasta avanzado"
     },
@@ -86,7 +87,8 @@ export const Features: React.FC = () => {
         alt="security"
         width={40}
         height={40}
-      />,
+      >
+      </Image>,
       title: "Seguridad Real",
       description: "Técnicas actualizadas usadas por profesionales"
     }

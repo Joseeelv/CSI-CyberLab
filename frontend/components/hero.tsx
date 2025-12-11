@@ -29,7 +29,7 @@ export const Hero: React.FC = () => {
       {/* Glowing orbs */}
       <div
         className="absolute top-20 left-10 w-64 h-64 rounded-full blur-10xl animate-pulse"
-        style={{ background: 'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)' }}
+        style={{ background: 'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)'}}
       />
       <div
         className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-2xl animate-pulse"

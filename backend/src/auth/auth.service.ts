@@ -13,8 +13,6 @@ import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
-  private readonly logger = new Logger(AuthService.name);
-
   constructor(
     private readonly userService: UserService,
     private readonly configService: ConfigService,

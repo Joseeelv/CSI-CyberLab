@@ -1,13 +1,3 @@
-x-common: &common
-  restart: unless-stopped
-  networks: 
-    - app-network
-  logging:
-    driver: json-file
-    options:
-      max-size: "10m"
-      max-file: "3"
-
 services:
   postgres:
     image: postgres:15-alpine # Alpine es más ligero
@@ -48,7 +38,6 @@ services:
       -c max_connections=50
 
   backend:
-    <<: *common
     container_name: backend
     platform: linux/arm64/v8
     build:
@@ -69,15 +58,12 @@ services:
     environment:
       DATABASE_HOST: postgres
       DATABASE_PORT: 5432
-      DATABASE_NAME: ${DATABASE_NAME:-app}
-      DATABASE_USER: ${DATABASE_USER:-postgres}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD:-postgres}
-      # Security
-      SALT_ROUNDS: ${SALT_ROUNDS:-10}
-      JWT_SECRET: ${JWT_SECRET:-dev-secret}
-      # App
+      DATABASE_NAME: ${DATABASE_NAME}
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      SALT_ROUNDS: ${SALT_ROUNDS}
+      JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:3001}
       NODE_ENV: development
       # Optimizaciones de Node.js
       NODE_OPTIONS: "--max-old-space-size=512"
@@ -96,7 +82,6 @@ services:
           memory: 384M
 
   frontend:
-    <<: *common
     container_name: frontend
     platform: linux/arm64/v8
     build:

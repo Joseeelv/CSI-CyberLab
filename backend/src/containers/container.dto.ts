@@ -1,10 +1,10 @@
-import { IsString, IsOptional, IsUUID, IsInt } from "class-validator";
+import { IsString } from "class-validator";
 
 export class ContainerDto {
   @IsString()
   name: string;
 
-  @IsUUID()
+  @IsString()
   imageId: string;
 
   @IsOptional()

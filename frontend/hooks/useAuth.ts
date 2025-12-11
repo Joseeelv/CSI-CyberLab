@@ -66,7 +66,6 @@ export function useAuth() {
             return;
           }
         } else {
-          console.error('Auth error:', error);
           setState({
             user: null,
             loading: false,
