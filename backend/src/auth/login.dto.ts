@@ -7,7 +7,7 @@ export class LoginUserDto {
   @Transform(({ value }) => value?.toLowerCase().trim())
   email: string;
 
-  @MinLength(8, { message: 'Password must be at least 8 characters' })
+  @MinLength(8, { message: 'Invalid password' })
   @IsNotEmpty()
   password: string;
 }

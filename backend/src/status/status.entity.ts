@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
 
@@ -11,10 +11,9 @@ export class Status {
   name: string;
 
   @OneToMany(() => Container, (container) => container.status, { nullable: true })
-  @JoinColumn({ name: 'containerId' })
   containers: Container[];
 
-  @OneToMany(() => Lab, (lab) => lab.uuid, { nullable: true })
-  @JoinColumn({ name: 'labId' })
+  // Labs reference status via ManyToOne -> Lab.status
+  @OneToMany(() => Lab, (lab) => lab.status, { nullable: true })
   labs: Lab[];
 }

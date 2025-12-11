@@ -2,7 +2,6 @@ import { BadRequestException, Injectable } from '@nestjs/common';
 import { Image } from './image.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Container } from 'src/containers/container.entity';
 @Injectable()
 export class ImageService {
   constructor(

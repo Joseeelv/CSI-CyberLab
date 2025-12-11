@@ -3,8 +3,8 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import Image from 'next/image';
-import Home from '@/app/page';
-import { fetcher, ApiError } from '@/lib/api';
+import { BackgroundGradient } from './backgroundGradient';
+import { fetcher, type ApiError } from '@/lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -21,7 +21,7 @@ export default function Login() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -38,9 +38,19 @@ export default function Login() {
         body: JSON.stringify({ email, password }),
       });
 
-      if (data.role === 'student') router.push('/dashboard');
-      else if (data.role === 'admin') router.push('/admin');
-      else router.push('/dashboard');
+      // Verificar que la respuesta tenga la estructura esperada
+      if (!data || typeof data !== 'object') {
+        throw new Error('Respuesta inválida del servidor');
+      }
+
+      // Redirigir según el rol
+      const roleData = (data as any);
+      const roleName = roleData?.role?.name || roleData?.user?.role?.name;
+      if (roleName === 'admin') {
+        router.push('/admin');
+      } else {
+        router.push('/dashboard');
+      }
     } catch (err) {
       const error = err as ApiError;
       setError(error.message || 'Credenciales inválidas. Inténtalo de nuevo.');
@@ -61,12 +71,7 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-4 relative overflow-hidden">
-      <div className="absolute inset-0 z-0 overflow-hidden">
-        <div className="opacity-30">
-          <Home />
-        </div>
-        <div className="absolute inset-0 bg-black/20" />
-      </div>
+      <BackgroundGradient />
 
       {/* El formulario con la animación aplicada */}
       <div
