@@ -46,6 +46,18 @@ export class LabService {
     if (!lab) {
       throw new NotFoundException(`Lab with name "${name}" not found`);
     }
+    const lab = {
+      name: labData.name.trim(),
+      description: labData.description,
+      status: labData.status,
+      points: labData.points,
+      estimatedTime: labData.estimatedTime,
+      tags: labData.tags,
+      categoryId: Number(labData.categoryId),
+      operatingSystemId: Number(labData.operatingSystemId),
+      difficultyId: Number(labData.difficultyId),
+      containerId: Number(labData.containerId),
+    };
 
     return lab;
   }
