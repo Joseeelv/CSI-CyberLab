@@ -21,6 +21,7 @@ import { RoleController } from './role/role.controller';
 import { RoleModule } from './role/role.module';
 import { SessionModule } from './session/session.module';
 import { DockerModule } from './docker/docker.module';
+import { SeederModule } from './database/seeder.module';
 
 @Module({
   imports: [
@@ -54,6 +55,7 @@ import { DockerModule } from './docker/docker.module';
     RoleModule,
     SessionModule,
     DockerModule,
+    SeederModule,
   ],
   controllers: [AppController, RoleController],
   providers: [

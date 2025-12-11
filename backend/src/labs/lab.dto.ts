@@ -20,9 +20,9 @@ export class LabDto {
   @IsOptional()
   tags?: string;
 
-  @IsBoolean()
+  @IsNumber()
   @IsOptional()
-  status?: boolean;
+  status?: number;
 
   @IsNumber()
   @IsOptional()

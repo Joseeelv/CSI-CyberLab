@@ -21,11 +21,6 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-postgres} -d ${DATABASE_NAME:-app} -h localhost || exit 1"]
-      interval: 10s
-      timeout: 5s
-      retries: 6
 
   backend:
     <<: *common
@@ -55,11 +50,6 @@ services:
       - "3000:3000"
     depends_on:
       - postgres
-    healthcheck:
-      test: ["CMD-SHELL", "curl -f http://127.0.0.1:3000/health || exit 1"]
-      interval: 20s
-      timeout: 5s
-      retries: 5
     command: ["pnpm", "run", "start:dev"]
 
   frontend:
@@ -85,11 +75,6 @@ services:
       - "3001:3001"
     depends_on:
       - backend
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1:3001 || exit 1"]
-      interval: 20s
-      timeout: 5s
-      retries: 5
     command: ["pnpm", "run", "dev"]
 
   nginx:
@@ -104,11 +89,6 @@ services:
     depends_on:
       - frontend
       - backend
-    healthcheck:
-      test: ["CMD-SHELL", "wget --no-verbose --tries=1 --spider http://127.0.0.1 || exit 1"]
-      interval: 30s
-      timeout: 5s
-      retries: 3
 
 volumes:
   postgres-data:
