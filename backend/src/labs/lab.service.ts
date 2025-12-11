@@ -46,18 +46,16 @@ export class LabService {
     if (!lab) {
       throw new NotFoundException(`Lab with name "${name}" not found`);
     }
-    const lab = {
+    const lab = this.labRepository.create({
       name: labData.name.trim(),
       description: labData.description,
-      status: labData.status,
       points: labData.points,
       estimatedTime: labData.estimatedTime,
       tags: labData.tags,
-      categoryId: Number(labData.categoryId),
-      operatingSystemId: Number(labData.operatingSystemId),
-      difficultyId: Number(labData.difficultyId),
-      containerId: Number(labData.containerId),
-    };
+      status: { id: 1 } as any,
+      operatingSystem: { id: labData.operatingSystemId } as any,
+      difficulty: { id: labData.difficultyId } as any,
+    });
 
     return lab;
   }
