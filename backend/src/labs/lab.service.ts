@@ -173,7 +173,7 @@ export class LabService {
           .getRepository(Container)
           .createQueryBuilder()
           .update(Container)
-          .set({ lab: null })
+          .set({ lab: undefined })
           .where('"labId" IS NOT NULL')
           .execute();
           
