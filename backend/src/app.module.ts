@@ -12,6 +12,8 @@ import { CategoryModule } from './categories/category.module';
 import { ImageModule } from './images/image.module';
 import { LabsModule } from './labs/lab.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
+import { RoleModule } from './role/role.module';
+import { SeederModule } from './database/seeder.module';
 
 @Module({
   imports: [
@@ -45,6 +47,8 @@ import { DifficultyModule } from './difficulty/difficulty.module';
     ImageModule,
     LabsModule,
     DifficultyModule,
+    RoleModule,
+    SeederModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -23,12 +23,9 @@ importers:
       '@nestjs/platform-express':
         specifier: ^11.0.0
         version: 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)
-<<<<<<< Updated upstream
-=======
       '@nestjs/throttler':
         specifier: ^6.5.0
         version: 6.5.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)
->>>>>>> Stashed changes
       '@nestjs/typeorm':
         specifier: ^11.0.0
         version: 11.0.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.28(pg@8.16.3)(ts-node@10.9.2(@types/node@20.19.25)(typescript@5.9.3)))
@@ -44,8 +41,6 @@ importers:
       crypto:
         specifier: ^1.0.1
         version: 1.0.1
-<<<<<<< Updated upstream
-=======
       dockerode:
         specifier: ^4.0.9
         version: 4.0.9
@@ -58,7 +53,6 @@ importers:
       passport-jwt:
         specifier: ^4.0.1
         version: 4.0.1
->>>>>>> Stashed changes
       pg:
         specifier: ^8.11.0
         version: 8.16.3
@@ -99,15 +93,9 @@ importers:
       '@types/node':
         specifier: ^20.11.19
         version: 20.19.25
-<<<<<<< Updated upstream
-      '@types/reflect-metadata':
-        specifier: ^0.1.0
-        version: 0.1.0
-=======
       '@types/passport-jwt':
         specifier: ^4.0.1
         version: 4.0.1
->>>>>>> Stashed changes
       '@types/supertest':
         specifier: ^6.0.2
         version: 6.0.3
@@ -751,8 +739,6 @@ packages:
       '@nestjs/platform-express':
         optional: true
 
-<<<<<<< Updated upstream
-=======
   '@nestjs/throttler@6.5.0':
     resolution: {integrity: sha512-9j0ZRfH0QE1qyrj9JjIRDz5gQLPqq9yVC2nHsrosDVAfI5HHw08/aUAWx9DZLSdQf4HDkmhTTEGLrRFHENvchQ==}
     peerDependencies:
@@ -760,7 +746,6 @@ packages:
       '@nestjs/core': ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0 || ^11.0.0
       reflect-metadata: ^0.1.13 || ^0.2.0
 
->>>>>>> Stashed changes
   '@nestjs/typeorm@11.0.0':
     resolution: {integrity: sha512-SOeUQl70Lb2OfhGkvnh4KXWlsd+zA08RuuQgT7kKbzivngxzSo1Oc7Usu5VxCxACQC9wc2l9esOHILSJeK7rJA==}
     peerDependencies:
@@ -3032,10 +3017,6 @@ packages:
     resolution: {integrity: sha512-g9ljZiwki/LfxmQADO3dEY1CbpmXT5Hm2fJ+QaGKwSXUylMybePR7/67YW7jOrrvjEgL1Fmz5kzyAjWVWLlucg==}
     engines: {node: '>=6'}
 
-<<<<<<< Updated upstream
-  terser-webpack-plugin@5.3.14:
-    resolution: {integrity: sha512-vkZjpUjb6OMS7dhV+tILUW6BhpDR7P2L/aQSAv+Uwk+m8KATX9EccViHTJR2qDtACKPIYndLGCyl3FMo+r2LMw==}
-=======
   tar-fs@2.1.4:
     resolution: {integrity: sha512-mDAjwmZdh7LTT6pNleZ05Yt65HC3E+NiQzl672vQG38jIrehtJk/J3mNwIg+vShQPcLF/LV7CMnDW6vjj6sfYQ==}
 
@@ -3045,7 +3026,6 @@ packages:
 
   terser-webpack-plugin@5.3.15:
     resolution: {integrity: sha512-PGkOdpRFK+rb1TzVz+msVhw4YMRT9txLF4kRqvJhGhCM324xuR3REBSHALN+l+sAhKUmz0aotnjp5D+P83mLhQ==}
->>>>>>> Stashed changes
     engines: {node: '>= 10.13.0'}
     peerDependencies:
       '@swc/core': '*'
@@ -3293,17 +3273,12 @@ packages:
   util-deprecate@1.0.2:
     resolution: {integrity: sha512-EPD5q1uXyFxJpCrLnCc1nHnq3gOa6DZBocAIiI2TaSCA7VCJ1UJDMagCzIkXNsUYfD1daK//LTEQ8xiIbrHtcw==}
 
-<<<<<<< Updated upstream
-  uuid@11.1.0:
-    resolution: {integrity: sha512-0/A9rDy9P7cJ+8w1c9WD9V//9Wj15Ce2MPz8Ri6032usz+NfePxx5AcN3bN+r6ZL6jEo066/yNYB3tn4pQEx+A==}
-=======
   utils-merge@1.0.1:
     resolution: {integrity: sha512-pMZTvIkT1d+TFGvDOqodOclx0QWkkgi6Tdoa8gC8ffGAAqz9pzPTZWAybbsHHoED/ztMtkv/VoYTYyShUn81hA==}
     engines: {node: '>= 0.4.0'}
 
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
->>>>>>> Stashed changes
     hasBin: true
 
   uuid@11.1.0:
@@ -4189,15 +4164,12 @@ snapshots:
     optionalDependencies:
       '@nestjs/platform-express': 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)
 
-<<<<<<< Updated upstream
-=======
   '@nestjs/throttler@6.5.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)':
     dependencies:
       '@nestjs/common': 11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       '@nestjs/core': 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/platform-express@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)
       reflect-metadata: 0.2.2
 
->>>>>>> Stashed changes
   '@nestjs/typeorm@11.0.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)(rxjs@7.8.2)(typeorm@0.3.28(pg@8.16.3)(ts-node@10.9.2(@types/node@20.19.25)(typescript@5.9.3)))':
     dependencies:
       '@nestjs/common': 11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2)
@@ -6763,9 +6735,6 @@ snapshots:
 
   tapable@2.3.0: {}
 
-<<<<<<< Updated upstream
-  terser-webpack-plugin@5.3.14(webpack@5.103.0):
-=======
   tar-fs@2.1.4:
     dependencies:
       chownr: 1.1.4
@@ -6782,7 +6751,6 @@ snapshots:
       readable-stream: 3.6.2
 
   terser-webpack-plugin@5.3.15(webpack@5.103.0):
->>>>>>> Stashed changes
     dependencies:
       '@jridgewell/trace-mapping': 0.3.31
       jest-worker: 27.5.1
@@ -6981,13 +6949,9 @@ snapshots:
 
   util-deprecate@1.0.2: {}
 
-<<<<<<< Updated upstream
-  uuid@11.1.0: {}
-=======
   utils-merge@1.0.1: {}
 
   uuid@10.0.0: {}
->>>>>>> Stashed changes
 
   uuid@11.1.0: {}
 
