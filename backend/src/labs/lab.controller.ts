@@ -12,22 +12,26 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LabService } from './lab.service';
-import { CreateLabDto } from './dto/create-lab.dto';
-import { UpdateLabDto } from './dto/update-lab.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Lab } from './lab.entity';
+import { LabDto } from './lab.dto';
 
 @Controller('labs')
 export class LabsController {
   constructor(private readonly labService: LabService) { }
 
   @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.labService.findAll(+page, +limit);
+  async getLabs() {
+    return await this.labService.getAllLabs();
   }
 
-  @Get(':name')
-  async findOne(@Param('name') name: string) {
-    return this.labService.findOne(name);
+  @Post()
+  async createLabDirect(@Body() labData: LabDto) {
+    return await this.labService.createLab(labData);
+  }
+
+  @Post('create')
+  async createLab(@Body() labData: LabDto) {
+    return await this.labService.createLab(labData);
   }
 
   @Post()
