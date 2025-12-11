@@ -6,7 +6,8 @@ export interface ApiError {
 }
 
 export async function fetcher(url: string, options?: RequestInit) {
-  const response = await fetch(`${API_URL}${url}`, {
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const response = await fetch(fullUrl, {
     ...options,
     credentials: 'include',
     headers: {
@@ -19,13 +20,18 @@ export async function fetcher(url: string, options?: RequestInit) {
       message: response.statusText || 'Request failed'
     }));
     const apiError: ApiError = {
-      message: error.message || `HTTP ${response.status}`,
+      message: (errBody as any)?.message || `HTTP ${response.status}`,
       statusCode: response.status,
     };
     throw apiError;
   }
 
-  return response.json();
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+
+  // If not JSON, return the Response so callers can handle blob/text
+  return response;
 }
 
 export async function authFetch(url: string, options?: RequestInit) {

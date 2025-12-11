@@ -41,8 +41,11 @@ export class DockerService {
                 this.logger.log(
                   event.status + (event.progress ? `: ${event.progress}` : ""),
                 );
+                this.logger.log(
+                  event.status + (event.progress ? `: ${event.progress}` : ""),
+                );
               }
-            },
+            }
           );
         });
       });

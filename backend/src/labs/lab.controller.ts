@@ -25,7 +25,7 @@ export class LabController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createLabDto: LabDto) {
     return this.labService.createLab(createLabDto);

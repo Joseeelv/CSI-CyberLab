@@ -31,6 +31,7 @@ async function bootstrap() {
     "http://localhost:3001",
     process.env.FRONTEND_URL,
   ].filter(Boolean);
+  logger.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
 
   if (!allowedOrigins.length) {
     throw new Error(

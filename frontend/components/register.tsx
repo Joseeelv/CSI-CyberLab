@@ -16,7 +16,6 @@ export function Register() {
   const [, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
   const router = useRouter();
-
   useEffect(() => {
     // Animación de entrada cuando el componente se monta
     const timer = setTimeout(() => setIsVisible(true), 100);
@@ -47,7 +46,7 @@ export function Register() {
     }
 
     try {
-      await fetcher('/auth/register', {
+      await fetcher(`/auth/register`, {
         method: 'POST',
         include: 'credentials',
         body: JSON.stringify({ username, email, password }),

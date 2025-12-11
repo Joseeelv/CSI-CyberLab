@@ -1,0 +1,105 @@
+"use client";
+
+import Link from 'next/link';
+import { Button } from './ui/button';
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { fetcher } from '@/lib/api';
+
+
+export function HeaderAuth() {
+  const [mounted, setMounted] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
+  // const [getImage, setGetImage] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+
+    window.addEventListener('scroll', handleScroll);
+
+    // Evitar que la rueda del ratón haga scroll cuando el cursor está sobre el header
+    const headerEl = document.querySelector('header');
+    const onWheel = (e: WheelEvent) => {
+      // si quieres bloquear TODO el scroll sobre header descomenta la siguiente línea
+      // e.preventDefault();
+    };
+
+    if (headerEl) {
+      headerEl.addEventListener('wheel', onWheel, { passive: false });
+    }
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (headerEl) headerEl.removeEventListener('wheel', onWheel as EventListener);
+    };
+
+  }, []);
+
+  const handleLogoutClick = async () => {
+    try {
+      await fetcher(`/auth/logout`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+    } catch (err) {
+      // ignore
+    } finally {
+      const path = window.location.pathname;
+      if (path === '/dashboard' || path.startsWith('/dashboard/')) {
+        window.location.href = '/login';
+      } else {
+        window.location.href = '/';
+      }
+    }
+  };
+
+  // const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  //   React.useEffect(() => {
+  //     const fetchCount = async () => {
+  //       try {
+  //         const res = await fetch(`${API_URL}/users/getImage`, {
+  //           method: 'GET',
+  //           credentials: 'include',
+  //           headers: { 'Content-Type': 'application/json' }
+  //         });
+  //         if (!res.ok) {
+  //           setGetImage(false);
+  //           return;
+  //         }
+  //         const data = await res.json();
+  //         setGetImage(Boolean(data?.image ?? false));
+  //       } catch (err) {
+  //         setGetImage(false);
+  //       }
+  //     };
+  //     fetchCount();
+  //   }, []);
+
+  return (
+    <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a0e1a]/95 backdrop-blur-xl shadow-lg shadow-cyan-500/5 border-b border-cyan-500/20' : 'bg-transparent border-b border-gray-800/50'}`}>
+      <nav className="max-w-7xl mx-auto px-5 py-4 flex items-center justify-between">
+        <Link
+          href="/"
+          className="flex items-center gap-3 group transition-all duration-300 hover:scale-105"
+        >
+          <span className="h-10 text-4xl font-bold font-logo bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent hover:drop-shadow-[0_0_25px_rgba(0,212,255,0.6)] transition-all duration-300">
+            CyberLabs
+          </span>
+        </Link>
+        <div className="flex items-center gap-3 flex-col sm:flex-row ">
+          {mounted && (
+
+            <Button variant="ghost" onClick={handleLogoutClick}>
+              Cerrar Sesión
+            </Button>
+          )}
+        </div>
+      </nav>
+    </header>
+  );
+}
+
+export default HeaderAuth;

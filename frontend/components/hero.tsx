@@ -3,6 +3,7 @@
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Hero: React.FC = () => {
   const { isAuthenticated } = useAuth();

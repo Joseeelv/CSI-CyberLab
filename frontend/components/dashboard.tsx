@@ -398,7 +398,7 @@ export default function Dashboard() {
 
       <div className="w-full px-6 mb-20">
         <div className="flex flex-row flex-wrap gap-4 justify-start items-center px-6 mb-6">
-          <Button
+            <Button
             onClick={() => setSelected('labs')}
             variant={selected === 'labs' ? 'linkselected' : 'link'}
             size="lg"
@@ -407,7 +407,7 @@ export default function Dashboard() {
             Ver Laboratorios
           </Button>
 
-          <Button
+            <Button
             onClick={() => setSelected('settings')}
             variant={selected === 'settings' ? 'linkselected' : 'link'}
             size="lg"
@@ -416,7 +416,7 @@ export default function Dashboard() {
             Configuración
           </Button>
 
-          <Button
+            <Button
             onClick={() => setSelected('rankings')}
             variant={selected === 'rankings' ? 'linkselected' : 'link'}
             size="lg"
