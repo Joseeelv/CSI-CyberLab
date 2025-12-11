@@ -37,7 +37,7 @@ export class LabsController {
   @Post()
   // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createLabDto: CreateLabDto) {
+  async create(@Body() createLabDto: LabDto) {
     return this.labService.create(createLabDto);
   }
   
@@ -45,7 +45,7 @@ export class LabsController {
   // @UseGuards(JwtAuthGuard)
   async update(
     @Param('name') name: string,
-    @Body() updateLabDto: UpdateLabDto,
+    @Body() updateLabDto: LabDto,
   ) {
     return this.labService.update(name, updateLabDto);
   }
