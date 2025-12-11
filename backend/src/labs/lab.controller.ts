@@ -1,62 +1,35 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Put } from '@nestjs/common';
+import { Get, Post, Param, Body} from '@nestjs/common';
 import { LabService } from './lab.service';
-import { CreateLabDto } from './dto/create-lab.dto';
-import { UpdateLabDto } from './dto/update-lab.dto';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import { Lab } from './lab.entity';
 
 @Controller('labs')
 export class LabsController {
-  constructor(private readonly labService: LabService) { }
+
+  constructor(private readonly labService: LabService) {}
 
   @Get()
-  async findAll(@Query('page') page = 1, @Query('limit') limit = 10) {
-    return this.labService.findAll(+page, +limit);
+  async getLabs() {
+    return await this.labService.getAllLabs();
   }
 
-  @Get(':name')
-  async findOne(@Param('name') name: string) {
-    return this.labService.findOne(name);
+  @Post('create')
+  async createLab(@Body() labData) {
+    return await this.labService.createLab(labData);
   }
 
-  @Post()
-  // @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.CREATED)
-  async create(@Body() createLabDto: CreateLabDto) {
-    return this.labService.create(createLabDto);
-  }
-  
-  @Put(':name')
-  // @UseGuards(JwtAuthGuard)
-  async update(
-    @Param('name') name: string,
-    @Body() updateLabDto: UpdateLabDto,
-  ) {
-    return this.labService.update(name, updateLabDto);
+  @Get(':uuid')
+  async getLabById(@Param('uuid') uuid: string) {
+    return await this.labService.findLabById(uuid);
   }
 
-  @Delete(':name')
-  // @UseGuards(JwtAuthGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async remove(@Param('name') name: string) {
-    await this.labService.remove(name);
+  @Post('update/:uuid')
+  async updateLab(@Param('uuid') uuid: string, @Param() updateData: Partial<Lab>) {
+    return await this.labService.updateLab(uuid, updateData);
   }
 
-  @Delete()
-  @HttpCode(HttpStatus.NO_CONTENT)
-  async removeAll() {
-    await this.labService.removeAll();
+  @Put('delete/:uuid')
+  async deleteLab(@Param('uuid') uuid: string) {
+    return await this.labService.deleteLab(uuid);
   }
-
 }

@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Lab } from 'src/labs/lab.entity';
+
 @Entity()
 export class Category {
   @PrimaryGeneratedColumn()
@@ -8,6 +9,6 @@ export class Category {
   @Column({ type: 'varchar', length: 32, nullable: false })
   name: string;
 
-  @ManyToMany(() => Lab, (lab) => lab.categories, { nullable: true })
+  @OneToMany(() => Lab, (lab) => lab.categories, { nullable: true })
   labs: Lab[];
 }

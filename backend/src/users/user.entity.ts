@@ -1,42 +1,41 @@
-import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn } from "typeorm";
 import { Container } from "src/containers/container.entity";
 import { Lab } from "src/labs/lab.entity";
-import { Role } from "src/role/role.entity";
-import { Session } from "src/session/session.entity";
+
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true, type: 'varchar', length: 100 })
+  @Column({ nullable: true })
   fullName: string;
 
-  @Column({ type: 'varchar', length: 50, nullable: false })
+  @Column()
   username: string;
 
-  @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
+  @Column()
   email: string;
 
-  @Column({ type: 'varchar', length: 100 })
+  @Column()
   password: string;
 
-  @ManyToOne(() => Role, { nullable: true })
-  @JoinColumn({ name: 'roleId' })
-  role: Role;
+  //DEBE DE SER UNA RELACION CON LA CLASE ROLE
+  @Column({ nullable: true })
+  role: string; // admin, student, teacher
 
-  @OneToMany(() => Container, (container) => container.user)
+  @ManyToMany(() => Container, (container) => container.user, {
+    nullable: false
+  })
+  @JoinColumn({ name: 'containerId' })
   containers: Container[];
-
-  @OneToMany(() => Session, (session) => session.user)
-  sessions: Session[];
 
   @ManyToMany(() => Lab, (lab) => lab.users, {
     nullable: false
   })
-  @JoinTable()
+  @JoinColumn({ name: 'labId' })
   labs: Lab[];
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: false })
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' , nullable: false})
   created: Date;
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated: Date;

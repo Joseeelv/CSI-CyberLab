@@ -2,8 +2,8 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm globally and wget for healthcheck
-RUN npm install -g pnpm && apk add --no-cache wget
+# Install pnpm globally
+RUN npm install -g pnpm
 
 # Copy package files
 COPY package.json ./

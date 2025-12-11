@@ -9,9 +9,16 @@ export class OperatingSystem {
   @Column({ type: 'varchar', length: 64, nullable: false })
   name: string;
 
-  @OneToMany(() => Lab, (lab) => lab.operatingSystem)
+  @OneToMany(() => Lab, (lab) => lab.operatingSystem, { nullable: true })
+  @JoinColumn({ name: 'labId' })
   labs: Lab[];
 
-  @OneToMany(() => Image, (image) => image.operatingSystem)
+  @OneToMany(() => Image, (image) => image.baseOperatingSystem, { nullable: false })
+  @JoinColumn({ name: 'imageId' })
   images: Image[];
+
+  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  created: Date;
+  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP'})
+  updated: Date;
 }
