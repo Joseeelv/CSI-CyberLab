@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Param, Body } from '@nestjs/common';
 import { DifficultyService } from './difficulty.service';
 import { DifficultyDto } from './difficulty.dto';
-@Controller('difficulties')
+@Controller('difficulty')
 export class DifficultiesController {
   constructor(private readonly difficultyService: DifficultyService) { }
 
@@ -10,7 +10,7 @@ export class DifficultiesController {
     return await this.difficultyService.getAll();
   }
 
-  @Post('create')
+  @Post()
   async createDifficulty(@Body() data: DifficultyDto) {
     return await this.difficultyService.create(data);
   }
@@ -20,3 +20,4 @@ export class DifficultiesController {
     return await this.difficultyService.findByName(name);
   }
 }
+  

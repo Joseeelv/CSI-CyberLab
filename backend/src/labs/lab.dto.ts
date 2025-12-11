@@ -1,23 +1,46 @@
-import { IsString, IsBoolean, IsNumber } from "class-validator";
+import { IsString, IsBoolean, IsNumber, IsOptional } from "class-validator";
 
 export class LabDto {
   @IsString()
   name: string;
 
   @IsString()
-  description: string;
-
-  @IsBoolean()
-  status: boolean;
+  @IsOptional()
+  description?: string;
 
   @IsNumber()
-  categoryId: number;
+  @IsOptional()
+  points?: number;
+  
   @IsNumber()
-  operatingSystemId: number;
+  @IsOptional()
+  estimatedTime?: number;
+
+  @IsString()
+  @IsOptional()
+  tags?: string;
+
   @IsNumber()
-  difficultyId: number;
+  @IsOptional()
+  status?: number;
+
   @IsNumber()
-  containerId: number;
+  @IsOptional()
+  categoryId?: number;
+  
   @IsNumber()
-  userId: number;
+  @IsOptional()
+  operatingSystemId?: number;
+  
+  @IsNumber()
+  @IsOptional()
+  difficultyId?: number;
+  
+  @IsNumber()
+  @IsOptional()
+  containerId?: number;
+  
+  @IsNumber()
+  @IsOptional()
+  userId?: number;
 }

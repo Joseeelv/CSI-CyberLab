@@ -1,12 +1,5 @@
 import { useEffect, useState } from 'react';
-import { authFetch, ApiError } from '@/lib/api';
-
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  role?: string;
-}
+import { authFetch, type ApiError, type User, type AuthResponse } from '@/lib/api';
 
 interface AuthState {
   user: User | null;
@@ -26,17 +19,26 @@ export function useAuth() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const data = await authFetch('/auth/me');
+        const data = await authFetch<AuthResponse>('/auth/me');
+
+        // Extraer usuario de diferentes estructuras posibles
+        const user = data?.user ?? data?.payload ?? (data as any);
+
+        // Validar que tengamos al menos un email o id
+        if (!user?.email && !user?.id) {
+          throw new Error('Invalid user data');
+        }
+
         setState({
-          user: data.payload,
+          user: user as User,
           loading: false,
           error: null,
           isAuthenticated: true,
         });
       } catch (err) {
         const error = err as ApiError;
-        
-        // 401 is expected when not logged in, don't treat as error
+
+        // 401 es esperado cuando no está logueado
         if (error.statusCode === 401) {
           setState({
             user: null,
@@ -45,6 +47,7 @@ export function useAuth() {
             isAuthenticated: false,
           });
         } else {
+          console.error('Auth error:', error);
           setState({
             user: null,
             loading: false,

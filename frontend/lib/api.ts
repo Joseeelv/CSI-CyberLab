@@ -1,3 +1,5 @@
+import type { ApiError } from './types';
+
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost/api';
 
 export interface ApiError {
@@ -6,7 +8,8 @@ export interface ApiError {
 }
 
 export async function fetcher(url: string, options?: RequestInit) {
-  const response = await fetch(`${API_URL}${url}`, {
+  const fullUrl = url.startsWith('http') ? url : `${API_URL}${url}`;
+  const response = await fetch(fullUrl, {
     ...options,
     credentials: 'include',
     headers: {
@@ -15,18 +18,22 @@ export async function fetcher(url: string, options?: RequestInit) {
     },
   });
 
+  const contentType = response.headers.get('content-type') ?? '';
   if (!response.ok) {
-    const error = await response.json().catch(() => ({ 
-      message: response.statusText || 'Request failed' 
-    }));
+    const errBody = contentType.includes('application/json') ? await response.json() : { message: response.statusText };
     const apiError: ApiError = {
-      message: error.message || `HTTP ${response.status}`,
+      message: (errBody as any)?.message || `HTTP ${response.status}`,
       statusCode: response.status,
     };
     throw apiError;
   }
 
-  return response.json();
+  if (contentType.includes('application/json')) {
+    return response.json();
+  }
+
+  // If not JSON, return the Response so callers can handle blob/text
+  return response;
 }
 
 export async function authFetch(url: string, options?: RequestInit) {

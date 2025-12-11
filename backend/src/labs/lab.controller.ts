@@ -1,35 +1,66 @@
-import { Controller, Put } from '@nestjs/common';
-import { Get, Post, Param, Body} from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  Query,
+  HttpCode,
+  HttpStatus,
+  UseGuards,
+} from '@nestjs/common';
 import { LabService } from './lab.service';
 import { Lab } from './lab.entity';
+import { LabDto } from './lab.dto';
 
 @Controller('labs')
 export class LabsController {
-
-  constructor(private readonly labService: LabService) {}
+  constructor(private readonly labService: LabService) { }
 
   @Get()
   async getLabs() {
     return await this.labService.getAllLabs();
   }
 
-  @Post('create')
-  async createLab(@Body() labData) {
+  @Post()
+  async createLabDirect(@Body() labData: LabDto) {
     return await this.labService.createLab(labData);
   }
 
-  @Get(':uuid')
-  async getLabById(@Param('uuid') uuid: string) {
-    return await this.labService.findLabById(uuid);
+  @Post('create')
+  async createLab(@Body() labData: LabDto) {
+    return await this.labService.createLab(labData);
   }
 
-  @Post('update/:uuid')
-  async updateLab(@Param('uuid') uuid: string, @Param() updateData: Partial<Lab>) {
-    return await this.labService.updateLab(uuid, updateData);
+  @Post()
+  // @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.CREATED)
+  async create(@Body() createLabDto: LabDto) {
+    return this.labService.create(createLabDto);
+  }
+  
+  @Put(':name')
+  // @UseGuards(JwtAuthGuard)
+  async update(
+    @Param('name') name: string,
+    @Body() updateLabDto: LabDto,
+  ) {
+    return this.labService.update(name, updateLabDto);
   }
 
-  @Put('delete/:uuid')
-  async deleteLab(@Param('uuid') uuid: string) {
-    return await this.labService.deleteLab(uuid);
+  @Delete(':name')
+  // @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async remove(@Param('name') name: string) {
+    await this.labService.remove(name);
   }
+
+  @Delete()
+  @HttpCode(HttpStatus.NO_CONTENT)
+  async removeAll() {
+    await this.labService.removeAll();
+  }
+
 }
