@@ -59,7 +59,7 @@ export function ActiveLabPanel({ activeLab, lab, onStop }: ActiveLabPanelProps) 
             </h3>
           </div>
           <p className="text-white" style={{ fontSize: '20px' }}>
-            {lab.title}
+            {lab.name}
           </p>
         </div>
       </div>

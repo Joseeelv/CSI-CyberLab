@@ -5,8 +5,8 @@ import { useAuth } from '@/hooks/useAuth';
 interface LabCardProps {
   lab: Lab;
   isActive: boolean;
-  onStart: (labId: string) => void;
-  onStop: () => void;
+  onStart?: (labId: string) => void;
+  onStop?: () => void;
 }
 
 const difficultyColors = {
@@ -52,12 +52,15 @@ export function LabCard({ lab, isActive, onStart, onStop }: LabCardProps) {
             `}>
               {lab.difficulty?.name}
             </span>
-            {lab.categories?.[0] && (
-              <span className={`
-                px-2 py-1 rounded text-xs border
-                ${categoryColors[lab.categories[0].name as keyof typeof categoryColors]}
-              `}>
-                {lab.categories[0].name}
+            {lab.category && (
+              <span
+                key={lab.category.id}
+                className={`
+                  px-2 py-1 rounded text-xs border
+                  ${categoryColors[lab.category.name as keyof typeof categoryColors]}
+                `}
+              >
+                {lab.category.name}
               </span>
             )}
             <span className={`
@@ -109,7 +112,7 @@ export function LabCard({ lab, isActive, onStart, onStop }: LabCardProps) {
       {/* Action Button */}
       {isActive ? (
         <button
-          onClick={onStop}
+          onClick={() => onStop?.()}
           className="cursor-pointer w-full flex items-center justify-center gap-2 px-4 py-3 bg-red-600 hover:bg-red-700 text-white rounded-lg transition-colors"
         >
           <Square className="w-4 h-4" />
@@ -117,7 +120,7 @@ export function LabCard({ lab, isActive, onStart, onStop }: LabCardProps) {
         </button>
       ) : (
         <button
-          onClick={() => isAuthenticated && onStart(lab.uuid)}
+          onClick={() => isAuthenticated && onStart?.(lab.uuid)}
           className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg transition-all ${
             isAuthenticated
               ? 'cursor-pointer bg-gradient-to-r from-purple-600 to-cyan-600 hover:from-purple-700 hover:to-cyan-700 text-white'
