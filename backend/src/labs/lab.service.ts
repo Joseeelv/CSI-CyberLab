@@ -4,6 +4,9 @@ import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { LabDto } from './dto/lab.dto';
 
+
+type RawTags = string | string[] | undefined | null;
+
 @Injectable()
 export class LabService {
   constructor(
@@ -11,60 +14,16 @@ export class LabService {
     private readonly labRepository: Repository<Lab>,
   ) { }
 
-  async getAllLabs() {
+  async getAllLabs(): Promise<Lab[]> {
     return await this.labRepository.find({
-      relations: ['difficulty', 'operatingSystem', 'categories'],
+      relations: ['difficulty', 'operatingSystem', 'category', 'status'],
     });
-  }
-
-  async createLab(labData: LabDto): Promise<Lab> {
-    if (!labData?.name || typeof labData.name !== 'string' || labData.name.trim() === '') {
-      throw new BadRequestException('Field "name" is required');
-    }
-    
-    const lab = this.labRepository.create({
-      name: labData.name.trim(),
-      description: labData.description,
-      points: labData.points,
-      estimatedTime: labData.estimatedTime,
-      tags: Array.isArray(labData.tags) ? labData.tags : [],
-      status: { id: 1 } as any,
-      operatingSystem: { id: labData.operatingSystemId } as any,
-      difficulty: { id: labData.difficultyId } as any,
-    });
-
-    try {
-      return await this.labRepository.save(lab);
-    } catch (error) {
-      throw new BadRequestException('Failed to create lab');
-    }
-  }
-
-  async findLabById(uuid: string): Promise<Lab | null> {
-    return await this.labRepository.findOne({ where: { uuid } });
-  }
-
-  async updateLab(uuid: string, updateData: Partial<Lab>): Promise<Lab | null> {
-    const lab = await this.labRepository.findOne({ where: { uuid } });
-    if (!lab) {
-      throw new Error('Lab not found');
-    }
-    Object.assign(lab, updateData);
-    return await this.labRepository.save(lab);
-  }
-
-  async deleteLab(uuid: string): Promise<void> {
-    const lab = await this.labRepository.findOne({ where: { uuid } });
-    if (!lab) {
-      throw new Error('Lab not found');
-    }
-    await this.labRepository.remove(lab);
   }
 
   async findByName(name: string): Promise<Lab> {
     const lab = await this.labRepository.findOne({
       where: { name },
-      relations: ['category', 'operatingSystem', 'difficulty', 'container', 'status']
+      relations: ['category', 'operatingSystem', 'difficulty', 'containers', 'status']
     });
 
     if (!lab) {
@@ -74,33 +33,104 @@ export class LabService {
     return lab;
   }
 
-  async create(createLabDto: LabDto): Promise<Lab> {
-    const lab = this.labRepository.create({
-      name: createLabDto.name,
-      description: createLabDto.description,
-      points: createLabDto.points,
-      estimatedTime: createLabDto.estimatedTime,
-      tags: Array.isArray(createLabDto.tags) ? createLabDto.tags : [],
-      status: { id: 1 } as any, //por defecto inactivo
-      operatingSystem: { id: createLabDto.operatingSystemId } as any,
-      difficulty: { id: createLabDto.difficultyId } as any,
+  async findById(uuid: string): Promise<Lab> {
+    const lab = await this.labRepository.findOne({ 
+      where: { uuid }, 
+      relations: ['difficulty', 'operatingSystem', 'category', 'status'] 
     });
+
+    if (!lab) {
+      throw new NotFoundException(`Lab with uuid "${uuid}" not found`);
+    }
+
+    return lab;
+  }
+
+  async createLab(labData: LabDto): Promise<Lab> {
+    if (!labData?.name || typeof labData.name !== 'string' || labData.name.trim() === '') {
+      throw new BadRequestException('Field "name" is required');
+    }
+
+    const tags = this.parseTags(labData.tags as RawTags);
+
+    const lab = this.labRepository.create({
+      name: labData.name.trim(),
+      description: labData.description,
+      points: labData.points,
+      estimatedTime: labData.estimatedTime,
+      tags,
+      status: { id: 1 } as any,
+      category: { id: labData.categoryId } as any,
+      operatingSystem: { id: labData.operatingSystemId } as any,
+      difficulty: { id: labData.difficultyId } as any,
+    });
+
+    try {
+      const savedLab = await this.labRepository.save(lab);
+      // Recargar con todas las relaciones
+      return await this.findById(savedLab.uuid);
+    } catch (error) {
+      throw new BadRequestException('Failed to create lab');
+    }
+  }
+
+  async update(identifier: string, updateData: Partial<LabDto>): Promise<Lab> {
+    // Buscar por uuid o name
+    const lab = await this.labRepository.findOne({ 
+      where: [{ uuid: identifier }, { name: identifier }] 
+    });
+
+    if (!lab) {
+      throw new NotFoundException(`Lab with identifier "${identifier}" not found`);
+    }
+
+    // Parse tags si están presentes
+    if ((updateData as any).tags) {
+      lab.tags = this.parseTags((updateData as any).tags);
+    }
+
+    Object.assign(lab, updateData);
     
-    return await this.labRepository.save(lab);
+    const savedLab = await this.labRepository.save(lab);
+    // Recargar con todas las relaciones
+    return await this.findById(savedLab.uuid);
   }
 
-  async update(name: string, updateLabDto: LabDto): Promise<Lab> {
-    const lab = await this.findByName(name);
-    Object.assign(lab, updateLabDto);
-    return await this.labRepository.save(lab);
-  }
+  async remove(identifier: string): Promise<void> {
+    const lab = await this.labRepository.findOne({ 
+      where: [{ uuid: identifier }, { name: identifier }] 
+    });
 
-  async remove(name: string): Promise<void> {
-    const lab = await this.findByName(name);
+    if (!lab) {
+      throw new NotFoundException(`Lab with identifier "${identifier}" not found`);
+    }
+
     await this.labRepository.remove(lab);
   }
 
   async removeAll(): Promise<void> {
     await this.labRepository.createQueryBuilder().delete().execute();
+  }
+
+  private parseTags(value: RawTags): string[] {
+    if (!value) return [];
+    if (Array.isArray(value)) return value.filter(Boolean);
+    if (typeof value === 'string') {
+      const cleaned = value.trim();
+      try {
+        // Intentar parsear JSON (con comillas simples o dobles)
+        const json = cleaned.replace(/'/g, '"');
+        const parsed = JSON.parse(json);
+        if (Array.isArray(parsed)) return parsed.map(String).filter(Boolean);
+      } catch {
+        // Fallback: dividir por comas
+        return cleaned
+          .replace(/^\[|\]$/g, '')
+          .split(',')
+          .map((t) => t.replace(/^\s*["']\s*|\s*["']\s*$/g, '').trim())
+          .filter(Boolean);
+      }
+    }
+    return [];
   }
 }

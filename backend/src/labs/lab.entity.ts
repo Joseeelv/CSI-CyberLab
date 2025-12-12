@@ -1,10 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Exclude } from 'class-transformer';
 import { OperatingSystem } from 'src/operating-systems/os.entity';
 import { Category } from 'src/categories/category.entity';
 import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { User } from 'src/users/user.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
+
 @Entity()
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
@@ -20,24 +22,40 @@ export class Lab {
   points: number;
 
   @Column({ type: 'int', default: 30 })
-  estimatedTime: number; // minutos
+  estimatedTime: number;
 
   @Column({ type: 'simple-json', nullable: true })
   tags: string[];
 
-  @ManyToOne(() => Status, (status) => status.labs)
+  @Exclude()
+  @Column({ name: 'statusId', nullable: true })
+  statusId: number;
+
+  @ManyToOne(() => Status, (status) => status.labs, { eager: true })
   @JoinColumn({ name: 'statusId' })
   status: Status;
 
-  @ManyToMany(() => Category, (category) => category.labs, { nullable: true })
-  @JoinTable({ name: 'Lab_Category' })
-  categories: Category[];
+  @Exclude()
+  @Column({ name: 'categoryId', nullable: true })
+  categoryId: number;
 
-  @ManyToOne(() => Difficulty, (difficulty) => difficulty.labs, { nullable: true })
+  @ManyToOne(() => Category, (category) => category.id, { nullable: true, eager: true })
+  @JoinColumn({ name: 'categoryId' })
+  category: Category;
+
+  @Exclude()
+  @Column({ name: 'difficultyId', nullable: true })
+  difficultyId: number;
+
+  @ManyToOne(() => Difficulty, (difficulty) => difficulty.labs, { nullable: true, eager: true })
   @JoinColumn({ name: 'difficultyId' })
   difficulty: Difficulty;
 
-  @ManyToOne(() => OperatingSystem, (os) => os.labs, { nullable: true })
+  @Exclude()
+  @Column({ name: 'operatingSystemId', nullable: true })
+  operatingSystemId: number;
+
+  @ManyToOne(() => OperatingSystem, (os) => os.labs, { nullable: true, eager: true })
   @JoinColumn({ name: 'operatingSystemId' })
   operatingSystem: OperatingSystem;
 
@@ -45,11 +63,12 @@ export class Lab {
   containers: Container[];
 
   @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable({ name: "Lab_User" })
+  @JoinTable({ name: 'Lab_User' })
   users: User[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
+
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated: Date;
 }

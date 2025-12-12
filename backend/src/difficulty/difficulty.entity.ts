@@ -1,8 +1,10 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Lab } from 'src/labs/lab.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Difficulty {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 

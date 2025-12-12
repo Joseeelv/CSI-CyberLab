@@ -5,9 +5,15 @@ import * as cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { Logger } from '@nestjs/common';
 
+import { ClassSerializerInterceptor } from '@nestjs/common';
+import { Reflector } from '@nestjs/core';
+
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, { logger: ['log', 'error', 'warn', 'debug', 'verbose'] });
-
+  
+  app.useGlobalInterceptors(new ClassSerializerInterceptor(app.get(Reflector)));
+  
   // Parse cookies on incoming requests so controllers can read req.cookies
   app.use(cookieParser());
 

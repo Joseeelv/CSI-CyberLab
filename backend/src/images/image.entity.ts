@@ -1,11 +1,12 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, CreateDateColumn, JoinColumn } from 'typeorm';
 import { Container } from 'src/containers/container.entity';
 import { OperatingSystem } from 'src/operating-systems/os.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Image {
   @PrimaryGeneratedColumn('uuid')
-  id: string;
+  uuid: string;
 
   @Column({ type: 'varchar', length: 64 })
   name: string;
@@ -13,11 +14,12 @@ export class Image {
   @Column({ type: 'varchar', length: 32, nullable: true })
   version: string | null;
 
+  @Exclude()
   @OneToMany(() => OperatingSystem, (os) => os.id, {
     nullable: false
   })
   @JoinColumn({ name: 'operatingSystemId' })
-  operatingSystem: OperatingSystem;
+  operatingSystemId: OperatingSystem;
 
   @Column({ type: 'varchar', length: 255, nullable: true })
   repository: string | null;
@@ -28,9 +30,10 @@ export class Image {
   @JoinColumn({ name: 'imageId' })
   containers: Container[];
 
+  @Exclude()
   @ManyToOne(() => OperatingSystem, (os) => os.id, { nullable: false })
   @JoinColumn({ name: 'baseOperatingSystemId' })
-  baseOperatingSystem: OperatingSystem;
+  baseOperatingSystemId: OperatingSystem;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
