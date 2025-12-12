@@ -20,24 +20,30 @@ export class UserController {
     const count = await this.userService.countUsers();
     return { count };
   }
-  
+
   // Endpoint para actualizar un usuario por su ID
-  @Put('/update-user/:id')
-  updateUser(
-    @Param('id') id: number,
-    @Body() updateData: Partial<User>,
-  ): Promise<User | null> {
-    return this.userService.updateUser(id, updateData);
+  @Put(':id')
+  updateUser(@Param('id') id: number, @Body() updateData: Partial<User>,): Promise<User | String | null> {
+    try {
+      return this.userService.updateUser(id, updateData);
+    }
+    catch (error) {
+      throw new Error('User not found ' + error.message);
+    }
   }
 
   // Endpoint para buscar un usuario por su nombre de usuario
   @Get(':username')
-  findOne(@Param('username') username: string): Promise<User | null> {
-    return this.userService.findByUsername(username);
+  findOne(@Param('username') username: string): Promise<User | null | String> {
+    try {
+      return this.userService.findByUsername(username);
+    } catch (error) {
+      throw new Error('User not found ' + error.message);
+    }
   }
 
   // Endpoint para buscar un usuario por su correo electrónico
-  @Get('email/:email')
+  @Get('email')
   findByEmail(@Param('email') email: string): Promise<User | null> {
     return this.userService.findByEmail(email);
   }
@@ -49,8 +55,9 @@ export class UserController {
   }
 
   // Endpoint para eliminar un usuario por su ID
-  @Delete('/delete/:id')
-  async deleteUser(@Param('id') id: number): Promise<void> {
+  @Delete(':id')
+  async deleteUser(@Param('id') id: number): Promise<String> {
     await this.userService.deleteUser(id);
+    return "User deleted successfully";
   }
 }
