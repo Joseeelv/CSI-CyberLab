@@ -11,7 +11,7 @@ export interface Lab {
   name: string;
   description: string;
   difficulty: { id: number; name: string };
-  categories: { id: number; name: string }[];
+  category?: { id: number; name: string };
   operatingSystem: { id: number; name: string };
   points: number;
   estimatedTime: number; // in minutes
@@ -65,7 +65,7 @@ export default function LabPage() {
 
     if (selectedCategories.length > 0) {
       filtered = filtered.filter(lab => 
-        lab.categories?.some(cat => selectedCategories.includes(cat.name))
+        selectedCategories.includes(lab.category?.name ?? '')
       );
     }
 
@@ -78,7 +78,7 @@ export default function LabPage() {
       filtered = filtered.filter(lab => 
         lab.name.toLowerCase().includes(query) ||
         lab.description.toLowerCase().includes(query) ||
-        lab.categories?.some(cat => cat.name.toLowerCase().includes(query)) ||
+        lab.category?.name.toLowerCase().includes(query) ||
         lab.difficulty?.name.toLowerCase().includes(query) ||
         lab.operatingSystem?.name.toLowerCase().includes(query) ||
         (Array.isArray(lab.tags) && lab.tags.some(tag => tag.toLowerCase().includes(query)))
@@ -142,7 +142,7 @@ export default function LabPage() {
               <div className="mb-8">
                 <ActiveLabPanel
                   activeLab={activeLab}
-                  lab={labs.find(l => l.id === activeLab.labId)!}
+                  lab={labs.find(l => l.uuid === activeLab.labId)!}
                   onStop={handleStopLab}
                 />
               </div>

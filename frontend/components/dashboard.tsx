@@ -35,7 +35,7 @@ export default function Dashboard() {
   useEffect(() => {
     const check = async () => {
       try {
-        const data = await fetcher('/auth/me');
+        const data = await fetcher('/auth/me'); // Corregido: se asigna el resultado de fetcher a 'data'
         setUserPayload(data.payload ?? data);
       } catch (err) {
         console.error('Auth check failed:', err);
@@ -130,8 +130,8 @@ export default function Dashboard() {
           {(selected == 'labs' || selected == null) && (
             <AnimatedPanel>
               <div className="grid md:grid-cols-2 gap-4 mb-6">
-                {labs.map((lab) => (
-                  <LabCard key={lab.id} lab={lab} isActive={false} />
+                {labs.map((lab, index) => (
+                  <LabCard key={lab.uuid || `lab-${index}`} lab={lab} isActive={false} />
                 ))}
               </div>
             </AnimatedPanel>
