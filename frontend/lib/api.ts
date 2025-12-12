@@ -4,7 +4,6 @@ export interface ApiError {
   message: string;
   statusCode?: number;
 }
-console.log('API_URL is set to:', API_URL);
 export async function fetcher(url: string, options?: RequestInit) {
   const response = await fetch(`${API_URL}${url}`, {
     ...options,
