@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { LabService } from './lab.service';
 
-import { LabDto } from './dto/lab.dto';
+import { LabDto } from './dto/dto/lab.dto';
 
 @Controller('labs')
 export class LabsController {
