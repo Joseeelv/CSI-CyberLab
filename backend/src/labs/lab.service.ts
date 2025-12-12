@@ -51,8 +51,9 @@ export class LabService {
       description: labData.description,
       points: labData.points,
       estimatedTime: labData.estimatedTime,
-      tags: Array.isArray(labData.tags) ? labData.tags : [],
+      tags,
       status: { id: 1 } as any,
+      category: { id: labData.categoryId } as any,
       operatingSystem: { id: labData.operatingSystemId } as any,
       difficulty: { id: labData.difficultyId } as any,
     });

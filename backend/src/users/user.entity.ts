@@ -34,6 +34,7 @@ export class User {
   @Column()
   password: string;
 
+  @Exclude()
   @ManyToOne(() => Role, (role) => role.id, {
     nullable: false,
   })
