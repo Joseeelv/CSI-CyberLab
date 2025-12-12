@@ -137,18 +137,18 @@ export class SeederService {
 
   private async seedImages() {
     const images = [
-      { name: 'kali-linux', version: 'latest', baseOperatingSystem: { id: 1 } as any },
-      { name: 'ubuntu', version: '22.04', baseOperatingSystem: { id: 1 } as any },
-      { name: 'debian', version: '11', baseOperatingSystem: { id: 1 } as any },
-      { name: 'windows-server', version: '2022', baseOperatingSystem: { id: 2 } as any },
+      { imageName: 'kali-linux', tag: 'latest', baseOperatingSystem: { id: 1 } as any },
+      { imageName: 'ubuntu', tag: '22.04', baseOperatingSystem: { id: 1 } as any },
+      { imageName: 'debian', tag: '11', baseOperatingSystem: { id: 1 } as any },
+      { imageName: 'windows-server', tag: '2022', baseOperatingSystem: { id: 2 } as any },
     ];
 
     for (const image of images) {
-      const exists = await this.imageRepository.findOne({ where: { name: image.name, version: image.version } });
+      const exists = await this.imageRepository.findOne({ where: { imageName: image.imageName, tag: image.tag } });
       if (!exists) {
         const newImage = this.imageRepository.create(image);
         await this.imageRepository.save(newImage);
-        this.logger.log(`   ✓ Imagen creada: ${image.name}:${image.version}`);
+        this.logger.log(`   ✓ Imagen creada: ${image.imageName}:${image.tag}`);
       }
     }
   }
