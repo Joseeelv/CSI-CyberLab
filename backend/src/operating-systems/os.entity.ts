@@ -21,9 +21,4 @@ export class OperatingSystem {
   @OneToMany(() => Image, (image) => image.uuid, { nullable: false })
   @JoinColumn({ name: 'image' })
   images: Image[];
-
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
-  created: Date;
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP'})
-  updated: Date;
 }
