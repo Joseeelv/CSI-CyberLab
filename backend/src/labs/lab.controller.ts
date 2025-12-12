@@ -12,8 +12,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { LabService } from './lab.service';
-
-import { LabDto } from './dto/dto/lab.dto';
+import { LabDto } from './dto/lab.dto';
 
 @Controller('labs')
 export class LabsController {
@@ -40,7 +39,7 @@ export class LabsController {
   async create(@Body() createLabDto: LabDto) {
     return this.labService.create(createLabDto);
   }
-  
+
   @Put(':name')
   // @UseGuards(JwtAuthGuard)
   async update(

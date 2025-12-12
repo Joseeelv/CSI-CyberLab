@@ -23,14 +23,14 @@ export class Lab {
   estimatedTime: number; // minutos
 
   @Column({ type: 'simple-json', nullable: true })
-  tags: string[]; 
-  
+  tags: string[];
+
   @ManyToOne(() => Status, (status) => status.labs)
   @JoinColumn({ name: 'statusId' })
   status: Status;
 
   @ManyToMany(() => Category, (category) => category.labs, { nullable: true })
-  @JoinTable()
+  @JoinTable({ name: 'Lab_Category' })
   categories: Category[];
 
   @ManyToOne(() => Difficulty, (difficulty) => difficulty.labs, { nullable: true })
@@ -40,12 +40,12 @@ export class Lab {
   @ManyToOne(() => OperatingSystem, (os) => os.labs, { nullable: true })
   @JoinColumn({ name: 'operatingSystemId' })
   operatingSystem: OperatingSystem;
-  
+
   @OneToMany(() => Container, (container) => container.lab, { nullable: true })
   containers: Container[];
 
   @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable()
+  @JoinTable({ name: "Lab_User" })
   users: User[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

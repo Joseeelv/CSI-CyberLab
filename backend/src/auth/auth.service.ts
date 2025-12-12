@@ -19,13 +19,13 @@ export class AuthService {
   // Función para registrar un nuevo usuario
   async register(registerData: RegisterUserDto): Promise<any> {
     if (!registerData.password) {
-      console.log('Password is required', error);
+      console.error('Password is required', error);
       throw new BadRequestException('Password is required');
     }
 
     const existingUser = await this.userService.findByEmail(registerData.email);
     if (existingUser) {
-      console.log('Email already exists');
+      console.error('Email already exists');
       throw new BadRequestException('Email already exists');
     }
 
@@ -50,10 +50,8 @@ export class AuthService {
       fullName: user.username,
       email: user.email,
       password: user.password,
-      isPremium: false,
-      role: 'student', // Default role
+      roleId: 2, // Asignar rol de estudiante por defecto
       createdAt: new Date(),
-      updatedAt: new Date(),
     };
     return this.userService.createUser(newUser);
   }
@@ -72,9 +70,9 @@ export class AuthService {
     }
 
     // Build a minimal payload (do not include sensitive data)
-    const payload = { name: user.username, email: user.email, role: user.role };
+    const payload = { name: user.username, email: user.email, role: user.roleId };
     const accessToken = this.jwtService.sign(payload);
-    return { accessToken, role: user.role };
+    return { accessToken, role: user.roleId };
   }
 
   //Funcion para logout
