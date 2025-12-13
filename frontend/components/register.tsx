@@ -190,7 +190,7 @@ export default function Register() {
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
                     <span className="relative z-10 text-[#0a0e1a] font-bold">
-                      {isLoading ? 'Resgistrando cuenta...' : 'Registrarse'}
+                      {isLoading ? 'Registrando cuenta...' : 'Registrarse'}
                     </span>
                   </button>
                 </div>
