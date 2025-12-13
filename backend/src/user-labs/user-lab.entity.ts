@@ -20,8 +20,8 @@ export class UserLab {
   grade: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
-  createdAt: Date;
+  created: Date;
 
-  @Column({ type: 'timestamp', nullable: true })
-  updatedAt: Date;
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  updated: Date;
 }

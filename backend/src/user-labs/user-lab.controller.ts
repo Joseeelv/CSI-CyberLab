@@ -1,10 +1,11 @@
 import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
 import { UserLabService } from './user-lab.service';
 import { UserLab } from './user-lab.entity';
+import { UserLabDto } from './dto/user-lab.dto';
 
 @Controller('user-labs')
 export class UserLabController {
-  constructor(private readonly userLabService: UserLabService) {}
+  constructor(private readonly userLabService: UserLabService) { }
 
   @Get()
   async findAll(): Promise<UserLab[]> {
@@ -17,12 +18,12 @@ export class UserLabController {
   }
 
   @Post()
-  async create(@Body() userLab: Partial<UserLab>): Promise<UserLab> {
+  async create(@Body() userLab: UserLabDto): Promise<UserLab> {
     return this.userLabService.create(userLab);
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() userLab: Partial<UserLab>): Promise<UserLab> {
+  async update(@Param('id') id: number, @Body() userLab: UserLabDto): Promise<UserLab> {
     return this.userLabService.update(id, userLab);
   }
 
