@@ -128,7 +128,7 @@ export default function Register() {
                 </div>
               )}
 
-              <div className="space-y-6" onSubmit={handleSubmit}>
+              <div className="space-y-6">
                 <div>
                   <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
                     Nombre de Usuario
