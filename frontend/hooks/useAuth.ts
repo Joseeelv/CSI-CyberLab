@@ -1,19 +1,8 @@
 import { useEffect, useState } from 'react';
 import { authFetch, ApiError } from '@/lib/api';
+import { User } from '@/types/user';
+import { AuthState } from '@/types/AuthState';
 
-interface User {
-  id: string;
-  email: string;
-  username: string;
-  role?: string;
-}
-
-interface AuthState {
-  user: User | null;
-  loading: boolean;
-  error: string | null;
-  isAuthenticated: boolean;
-}
 
 export function useAuth() {
   const [state, setState] = useState<AuthState>({
@@ -27,15 +16,16 @@ export function useAuth() {
     const loadUser = async () => {
       try {
         const data = await authFetch('/auth/me');
+        const user = data?.payload ?? data; // Add fallback logic to handle different response structures
         setState({
-          user: data.payload,
+          user,
           loading: false,
           error: null,
-          isAuthenticated: true,
+          isAuthenticated: !!user,
         });
       } catch (err) {
         const error = err as ApiError;
-        
+
         // 401 is expected when not logged in, don't treat as error
         if (error.statusCode === 401) {
           setState({

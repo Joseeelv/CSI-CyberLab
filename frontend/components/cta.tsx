@@ -1,45 +1,38 @@
 "use client";
 
-import React from "react";
-
+import { useState, useEffect } from 'react';
 import { Button } from "./ui/button";
 import Link from "next/link";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+import { fetcher } from "@/lib/api";
 
 export function CTA() {
 
   // Estado para almacenar el conteo de usuarios
-  const [userCount, setUserCount] = React.useState<number | null>(null);
+  const [userCount, setUserCount] = useState<number | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchCount = async () => {
       try {
-        const res = await fetch(`${API_URL}/users/count`, {
+        const res = await fetcher('/users/count', {
           method: 'GET',
           credentials: 'include',
           headers: { 'Content-Type': 'application/json' }
         });
         if (!res.ok) {
           setUserCount(null);
-          return;
         }
-        const data = await res.json();
-        setUserCount(Number(data?.count ?? 0));
+        setUserCount(Number(res.count ?? 0));
       } catch (err) {
         setUserCount(null);
       }
     };
+    const interval = setInterval(fetchCount, 10000); // Actualiza cada 10 segundos
     fetchCount();
+    return () => clearInterval(interval); // Limpiar el intervalo al desmontar
   }, []);
 
   return (
     <section className="py-20 px-5 relative overflow-hidden">
-      {/* Animated background */}
-      <div className="absolute inset-0">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-r from-cyan-500/20 to-blue-500/20 rounded-full blur-3xl animate-pulse" />
-      </div>
-
       {/* Grid pattern */}
       <div className="absolute inset-0 opacity-5">
         <div className="absolute inset-0"

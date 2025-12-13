@@ -3,28 +3,9 @@ import { useState, useEffect } from 'react';
 import { LabCard } from '@/components/LabCard';
 import { LabFilters } from '@/components/LabFilters';
 import { ActiveLabPanel } from '@/components/ActiveLabPanel';
-import HeaderSwitcher from '@/components/headerSwitcher';
+import { Header } from '@/components/header';
 import { fetcher } from '@/lib/api';
-
-export interface Lab {
-  uuid: string;
-  name: string;
-  description: string;
-  difficulty: { id: number; name: string };
-  category?: { id: number; name: string };
-  operatingSystem: { id: number; name: string };
-  points: number;
-  estimatedTime: number; // in minutes
-  tags: string[];
-}
-
-export interface ActiveLab {
-  labId: string;
-  startTime: number;
-  duration: number; // in minutes
-  ip: string;
-  url: string;
-}
+import { Lab, ActiveLab } from '@/types/lab';
 
 export default function LabPage() {
   const [labs, setLabs] = useState<Lab[]>([]);
@@ -64,7 +45,7 @@ export default function LabPage() {
     }
 
     if (selectedCategories.length > 0) {
-      filtered = filtered.filter(lab => 
+      filtered = filtered.filter(lab =>
         selectedCategories.includes(lab.category?.name ?? '')
       );
     }
@@ -75,7 +56,7 @@ export default function LabPage() {
 
     if (searchQuery) {
       const query = searchQuery.toLowerCase();
-      filtered = filtered.filter(lab => 
+      filtered = filtered.filter(lab =>
         lab.name.toLowerCase().includes(query) ||
         lab.description.toLowerCase().includes(query) ||
         lab.category?.name.toLowerCase().includes(query) ||
@@ -112,17 +93,17 @@ export default function LabPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">
-      <HeaderSwitcher />
+      <Header />
 
       {/* Hero Section */}
       <section className="relative py-20 px-6 overflow-hidden">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#0a0a0a]" />
         <div className="container mx-auto relative z-10 text-center max-w-4xl">
           <h2 className="text-4xl font-bold mb-4">
-          <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
-            Laboratorios Prácticos
-          </span>
-        </h2>
+            <span className="bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent">
+              Laboratorios Prácticos
+            </span>
+          </h2>
           <p className="text-gray-300 mb-8" style={{ fontSize: '18px' }}>
             Pon a prueba tus habilidades en entornos reales. Inicia un laboratorio y accede a tu instancia privada.
           </p>

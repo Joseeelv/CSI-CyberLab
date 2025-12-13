@@ -18,22 +18,22 @@ export class Container {
   @Exclude()
   @ManyToOne(() => Image, (image) => image.uuid, { nullable: true })
   @JoinColumn({ name: 'imageId' })
-  image: Image;
+  imageId: Image;
 
   @Exclude()
   @ManyToOne(() => Lab, (lab) => lab.containers, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'labId' })
-  lab: Lab;
+  labId: Lab;
 
   @Exclude()
   @ManyToOne(() => Status, (status) => status.containers, { nullable: true })
   @JoinColumn({ name: 'statusId' })
-  status: Status;
+  statusId: Status;
 
   @Exclude()
   @ManyToOne(() => User, (user) => user.containers, { nullable: true })
   @JoinColumn({ name: 'userId' })
-  user: User;
+  userId: User;
 
   @Column({ type: 'timestamp', nullable: false, default: () => 'CURRENT_TIMESTAMP' })
   created: Date;

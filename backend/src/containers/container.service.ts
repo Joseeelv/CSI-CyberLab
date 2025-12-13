@@ -62,7 +62,7 @@ export class ContainerService {
     }
 
     //Construimos la imagen del docker
-    const dockerImageName = `${image.name}:${image.version || 'latest'}`;
+    const dockerImageName = `${image.name}:${image.tag || 'latest'}`;
 
     //Creamos el contenedor en Docker
     try {
@@ -71,13 +71,13 @@ export class ContainerService {
       // Creamos la entidad Container en la base de datos
       const newContainer: Partial<Container> = {
         name: containerData.name,
-        image: image,
-        status: status,
+        imageId: image,
+        statusId: status,
         created: new Date(),
       };
 
-      if (lab) newContainer.lab = lab;
-      if (user) newContainer.user = user;
+      if (lab) newContainer.labId = lab;
+      if (user) newContainer.userId = user;
 
       // create puede retornar una entidad o un arreglo; forzamos el tipo para evitar ambigüedades
       const createdEntity = this.containerRepository.create(newContainer as Partial<Container>) as Container;

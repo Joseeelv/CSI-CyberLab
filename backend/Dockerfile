@@ -9,7 +9,8 @@ RUN npm install -g pnpm
 COPY package.json ./
 
 # Install dependencies with pnpm
-RUN pnpm install
+RUN npm install -g pnpm@8.6.0 \
+    && npm cache clean --force
 
 # Copy source code
 COPY . .

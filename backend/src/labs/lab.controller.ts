@@ -20,10 +20,7 @@ export class LabsController {
 
   @Put(':name')
   // @UseGuards(JwtAuthGuard)
-  async update(
-    @Param('name') name: string,
-    @Body() updateLabDto: LabDto,
-  ) {
+  async update(@Param('name') name: string, @Body() updateLabDto: LabDto) {
     return this.labService.update(name, updateLabDto);
   }
 

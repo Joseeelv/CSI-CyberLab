@@ -4,32 +4,33 @@ import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import Image from 'next/image';
 import Home from '@/app/page';
-import { fetcher, ApiError } from '@/lib/api';
+import { fetcher } from '@/lib/api';
 import { motion } from 'framer-motion';
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [isVisible, setIsVisible] = useState(false);
-  const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
+  const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
 
   useEffect(() => {
-    // Animación de entrada cuando el componente se monta
     const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita el comportamiento predeterminado del formulario
     setIsLoading(true);
     setError('');
 
+    // Validar campos vacíos
     if (!email || !password) {
       setError('Por favor completa todos los campos');
       setIsLoading(false);
-      return;
+      return; // Detener el flujo si hay errores
     }
 
     try {
@@ -37,14 +38,16 @@ export default function Login() {
         method: 'POST',
         body: JSON.stringify({ email, password }),
       });
-
-
-      if (data.role === 'student') router.push('/dashboard');
-      else if (data.role === 'admin') router.push('/admin');
-      else router.push('/dashboard');
-    } catch (err) {
-      const error = err as ApiError;
-      setError(error.message || 'Credenciales inválidas. Inténtalo de nuevo.');
+      // Comprobar el rol y redirigir en consecuencia
+      if (data && data.role) {
+        if (data.role === 'student') router.push('/dashboard');
+        else if (data.role === 'admin') router.push('/admin');
+        else router.push('/dashboard');
+      } else {
+        setError('Respuesta del servidor inválida.');
+      }
+    } catch {
+      setError('Error al iniciar sesión. Por favor, verifica tus credenciales.');
     } finally {
       setIsLoading(false);
     }
@@ -54,7 +57,6 @@ export default function Login() {
     // Inicia la animación de cierre
     setIsClosing(true);
 
-    // Espera a que termine la animación antes de redirigir (coincide con duration: 500ms)
     setTimeout(() => {
       router.push('/');
     }, 100);
@@ -81,14 +83,17 @@ export default function Login() {
         transition={{ duration: 0.5 }}
         className="min-h-screen flex items-center justify-center bg-transparent p-4 relative overflow-hidden h-full w-full"
       >
-        {/* El formulario con la animación aplicada */}
         <motion.form
           {...formAnimation}
           id="login-form"
           className="w-full max-w-lg rounded-xl shadow-2xl relative z-10 space-y-6 overflow-hidden"
           onSubmit={handleSubmit}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              handleSubmit(e); // Llama al método handleSubmit
+            }
+          }}
         >
-
           <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
             <Button
               variant="close"
@@ -140,7 +145,6 @@ export default function Login() {
                       id="email"
                       name="email"
                       type="email"
-                      autoComplete="email"
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                       placeholder="tu@email.com"
@@ -159,7 +163,6 @@ export default function Login() {
                       id="password"
                       name="password"
                       type="password"
-                      autoComplete="current-password"
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                       placeholder="••••••••"
@@ -179,7 +182,7 @@ export default function Login() {
 
                 <div>
                   <button
-                    type="submit"
+                    onSubmit={handleSubmit}
                     disabled={isLoading}
                     className="relative w-full px-6 py-3 font-semibold rounded-lg overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/30 cursor-pointer"
                   >
@@ -204,6 +207,6 @@ export default function Login() {
           </div>
         </motion.form>
       </motion.div>
-    </div >
+    </div>
   );
 }

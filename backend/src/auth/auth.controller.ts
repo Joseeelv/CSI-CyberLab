@@ -29,14 +29,20 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async login(@Body() loginData: LoginUserDto, @Res({ passthrough: true }) res: Response) {
     try {
-      const { accessToken, role } = await this.authService.login(loginData.email, loginData.password);
+      if (!loginData.email || !loginData.password) {
+        throw new BadRequestException('Credentials are required');
+      }
+      const { accessToken, role } = await this.authService.login(loginData);
+      console.log('User Role:', role);
+
       // Set cookie
       res.cookie('jwt', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 3600000,
+        maxAge: 3600000, // 1 hora
       });
+
       return { message: 'Login successful', accessToken, role };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
@@ -60,12 +66,17 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<any> {
-    try {
-      res.clearCookie('jwt', { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' });
-      return { message: 'Logout successful' };
-    } catch (error) {
-      return { error: error.message };
+  async logout(@Res({ passthrough: true }) res: Response) {
+    console.log(res);
+    if (!res) {
+      throw new BadRequestException('No JWT cookie found');
     }
+    res.clearCookie('jwt', {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+    });
+
+    return { message: 'Logout successful' };
   }
 }

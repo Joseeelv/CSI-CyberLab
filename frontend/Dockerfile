@@ -2,10 +2,11 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
+# Install a specific trusted version of pnpm globally
+RUN npm install -g pnpm@8.6.0 \
+    && npm cache clean --force
 
-# Copy package files
+# Copy package files 
 COPY package.json ./
 
 # Install dependencies with pnpm

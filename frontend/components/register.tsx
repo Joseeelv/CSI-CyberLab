@@ -24,14 +24,29 @@ export default function Register() {
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Evita el comportamiento predeterminado del formulario
     setIsLoading(true);
     setError('');
 
-    if (!email || !password || !username) {
-      setError('Por favor completa todos los campos');
-      setIsLoading(false);
-      return;
+    // Validación básica del frontend
+    const newErrors: Record<string, string> = {};
+
+    if (!username.trim()) {
+      setError('El nombre de usuario es requerido');
+    }
+
+    if (!email.trim()) {
+      setError('El email es requerido');
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError('El formato del correo electrónico no es válido');
+    }
+
+    if (!password.trim()) {
+      setError('La contraseña es requerida');
+    } else if (password.length < 8) {
+      setError('La contraseña debe tener al menos 8 caracteres');
+    } else if (!/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>])/.test(password)) {
+      setError('La contraseña debe contener al menos una mayúscula, una minúscula, un número y un carácter especial');
     }
 
     try {
@@ -39,14 +54,30 @@ export default function Register() {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
       });
+
       router.push('/login');
-    } catch (err) {
-      const error = err as ApiError;
-      setError(error.message || 'No se ha podido registrar. Inténtalo de nuevo.');
+    } catch (err: any) {
+      // Manejar errores del backend
+      if (err.message) {
+        if (Array.isArray(err.message)) {
+          // Errores de validación del DTO
+          err.message.forEach((msg: string) => {
+            if (msg.includes('email')) setError(msg);
+            else if (msg.includes('password') || msg.includes('contraseña')) setError(msg);
+            else if (msg.includes('username') || msg.includes('usuario')) setError(msg);
+            else setError(msg);
+          });
+        } else {
+          setError(err.message);
+        }
+      } else {
+        setError('Error al registrar. Por favor, intenta de nuevo.');
+      }
     } finally {
       setIsLoading(false);
     }
   };
+
 
   const handleClose = () => {
     // Inicia la animación de cierre
@@ -84,7 +115,13 @@ export default function Register() {
           {...formAnimation}
           id="login-form"
           className="w-full max-w-lg rounded-xl shadow-2xl relative z-10 space-y-6 overflow-hidden"
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit} // Maneja el evento de envío del formulario
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') {
+              e.preventDefault();
+              handleSubmit(e); // Llama al método handleSubmit
+            }
+          }}
         >
 
           <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
@@ -138,7 +175,6 @@ export default function Register() {
                       id="username"
                       name="username"
                       type="text"
-                      autoComplete="username"
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                       placeholder="yourusername"
@@ -154,7 +190,6 @@ export default function Register() {
                       id="email"
                       name="email"
                       type="email"
-                      autoComplete="email"
                       required
                       className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                       placeholder="tu@email.com"
@@ -171,7 +206,6 @@ export default function Register() {
                         id="password"
                         name="password"
                         type="password"
-                        autoComplete="current-password"
                         required
                         className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
                         placeholder="••••••••"
@@ -183,9 +217,9 @@ export default function Register() {
                 </div>
                 <div>
                   <button
-                    type="submit"
+                    type="submit" // Cambiado a "submit" para que el formulario se envíe correctamente
                     disabled={isLoading}
-                    className="relative w-full px-6 py-3 font-semibold rounded-lg overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                    className="relative w-full px-6 py-3 font-semibold rounded-lg overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300 hover:scale-105 hover:shadow-cyan-500/30 cursor-pointer"
                   >
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
