@@ -8,11 +8,11 @@ export class CreateUserLabTableMigration implements MigrationInterface {
         columns: [
           { name: 'id', type: 'int', isPrimary: true, isGenerated: true, generationStrategy: 'increment' },
           { name: 'userId', type: 'int' },
-          { name: 'labId', type: 'int' },
+          { name: 'labId', type: 'uuid' },
           { name: 'progress', type: 'float', isNullable: true },
           { name: 'grade', type: 'float', isNullable: true },
-          { name: 'createdAt', type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
-          { name: 'updatedAt', type: 'timestamp', isNullable: true },
+          { name: 'created', type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
+          { name: 'updated', type: 'timestamp', isNullable: true },
         ],
         foreignKeys: [
           {
@@ -24,7 +24,7 @@ export class CreateUserLabTableMigration implements MigrationInterface {
           {
             columnNames: ['labId'],
             referencedTableName: 'labs',
-            referencedColumnNames: ['id'],
+            referencedColumnNames: ['uuid'],
             onDelete: 'CASCADE',
           },
         ],
