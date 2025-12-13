@@ -13,7 +13,7 @@ export class UserLabController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<UserLab> {
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserLab> {
     return this.userLabService.findOne(id);
   }
 
