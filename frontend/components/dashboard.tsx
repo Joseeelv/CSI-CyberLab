@@ -61,13 +61,14 @@ export default function Dashboard() {
 
         setLabs(data);
 
-        // Create a map of difficulty IDs to names for easy lookup
+        // Create a new map of difficulty IDs to names for easy lookup
+        const newDifficultyMap: { [key: number]: string } = {};
         data.forEach((lab) => {
           if (lab.difficulty && lab.difficulty.id !== undefined) {
-            difficultyMap[lab.difficulty.id] = lab.difficulty.name;
+            newDifficultyMap[lab.difficulty.id] = lab.difficulty.name;
           }
         });
-        setDifficultyMap(difficultyMap);
+        setDifficultyMap(newDifficultyMap);
 
       } catch (err) {
         console.error('Error fetching labs:', err);
@@ -75,7 +76,7 @@ export default function Dashboard() {
       }
     };
     check();
-  }, []);
+  }, [difficultyMap]);
 
   if (loading) return <div className="p-8">Comprobando sesión...</div>;
   if (!userPayload) return null;
