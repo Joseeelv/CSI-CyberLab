@@ -64,4 +64,7 @@ export class User {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updated: Date;
+
+  @OneToMany(() => UserLab, (userLab) => userLab.user)
+  userLabs: UserLab[];
 }
