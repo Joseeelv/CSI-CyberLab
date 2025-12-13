@@ -1,6 +1,5 @@
 import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable, OneToMany, JoinColumn } from "typeorm";
 import { Container } from "src/containers/container.entity";
-import { Lab } from "src/labs/lab.entity";
 import { Role } from "src/role/role.entity";
 import { UserLab } from '../user-labs/user-lab.entity';
 
