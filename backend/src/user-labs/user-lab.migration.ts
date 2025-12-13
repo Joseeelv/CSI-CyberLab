@@ -12,7 +12,7 @@ export class CreateUserLabTableMigration implements MigrationInterface {
           { name: 'progress', type: 'float', isNullable: true },
           { name: 'grade', type: 'float', isNullable: true },
           { name: 'created', type: 'timestamp', default: 'CURRENT_TIMESTAMP' },
-          { name: 'updated', type: 'timestamp', isNullable: true },
+          { name: 'updated', type: 'timestamp', default: 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP', isNullable: true },
         ],
         foreignKeys: [
           {
@@ -26,6 +26,12 @@ export class CreateUserLabTableMigration implements MigrationInterface {
             referencedTableName: 'labs',
             referencedColumnNames: ['uuid'],
             onDelete: 'CASCADE',
+          },
+        ],
+        uniques: [
+          {
+            name: 'UQ_user_lab',
+            columnNames: ['userId', 'labId'],
           },
         ],
       })
