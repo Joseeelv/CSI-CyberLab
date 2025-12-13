@@ -11,6 +11,6 @@ export class Category {
   @Column({ type: 'varchar', length: 32, nullable: false })
   name: string;
 
-  @OneToMany(() => Lab, (lab) => lab.uuid, { nullable: true })
+  @OneToMany(() => Lab, (lab) => lab.category, { nullable: true })
   labs: Lab[];
 }

@@ -19,7 +19,7 @@ export class Image {
   description: string | null;
 
   @Column({ type: 'boolean', default: true })
-  isPublic: boolean;
+  isPublic: boolean;;
 
   @Exclude()
   @OneToMany(() => Container, (container) => container.imageId, {
@@ -29,14 +29,14 @@ export class Image {
   containers: Container[];
 
   @Exclude()
-  @ManyToOne(() => Lab, (lab) => lab.uuid, { nullable: true })
+  @ManyToOne(() => Lab, { nullable: true })
   @JoinColumn({ name: 'labId' })
-  lab: Lab | null;
+  labId: Lab | null;
 
   @Exclude()
   @ManyToOne(() => OperatingSystem, (os) => os.images, { nullable: true })
   @JoinColumn({ name: 'operatingSystemId' })
-  operatingSystem: OperatingSystem | null;
+  operatingSystemId: OperatingSystem | null;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;

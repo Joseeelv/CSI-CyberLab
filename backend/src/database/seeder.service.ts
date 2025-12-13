@@ -137,10 +137,10 @@ export class SeederService {
 
   private async seedImages() {
     const images = [
-      { name: 'kali-linux', tag: 'latest', baseOperatingSystem: { id: 1 } as any },
-      { name: 'ubuntu', tag: '22.04', baseOperatingSystem: { id: 1 } as any },
-      { name: 'debian', tag: '11', baseOperatingSystem: { id: 1 } as any },
-      { name: 'windows-server', tag: '2022', baseOperatingSystem: { id: 2 } as any },
+      { name: 'kali-linux', tag: 'latest', operatingSystemId: { id: 1 } as any },
+      { name: 'ubuntu', tag: '22.04', operatingSystemId: { id: 1 } as any },
+      { name: 'debian', tag: '11', operatingSystemId: { id: 1 } as any },
+      { name: 'windows-server', tag: '2022', operatingSystemId: { id: 2 } as any },
     ];
 
     for (const image of images) {

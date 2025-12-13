@@ -5,7 +5,6 @@ import { User } from 'src/users/user.entity';
 import { RegisterUserDto } from './register.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
-import { error } from 'console';
 import { LoginUserDto } from './login.dto';
 import { JwtService } from '@nestjs/jwt';
 
@@ -20,7 +19,7 @@ export class AuthService {
   // Función para registrar un nuevo usuario
   async register(registerData: RegisterUserDto): Promise<any> {
     if (!registerData.password) {
-      console.error('Password is required', error);
+      console.error('Password is required');
       throw new BadRequestException('Password is required');
     }
 
@@ -42,7 +41,7 @@ export class AuthService {
 
     const validPassword = user.password = await bcrypt.hash(registerData.password, saltRounds);
     if (!validPassword) {
-      console.error('Error hashing password:', error);
+      console.error('Error hashing password');
       throw new BadRequestException('Failed to hash password');
     }
 

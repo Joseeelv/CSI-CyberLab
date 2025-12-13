@@ -16,7 +16,7 @@ export class Container {
   name: string;
 
   @Exclude()
-  @ManyToOne(() => Image, (image) => image.uuid, { nullable: true })
+  @ManyToOne(() => Image, (image) => image.containers, { nullable: true })
   @JoinColumn({ name: 'imageId' })
   imageId: Image;
 
