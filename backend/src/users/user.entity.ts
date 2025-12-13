@@ -1,8 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable, JoinColumn } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable, OneToMany, JoinColumn } from "typeorm";
 import { Container } from "src/containers/container.entity";
 import { Lab } from "src/labs/lab.entity";
 import { Role } from "src/role/role.entity";
-import { Exclude } from "class-transformer";
+import { UserLab } from '../user-labs/user-lab.entity';
 
 @Entity()
 export class User {
@@ -47,4 +47,7 @@ export class User {
 
   @Column({ nullable: true })
   updated: Date;
+
+  @OneToMany(() => UserLab, (userLab) => userLab.user)
+  userLabs: UserLab[];
 }

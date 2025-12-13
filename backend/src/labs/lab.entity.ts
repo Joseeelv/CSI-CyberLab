@@ -3,10 +3,9 @@ import { Exclude } from 'class-transformer';
 import { OperatingSystem } from 'src/operating-systems/os.entity';
 import { Category } from 'src/categories/category.entity';
 import { Difficulty } from 'src/difficulty/difficulty.entity';
-import { User } from 'src/users/user.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
-
+import { UserLab } from 'src/user-labs/user-lab.entity';
 @Entity()
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
@@ -62,9 +61,8 @@ export class Lab {
   @OneToMany(() => Container, (container) => container.labId, { nullable: true })
   containers: Container[];
 
-  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable({ name: 'Lab_User' })
-  users: User[];
+  @OneToMany(() => UserLab, (userLab) => userLab.lab)
+  userLabs: UserLab[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
