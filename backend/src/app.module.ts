@@ -14,6 +14,9 @@ import { LabsModule } from './labs/lab.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
 import { RoleModule } from './role/role.module';
 import { SeederModule } from './database/seeder.module';
+import { ChallengeService } from './challenge/challenge.service';
+import { ChallengeController } from './challenge/challenge.controller';
+import { ChallengeModule } from './challenge/challenge.module';
 
 @Module({
   imports: [
@@ -49,8 +52,9 @@ import { SeederModule } from './database/seeder.module';
     DifficultyModule,
     RoleModule,
     SeederModule,
+    ChallengeModule,
   ],
-  controllers: [AppController],
-  providers: [AppService],
+  controllers: [AppController, ChallengeController],
+  providers: [AppService, ChallengeService],
 })
 export class AppModule { }

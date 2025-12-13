@@ -6,13 +6,14 @@ import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { User } from 'src/users/user.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
+import { Challenge } from 'src/challenge/challenge.entity';
 
 @Entity()
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
 
-  @Column({ type: 'varchar', length: 64, nullable: false })
+  @Column({ type: 'varchar', length: 128, nullable: false })
   name: string;
 
   @Column({ type: 'varchar', length: 100, nullable: true })
@@ -65,6 +66,9 @@ export class Lab {
   @ManyToMany(() => User, (user) => user.labs, { nullable: true })
   @JoinTable({ name: 'Lab_User' })
   users: User[];
+
+  @OneToMany(() => Challenge, (challenge) => challenge.lab)
+  challenges: Challenge[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
