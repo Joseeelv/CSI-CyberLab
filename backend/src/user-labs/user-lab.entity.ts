@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn} from 'typeorm';
 import { User } from '../users/user.entity';
 import { Lab } from '../labs/lab.entity';
 
@@ -8,9 +8,11 @@ export class UserLab {
   id: number;
 
   @ManyToOne(() => User, (user) => user.userLabs)
+  @JoinColumn({ name: 'userId' })
   user: User;
 
   @ManyToOne(() => Lab, (lab) => lab.userLabs)
+  @JoinColumn({ name: 'labId' })
   lab: Lab;
 
   @Column({ type: 'float', nullable: true })

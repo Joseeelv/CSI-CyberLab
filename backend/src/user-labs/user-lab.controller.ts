@@ -1,4 +1,4 @@
-import { Controller, Get, Post, Put, Delete, Param, Body } from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe } from '@nestjs/common';
 import { UserLabService } from './user-lab.service';
 import { UserLab } from './user-lab.entity';
 import { UserLabDto } from './dto/user-lab.dto';
@@ -23,12 +23,12 @@ export class UserLabController {
   }
 
   @Put(':id')
-  async update(@Param('id') id: number, @Body() userLab: UserLabDto): Promise<UserLab> {
+  async update(@Param('id', ParseIntPipe) id: number, @Body() userLab: UserLabDto): Promise<UserLab> {
     return this.userLabService.update(id, userLab);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<void> {
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
     return this.userLabService.delete(id);
   }
 }
