@@ -62,7 +62,7 @@ export class ContainerService {
     }
 
     //Construimos la imagen del docker
-    const dockerImageName = `${image.imageName}:${image.tag || 'latest'}`;
+    const dockerImageName = `${image.name}:${image.version || 'latest'}`;
 
     //Creamos el contenedor en Docker
     try {

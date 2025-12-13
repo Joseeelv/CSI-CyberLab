@@ -60,7 +60,7 @@ return (
       </p>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-        <Link href= { !isAuthenticated ? "/register" : "/dashboard" }>
+        <Link href="/register">
           <Button variant="secondary" size="lg">
             {$texto}
           </Button>
