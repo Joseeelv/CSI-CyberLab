@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { UserLab } from './user-lab.entity';
@@ -9,24 +9,33 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ['user', 'lab'] });
   }
 
   async findOne(id: number): Promise<UserLab> {
-    return this.userLabRepository.findOne({ where: { id }, relations: ['user', 'lab'] });
+    const userLab = await this.userLabRepository.findOne({ where: { id }, relations: ['user', 'lab'] });
+    if (!userLab) {
+      throw new NotFoundException(`UserLab with id ${id} does not exist`);
+    }
+    return userLab;
   }
 
   async create(userLab: UserLabDto): Promise<UserLab> {
-    try{
+    try {
       const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
       if (existingUserLab) {
-        throw new NotFoundException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
+        throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
       }
-      const newUserLab = this.userLabRepository.create(userLab);
+      const newUserLab = this.userLabRepository.create({
+        ...userLab,
+        labId: parseInt(userLab.labId, 10),
+      });
       return this.userLabRepository.save(newUserLab);
+    } catch (error) {
+      throw error;
     }
   }
 
