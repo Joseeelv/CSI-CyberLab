@@ -13,11 +13,13 @@ export class UserLabDto {
   @IsOptional()
   @Validate(LabExistsConstraint)
   labId: string;
+
   @IsNumber()
   @IsOptional()
   @Min(0)
   @Max(100)
   progress?: number;
+
   @IsNumber()
   @IsOptional()
   @Min(0)
