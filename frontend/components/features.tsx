@@ -1,7 +1,6 @@
 "use client";
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from './ui/card';
 import Image from 'next/image';
 
 interface FeatureProps {
@@ -73,7 +72,7 @@ export const Features: React.FC = () => {
     },
     {
       icon: <Image
-       src="hack-files.svg"
+        src="hack-files.svg"
         alt="laboratory"
         width={40}
         height={40}

@@ -11,7 +11,7 @@ export class LabDto {
   @IsNumber()
   @IsOptional()
   points?: number;
-  
+
   @IsNumber()
   @IsOptional()
   estimatedTime?: number;
@@ -26,19 +26,19 @@ export class LabDto {
   @IsNumber()
   @IsOptional()
   categoryId?: number;
-  
+
   @IsNumber()
   @IsOptional()
   operatingSystemId?: number;
-  
+
   @IsNumber()
   @IsOptional()
   difficultyId?: number;
-  
+
   @IsNumber()
   @IsOptional()
   containerId?: number;
-  
+
   @IsNumber()
   @IsOptional()
   userId?: number;

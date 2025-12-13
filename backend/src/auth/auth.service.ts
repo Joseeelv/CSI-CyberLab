@@ -57,14 +57,14 @@ export class AuthService {
   }
 
   // Función para login
-  async login(email: string, password: string): Promise<any> {
-    const user = await this.userService.findByEmail(email);
+  async login(loginData: LoginUserDto): Promise<any> {
+    const user = await this.userService.findByEmail(loginData.email);
     if (!user) {
       // Avoid leaking whether the user exists
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
