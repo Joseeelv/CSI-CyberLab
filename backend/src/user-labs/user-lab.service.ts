@@ -8,7 +8,7 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ['user', 'lab'] });
@@ -29,6 +29,10 @@ export class UserLabService {
   }
 
   async delete(id: number): Promise<void> {
+    const userLab = await this.userLabRepository.findOne({ where: { id } });
+    if (!userLab) {
+      throw new Error(`UserLab with id ${id} does not exist`);
+    }
     await this.userLabRepository.delete(id);
   }
 }
