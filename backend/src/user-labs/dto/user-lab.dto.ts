@@ -5,10 +5,12 @@ import { IsString, IsNumber, IsOptional, ValidatorConstraint, ValidatorConstrain
 
 export class UserLabDto {
   @IsNumber()
+  @IsOptional()
   @Validate(UserExistsConstraint)
   userId: number;
 
   @IsString()
+  @IsOptional()
   @Validate(LabExistsConstraint)
   labId: string;
 
