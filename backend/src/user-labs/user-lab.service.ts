@@ -9,7 +9,7 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ['user', 'lab'] });
