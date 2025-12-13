@@ -5,7 +5,8 @@ import { StatusController } from "./status.controller";
 import { Status } from "./status.entity";
 
 @Module({
+  imports: [TypeOrmModule.forFeature([Status])],
   providers: [StatusService],
   controllers: [StatusController],
 })
-export class StatusModule {}
+export class StatusModule { }

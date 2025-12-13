@@ -9,7 +9,7 @@ export function CTA() {
   // Estado para almacenar el conteo de usuarios
   const [, setUserCount] = useState<number | null>(null);
 
-  React.useEffect(() => {
+  useEffect(() => {
     const fetchCount = async () => {
       try {
         const res = await fetcher('/users/count', {

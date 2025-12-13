@@ -49,8 +49,9 @@ module.exports = {
         fadeIn: "fadeIn 0.3s ease-out",
       },
       animation: {
-        fadeInSlideUp: "fadeInSlideUp 0.6s ease-out forwards",
-        fadeOutSlideDown: "fadeOutSlideDown 0.6s ease-out forwards",
+        fadeInSlideUp: "fadeInSlideUp 0.1s ease-out forwards",
+        fadeOutSlideDown: "fadeOutSlideDown 0.1s ease-out forwards",
+        fadeIn: "fadeIn 0.3s ease-out",
       },
     },
   },

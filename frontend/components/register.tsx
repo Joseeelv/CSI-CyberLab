@@ -52,6 +52,7 @@ export function Register() {
         include: 'credentials',
         body: JSON.stringify({ username, email, password }),
       });
+
       router.push('/login');
     } catch (err) {
       // Manejar errores del backend

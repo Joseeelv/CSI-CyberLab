@@ -69,6 +69,7 @@ export class AuthService {
   // Función para login
   async login(loginData: LoginUserDto): Promise<any> {
     const user = await this.userService.findByEmail(loginData.email);
+    console.log(user);
     if (!user) {
       throw new UnauthorizedException("Credenciales inválidas");
     }
@@ -115,6 +116,7 @@ export class AuthService {
       }
       return { message: "Logout successful" };
     } catch (error) {
+      console.error('Error during logout:', error.message);
       return { error: error.message };
     }
   }
