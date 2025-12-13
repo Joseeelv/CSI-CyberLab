@@ -1,11 +1,20 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
 import { User } from '../users/user.entity';
 import { Lab } from '../labs/lab.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity('user_labs')
 export class UserLab {
   @PrimaryGeneratedColumn()
   id: number;
+
+  @Exclude()
+  @Column()
+  userId: number;
+
+  @Exclude()
+  @Column()
+  labId: number;
 
   @ManyToOne(() => User, (user) => user.userLabs)
   @JoinColumn({ name: 'userId' })
