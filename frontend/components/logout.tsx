@@ -27,5 +27,5 @@ export default function Logout() {
     <div className="p-8">
       {isLoggingOut ? 'Cerrando sesión...' : 'Redirigiendo a la página de login...'}
     </div>
-  ); 
+  );
 }

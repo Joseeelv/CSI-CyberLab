@@ -62,13 +62,12 @@ export default function Dashboard() {
         setLabs(data);
 
         // Create a map of difficulty IDs to names for easy lookup
-        const map: { [key: number]: string } = {};
         data.forEach((lab) => {
           if (lab.difficulty && lab.difficulty.id !== undefined) {
-            map[lab.difficulty.id] = lab.difficulty.name;
+            difficultyMap[lab.difficulty.id] = lab.difficulty.name;
           }
         });
-        setDifficultyMap(map);
+        setDifficultyMap(difficultyMap);
 
       } catch (err) {
         console.error('Error fetching labs:', err);
