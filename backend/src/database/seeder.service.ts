@@ -9,6 +9,7 @@ import { Role } from 'src/role/role.entity';
 import { Image } from 'src/images/image.entity';
 import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class SeederService {
@@ -31,6 +32,8 @@ export class SeederService {
     private containerRepository: Repository<Container>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) { }
 
   async seed() {
@@ -160,6 +163,7 @@ export class SeederService {
         description: 'Aprende los fundamentos de SQL injection mediante un sitio web vulnerable',
         points: 100,
         estimatedTime: 30,
+        flag: ['flag{sql_injection_basic}', 'flag{sql_injection_advanced}'],
         tags: ['SQLi', 'Web', 'OWASP'],
         category: { id: 1 } as any,
         difficulty: { id: 1 } as any,
@@ -171,6 +175,7 @@ export class SeederService {
         description: 'Explora vulnerabilidades XSS en aplicaciones web',
         points: 150,
         estimatedTime: 45,
+        flag: ['flag{xss_basic}', 'flag{xss_stored}'],
         tags: ['XSS', 'Web', 'JavaScript'],
         category: { id: 1 } as any,
         difficulty: { id: 2 } as any,
@@ -182,6 +187,7 @@ export class SeederService {
         description: 'Aprende a explotar vulnerabilidades de desbordamiento de buffer',
         points: 300,
         estimatedTime: 90,
+        flag: ['flag{buffer_overflow_exploit}', 'flag{ret2libc}'],
         tags: ['Binary', 'Exploitation', 'C'],
         category: { id: 4 } as any,
         difficulty: { id: 3 } as any,
@@ -193,6 +199,7 @@ export class SeederService {
         description: 'Captura y analiza tráfico de red para encontrar información sensible',
         points: 200,
         estimatedTime: 60,
+        flag: ['flag{network_analysis_1}', 'flag{pcap_challenge}'],
         tags: ['Network', 'Wireshark', 'PCAP'],
         category: { id: 2 } as any,
         difficulty: { id: 2 } as any,
@@ -204,6 +211,7 @@ export class SeederService {
         description: 'Rompe cifrados RSA débiles mediante análisis matemático',
         points: 250,
         estimatedTime: 75,
+        flag: ['flag{rsa_crack_1}', 'flag{math_is_fun}'],
         tags: ['Crypto', 'RSA', 'Math'],
         category: { id: 3 } as any,
         difficulty: { id: 3 } as any,

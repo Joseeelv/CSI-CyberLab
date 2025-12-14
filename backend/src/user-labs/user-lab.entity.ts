@@ -20,7 +20,7 @@ export class UserLab {
   @JoinColumn({ name: 'userId' })
   user: User;
 
-  @ManyToOne(() => Lab, (lab) => lab.userLabs)
+  @ManyToOne(() => Lab, (lab) => lab.uuid)
   @JoinColumn({ name: 'labId' })
   lab: Lab;
 

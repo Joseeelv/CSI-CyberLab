@@ -10,10 +10,11 @@ import { StatusModule } from './status/status.module';
 import { OperatingSystemsModule } from './operating-systems/os.module';
 import { CategoryModule } from './categories/category.module';
 import { ImageModule } from './images/image.module';
-import { LabsModule } from './labs/lab.module';
+import { LabModule } from './labs/lab.module';
 import { DifficultyModule } from './difficulty/difficulty.module';
 import { RoleModule } from './role/role.module';
 import { SeederModule } from './database/seeder.module';
+import { FlagSubmissionModule } from './flag-submission/flag-submission.module';
 
 @Module({
   imports: [
@@ -45,10 +46,11 @@ import { SeederModule } from './database/seeder.module';
     OperatingSystemsModule,
     CategoryModule,
     ImageModule,
-    LabsModule,
+    LabModule,
     DifficultyModule,
     RoleModule,
     SeederModule,
+    FlagSubmissionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

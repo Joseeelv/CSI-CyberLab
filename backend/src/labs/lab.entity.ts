@@ -5,7 +5,9 @@ import { Category } from 'src/categories/category.entity';
 import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
-import { UserLab } from 'src/user-labs/user-lab.entity';
+import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
+import { User } from 'src/users/user.entity';
+
 @Entity()
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
@@ -25,6 +27,9 @@ export class Lab {
 
   @Column({ type: 'simple-json', nullable: true })
   tags: string[];
+
+  @Column({ type: 'simple-json', nullable: true }) //Un lab puede tener varias banderas
+  flag: string[];
 
   @Exclude()
   @Column({ name: 'statusId', nullable: true })
@@ -61,8 +66,12 @@ export class Lab {
   @OneToMany(() => Container, (container) => container.labId, { nullable: true })
   containers: Container[];
 
-  @OneToMany(() => UserLab, (userLab) => userLab.lab)
-  userLabs: UserLab[];
+  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
+  @JoinTable({ name: 'Lab_User' })
+  users: User[];
+
+  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
+  flagSubmissions: FlagSubmission[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;

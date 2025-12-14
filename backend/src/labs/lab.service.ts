@@ -15,15 +15,15 @@ export class LabService {
   ) { }
 
   async getAllLabs(): Promise<Lab[]> {
-    return await this.labRepository.find({
-      relations: ['difficulty', 'operatingSystem', 'category', 'status'],
+    return this.labRepository.find({
+      relations: ['difficulty', 'operatingSystem', 'category', 'status', 'containers', 'flagSubmissions'],
     });
   }
 
   async findByName(name: string): Promise<Lab> {
     const lab = await this.labRepository.findOne({
       where: { name },
-      relations: ['category', 'operatingSystem', 'difficulty', 'containers', 'status']
+      relations: ['category', 'operatingSystem', 'difficulty', 'containers', 'status', 'flagSubmissions'],
     });
 
     if (!lab) {
@@ -34,9 +34,9 @@ export class LabService {
   }
 
   async findById(uuid: string): Promise<Lab> {
-    const lab = await this.labRepository.findOne({ 
-      where: { uuid }, 
-      relations: ['difficulty', 'operatingSystem', 'category', 'status'] 
+    const lab = await this.labRepository.findOne({
+      where: { uuid },
+      relations: ['difficulty', 'operatingSystem', 'category', 'status', 'containers', 'flagSubmissions'],
     });
 
     if (!lab) {
@@ -57,6 +57,7 @@ export class LabService {
       name: labData.name.trim(),
       description: labData.description,
       points: labData.points,
+      flag: labData.flag,
       estimatedTime: labData.estimatedTime,
       tags,
       status: { id: 1 } as any,
@@ -76,8 +77,8 @@ export class LabService {
 
   async update(identifier: string, updateData: Partial<LabDto>): Promise<Lab> {
     // Buscar por uuid o name
-    const lab = await this.labRepository.findOne({ 
-      where: [{ uuid: identifier }, { name: identifier }] 
+    const lab = await this.labRepository.findOne({
+      where: [{ uuid: identifier }, { name: identifier }]
     });
 
     if (!lab) {
@@ -90,15 +91,15 @@ export class LabService {
     }
 
     Object.assign(lab, updateData);
-    
+
     const savedLab = await this.labRepository.save(lab);
     // Recargar con todas las relaciones
     return await this.findById(savedLab.uuid);
   }
 
   async remove(identifier: string): Promise<void> {
-    const lab = await this.labRepository.findOne({ 
-      where: [{ uuid: identifier }, { name: identifier }] 
+    const lab = await this.labRepository.findOne({
+      where: [{ uuid: identifier }, { name: identifier }]
     });
 
     if (!lab) {

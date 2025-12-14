@@ -19,6 +19,9 @@ export class LabDto {
   @IsOptional()
   tags?: string | string[];
 
+  @IsOptional()
+  flag?: string[];
+
   @IsNumber()
   @IsOptional()
   status?: number;

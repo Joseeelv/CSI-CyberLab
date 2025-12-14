@@ -33,7 +33,6 @@ export class AuthController {
         throw new BadRequestException('Credentials are required');
       }
       const { accessToken, role } = await this.authService.login(loginData);
-      console.log('User Role:', role);
 
       // Set cookie
       res.cookie('jwt', accessToken, {
@@ -67,7 +66,6 @@ export class AuthController {
   @Post('logout')
   @HttpCode(HttpStatus.OK)
   async logout(@Res({ passthrough: true }) res: Response) {
-    console.log(res);
     if (!res) {
       throw new BadRequestException('No JWT cookie found');
     }

@@ -26,12 +26,11 @@ export class UserService {
 
   // Buscar un usuario por su correo electrónico
   async findByEmail(email: string): Promise<User | null> {
-    const buscado = await this.userRepository.findOne({
+    const user = await this.userRepository.findOne({
       where: { email },
       relations: ['roleId'], // Incluir la relación del rol
     });
-    console.log('Usuario buscado por email:', buscado);
-    return buscado;
+    return user;
   }
 
   async findByUsername(username: string): Promise<User | null> {

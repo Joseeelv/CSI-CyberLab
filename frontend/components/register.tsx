@@ -2,7 +2,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { fetcher, ApiError } from '@/lib/api';
+import { fetcher } from '@/lib/api';
 import Image from 'next/image';
 import Home from '@/app/page';
 import { motion } from 'framer-motion';
@@ -27,9 +27,6 @@ export default function Register() {
     e.preventDefault(); // Evita el comportamiento predeterminado del formulario
     setIsLoading(true);
     setError('');
-
-    // Validación básica del frontend
-    const newErrors: Record<string, string> = {};
 
     if (!username.trim()) {
       setError('El nombre de usuario es requerido');
@@ -125,18 +122,20 @@ export default function Register() {
         >
 
           <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
-            <Button
-              variant="close"
-              size="sm"
-              onClick={(e) => {
-                e.preventDefault();
-                setIsClosing(true);
-                setTimeout(() => handleClose(), 500);
-              }}
-              aria-label="Cerrar"
-            >
-              X
-            </Button>
+            <div className="relative top-0 right-4 flex justify-end">
+              <Button
+                variant="close"
+                size="sm"
+                onClick={(e) => {
+                  e.preventDefault();
+                  setIsClosing(true);
+                  setTimeout(() => handleClose(), 500);
+                }}
+                aria-label="Cerrar"
+              >
+                X
+              </Button>
+            </div>
             <div className="p-8">
               {/* Logo */}
               <div className="flex justify-center mb-8">
