@@ -9,7 +9,6 @@ import { Role } from 'src/role/role.entity';
 import { Image } from 'src/images/image.entity';
 import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
-import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
 import { User } from 'src/users/user.entity';
 
 @Injectable()
@@ -33,8 +32,6 @@ export class SeederService {
     private containerRepository: Repository<Container>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
-    @InjectRepository(FlagSubmission)
-    private flagSubmissionRepository: Repository<FlagSubmission>,
     @InjectRepository(User)
     private userRepository: Repository<User>,
   ) { }
@@ -51,7 +48,6 @@ export class SeederService {
       await this.seedImages();
       await this.seedLabs();
       await this.seedContainers();
-      await this.seedFlagSubmissions();
 
       this.logger.log('✅ Seeding completado exitosamente');
       return { success: true, message: 'Base de datos inicializada correctamente' };
@@ -269,57 +265,6 @@ export class SeederService {
           await this.containerRepository.save(container);
           this.logger.log(`   ✓ Contenedor creado: ${container.name}`);
         }
-      }
-    }
-  }
-  private async seedFlagSubmissions() {
-    const users = await this.userRepository.find({ take: 2 }); // Obtener 2 usuarios de ejemplo
-    const labs = await this.labRepository.find({ take: 2 }); // Obtener 2 labs de ejemplo
-
-    if (users.length === 0 || labs.length === 0) {
-      this.logger.log('   ⚠ Saltando creación de Flag Submissions (faltan usuarios o labs)');
-      return;
-    }
-
-    const flagSubmissions = [
-      {
-        user: users[0],
-        lab: labs[0],
-        // challenge: { id: labs[0].id },
-        name: 'flag{example1}',
-        created: new Date(),
-        isCorrect: true,
-      },
-      {
-        user: users[1],
-        lab: labs[0],
-        // challenge: { id: labs[1].id },
-        name: 'flag{example2}',
-        created: new Date(),
-        isCorrect: false,
-      },
-    ];
-
-    for (const flagSubmission of flagSubmissions) {
-      const exists = await this.flagSubmissionRepository.findOne({
-        where: {
-          userId: { id: flagSubmission.user.id },
-          name: flagSubmission.name,
-          labId: { uuid: flagSubmission.lab.uuid },
-          // challenge: { uuid: flagSubmission.challenge.uuid },
-        },
-      });
-
-      if (!exists) {
-        const newFlagSubmission = this.flagSubmissionRepository.create({
-          userId: flagSubmission.user,
-          labId: flagSubmission.lab,
-          name: flagSubmission.name,
-          created: flagSubmission.created,
-          isCorrect: flagSubmission.isCorrect,
-        });
-        await this.flagSubmissionRepository.save(newFlagSubmission);
-        this.logger.log(`   ✓ Flag Submission creada: ${flagSubmission.name}`);
       }
     }
   }

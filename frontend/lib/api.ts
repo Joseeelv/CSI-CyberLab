@@ -13,7 +13,6 @@ export async function fetcher(url: string, options?: RequestInit) {
       ...options?.headers,
     },
   });
-
   if (!response.ok) {
     const error = await response.json().catch(() => ({
       message: response.statusText || 'Request failed'

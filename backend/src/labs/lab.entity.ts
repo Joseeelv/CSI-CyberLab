@@ -6,6 +6,7 @@ import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
 import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
+import { User } from 'src/users/user.entity';
 
 @Entity()
 export class Lab {
@@ -69,7 +70,7 @@ export class Lab {
   @JoinTable({ name: 'Lab_User' })
   users: User[];
 
-  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.labId)
+  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
   flagSubmissions: FlagSubmission[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

@@ -1,4 +1,3 @@
-
 import { Injectable, UnauthorizedException, BadRequestException, Req } from '@nestjs/common';
 import { UserService } from 'src/users/user.service';
 import { User } from 'src/users/user.entity';
@@ -59,7 +58,6 @@ export class AuthService {
   // Función para login
   async login(loginData: LoginUserDto): Promise<any> {
     const user = await this.userService.findByEmail(loginData.email);
-    console.log(user);
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
@@ -70,7 +68,7 @@ export class AuthService {
     }
 
 
-    const payload = { name: user.username, email: user.email, role: user.roleId };
+    const payload = { id: user.id, name: user.username, email: user.email, role: user.roleId };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken, role: user.roleId };
   }

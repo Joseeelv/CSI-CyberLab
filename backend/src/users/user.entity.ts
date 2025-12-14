@@ -2,6 +2,9 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTabl
 import { Container } from "src/containers/container.entity";
 import { Role } from "src/role/role.entity";
 import { UserLab } from '../user-labs/user-lab.entity';
+import { Exclude } from "class-transformer";
+import { Lab } from "src/labs/lab.entity";
+import { FlagSubmission } from "src/flag-submission/flag-submission.entity";
 
 @Entity()
 export class User {
@@ -48,4 +51,7 @@ export class User {
 
   @OneToMany(() => UserLab, (userLab) => userLab.user)
   userLabs: UserLab[];
+
+  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.user)
+  flagSubmissions: FlagSubmission[];
 }
