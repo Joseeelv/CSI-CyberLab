@@ -12,6 +12,7 @@ import { Lab } from "src/labs/lab.entity";
 
 @Entity("FlagSubmission")
 export class FlagSubmission {
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;

@@ -153,6 +153,9 @@ export class FlagSubmissionService {
 
       const saved = await this.flagSubmissionRepository.save(newFlagSubmission);
 
+      // Determinar si es la primera o segunda flag
+      const flagNumber = existingCorrectSubmissions.length + 1;
+
       return {
         success: true,
         message: `¡Flag ${flagNumber} correcta! Bien hecho`,

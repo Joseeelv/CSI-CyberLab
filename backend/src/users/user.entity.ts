@@ -67,4 +67,7 @@ export class User {
 
   @OneToMany(() => UserLab, (userLab) => userLab.user)
   userLabs: UserLab[];
+
+  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.user)
+  flagSubmissions: FlagSubmission[];
 }

@@ -120,7 +120,14 @@ export default function Dashboard() {
 
   // Load labs
   useEffect(() => {
-    const check = async () => {
+    if (!loading && !userPayload) {
+      router.replace('/login');
+    }
+  }, [loading, userPayload, router]);
+
+  // Load labs
+  useEffect(() => {
+    const loadLabs = async () => {
       try {
         const data = await fetcher('/labs', {
           method: 'GET',

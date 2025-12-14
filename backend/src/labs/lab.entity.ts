@@ -88,7 +88,7 @@ export class Lab {
   @JoinTable({ name: 'Lab_User' })
   users: User[];
 
-  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.labId)
+  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
   flagSubmissions: FlagSubmission[];
 
   @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
