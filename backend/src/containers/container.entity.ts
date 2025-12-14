@@ -31,7 +31,7 @@ export class Container {
   statusId: Status;
 
   @Exclude()
-  @ManyToOne(() => User, (user) => user.containers, { nullable: true })
+  @ManyToOne(() => User, (user) => user.containers, { nullable: true, onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   userId: User;
 

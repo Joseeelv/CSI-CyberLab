@@ -99,6 +99,19 @@ export class UserService {
     if (!user) {
       throw new NotFoundException('User not found');
     }
-    await this.userRepository.remove(user);
+
+    //Tengo que eliminar las flag submissions asociadas al usuario primero por la FK
+    await this.userRepository.manager
+      .createQueryBuilder()
+      .delete()
+      .from('flag_submission')
+      .where('userId = :id', { id })
+      .execute();
+
+    await this.userRepository.createQueryBuilder()
+      .delete()
+      .from(User)
+      .where('id = :id', { id })
+      .execute();
   }
 }
