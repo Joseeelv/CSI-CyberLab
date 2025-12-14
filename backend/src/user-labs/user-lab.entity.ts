@@ -16,7 +16,7 @@ export class UserLab {
   @Column({ type: 'uuid' })
   labId: string;
 
-  @ManyToOne(() => User, (user) => user.userLabs)
+  @ManyToOne(() => User, (user) => user.userLabs, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 
