@@ -3,11 +3,13 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserLab } from './user-lab.entity';
 import { UserLabService } from './user-lab.service';
 import { UserLabController } from './user-lab.controller';
+import { UserExistsConstraint } from './dto/user-exists.validator';
+import { LabExistsConstraint } from './dto/lab-exists.validator';
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserLab])],
-  providers: [UserLabService],
+  providers: [UserLabService, UserExistsConstraint, LabExistsConstraint],
   controllers: [UserLabController],
   exports: [UserLabService],
 })
-export class UserLabModule {}
+export class UserLabModule { }

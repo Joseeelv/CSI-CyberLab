@@ -1,6 +1,6 @@
 import { UserExistsConstraint } from "./user-exists.validator";
 import { LabExistsConstraint } from "./lab-exists.validator";
-import { IsString, IsNumber, IsOptional, ValidatorConstraint, ValidatorConstraintInterface, ValidationArguments, Validate, Min, Max } from "class-validator";
+import { IsString, IsNumber, IsOptional, Validate, Min, Max } from "class-validator";
 
 
 export class UserLabDto {
