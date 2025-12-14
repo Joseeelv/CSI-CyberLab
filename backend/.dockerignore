@@ -23,5 +23,4 @@ coverage
 .vscode
 .idea
 .cache
-pnpm-lock.yaml
 

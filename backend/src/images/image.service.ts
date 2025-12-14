@@ -2,6 +2,7 @@ import { Injectable, ConflictException } from '@nestjs/common';
 import { Image } from './image.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class ImageService {
@@ -11,7 +12,8 @@ export class ImageService {
   ) { }
 
   async getImages() {
-    return await this.imageRepository.find();
+    const images = await this.imageRepository.find();
+    return images.map(i => instanceToPlain(i));
   }
 
   async createImage(imageData: Partial<Image>): Promise<Image> {

@@ -2,9 +2,10 @@ import { Injectable, ConflictException, InternalServerErrorException } from '@ne
 import { Difficulty } from './difficulty.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { instanceToPlain } from 'class-transformer';
 
-type CreateDifficultyDto = Partial<Pick<Difficulty, 'name' >>;
-    
+type CreateDifficultyDto = Partial<Pick<Difficulty, 'name'>>;
+
 @Injectable()
 export class DifficultyService {
 
@@ -13,8 +14,10 @@ export class DifficultyService {
     private readonly difficultyRepository: Repository<Difficulty>,
   ) { }
 
-  async getAll(): Promise<Difficulty[]> {
-    return await this.difficultyRepository.find();
+  async getAll(): Promise<any[]> {
+    const difficulties = await this.difficultyRepository.find();
+    // Oculta los IDs usando class-transformer
+    return difficulties.map(d => instanceToPlain(d));
   }
 
   async create(data: CreateDifficultyDto): Promise<Difficulty> {

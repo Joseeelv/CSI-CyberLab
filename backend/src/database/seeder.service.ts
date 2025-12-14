@@ -9,6 +9,8 @@ import { Role } from 'src/role/role.entity';
 import { Image } from 'src/images/image.entity';
 import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
+import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class SeederService {
@@ -31,6 +33,10 @@ export class SeederService {
     private containerRepository: Repository<Container>,
     @InjectRepository(Lab)
     private labRepository: Repository<Lab>,
+    @InjectRepository(FlagSubmission)
+    private flagSubmissionRepository: Repository<FlagSubmission>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
   ) { }
 
   async seed() {
@@ -45,6 +51,7 @@ export class SeederService {
       await this.seedImages();
       await this.seedLabs();
       await this.seedContainers();
+      await this.seedFlagSubmissions();
 
       this.logger.log('✅ Seeding completado exitosamente');
       return { success: true, message: 'Base de datos inicializada correctamente' };
@@ -160,6 +167,7 @@ export class SeederService {
         description: 'Aprende los fundamentos de SQL injection mediante un sitio web vulnerable',
         points: 100,
         estimatedTime: 30,
+        flag: ['flag{sql_injection_basic}', 'flag{sql_injection_advanced}'],
         tags: ['SQLi', 'Web', 'OWASP'],
         category: { id: 1 } as any,
         difficulty: { id: 1 } as any,
@@ -171,6 +179,7 @@ export class SeederService {
         description: 'Explora vulnerabilidades XSS en aplicaciones web',
         points: 150,
         estimatedTime: 45,
+        flag: ['flag{xss_basic}', 'flag{xss_stored}'],
         tags: ['XSS', 'Web', 'JavaScript'],
         category: { id: 1 } as any,
         difficulty: { id: 2 } as any,
@@ -182,6 +191,7 @@ export class SeederService {
         description: 'Aprende a explotar vulnerabilidades de desbordamiento de buffer',
         points: 300,
         estimatedTime: 90,
+        flag: ['flag{buffer_overflow_exploit}', 'flag{ret2libc}'],
         tags: ['Binary', 'Exploitation', 'C'],
         category: { id: 4 } as any,
         difficulty: { id: 3 } as any,
@@ -193,6 +203,7 @@ export class SeederService {
         description: 'Captura y analiza tráfico de red para encontrar información sensible',
         points: 200,
         estimatedTime: 60,
+        flag: ['flag{network_analysis_1}', 'flag{pcap_challenge}'],
         tags: ['Network', 'Wireshark', 'PCAP'],
         category: { id: 2 } as any,
         difficulty: { id: 2 } as any,
@@ -204,6 +215,7 @@ export class SeederService {
         description: 'Rompe cifrados RSA débiles mediante análisis matemático',
         points: 250,
         estimatedTime: 75,
+        flag: ['flag{rsa_crack_1}', 'flag{math_is_fun}'],
         tags: ['Crypto', 'RSA', 'Math'],
         category: { id: 3 } as any,
         difficulty: { id: 3 } as any,
@@ -257,6 +269,57 @@ export class SeederService {
           await this.containerRepository.save(container);
           this.logger.log(`   ✓ Contenedor creado: ${container.name}`);
         }
+      }
+    }
+  }
+  private async seedFlagSubmissions() {
+    const users = await this.userRepository.find({ take: 2 }); // Obtener 2 usuarios de ejemplo
+    const labs = await this.labRepository.find({ take: 2 }); // Obtener 2 labs de ejemplo
+
+    if (users.length === 0 || labs.length === 0) {
+      this.logger.log('   ⚠ Saltando creación de Flag Submissions (faltan usuarios o labs)');
+      return;
+    }
+
+    const flagSubmissions = [
+      {
+        user: users[0],
+        lab: labs[0],
+        // challenge: { id: labs[0].id },
+        name: 'flag{example1}',
+        created: new Date(),
+        isCorrect: true,
+      },
+      {
+        user: users[1],
+        lab: labs[0],
+        // challenge: { id: labs[1].id },
+        name: 'flag{example2}',
+        created: new Date(),
+        isCorrect: false,
+      },
+    ];
+
+    for (const flagSubmission of flagSubmissions) {
+      const exists = await this.flagSubmissionRepository.findOne({
+        where: {
+          userId: { id: flagSubmission.user.id },
+          name: flagSubmission.name,
+          labId: { uuid: flagSubmission.lab.uuid },
+          // challenge: { uuid: flagSubmission.challenge.uuid },
+        },
+      });
+
+      if (!exists) {
+        const newFlagSubmission = this.flagSubmissionRepository.create({
+          userId: flagSubmission.user,
+          labId: flagSubmission.lab,
+          name: flagSubmission.name,
+          created: flagSubmission.created,
+          isCorrect: flagSubmission.isCorrect,
+        });
+        await this.flagSubmissionRepository.save(newFlagSubmission);
+        this.logger.log(`   ✓ Flag Submission creada: ${flagSubmission.name}`);
       }
     }
   }

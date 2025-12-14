@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Status } from './status.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { instanceToPlain } from 'class-transformer';
 @Injectable()
 export class StatusService {
   constructor(
@@ -9,8 +10,9 @@ export class StatusService {
     private readonly statusRepository: Repository<Status>,
   ) { }
 
-  async getAllStatuses(): Promise<Status[]> {
-    return await this.statusRepository.find();
+  async getAllStatuses(): Promise<any[]> {
+    const statuses = await this.statusRepository.find();
+    return statuses.map(s => instanceToPlain(s));
   }
 
   async createStatus(statusData: Partial<Status>): Promise<Status> {

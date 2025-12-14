@@ -33,7 +33,6 @@ export class AuthController {
         throw new BadRequestException('Credentials are required');
       }
       const { accessToken, role } = await this.authService.login(loginData);
-      console.log('User Role:', role);
 
       // Set cookie
       res.cookie('jwt', accessToken, {

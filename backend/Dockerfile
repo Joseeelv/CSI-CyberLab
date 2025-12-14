@@ -2,15 +2,15 @@ FROM node:20-alpine
 
 WORKDIR /app
 
-# Install pnpm globally
-RUN npm install -g pnpm
-
-# Copy package files
-COPY package.json ./
-
-# Install dependencies with pnpm
-RUN npm install -g pnpm@8.6.0 \
+# Install latest stable pnpm
+RUN npm install -g pnpm \
     && npm cache clean --force
+
+# Copy package files AND lockfile
+COPY package.json pnpm-lock.yaml* ./
+
+# Install dependencies with frozen lockfile
+RUN pnpm install
 
 # Copy source code
 COPY . .
