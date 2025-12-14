@@ -19,6 +19,6 @@ export class UserExistsConstraint implements ValidatorConstraintInterface {
   }
 
   defaultMessage(args: ValidationArguments) {
-    return "User with id '$value' does not exist.";
+    return "Lab with id $value does not exist.";
   }
 }
