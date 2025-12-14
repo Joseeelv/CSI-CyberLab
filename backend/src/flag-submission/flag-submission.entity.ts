@@ -18,7 +18,7 @@ export class FlagSubmission {
   @CreateDateColumn()
   created: Date;
 
-  @ManyToOne(() => User, (user) => user.flagSubmissions)
+  @ManyToOne(() => User, (user) => user.flagSubmissions, { onDelete: 'CASCADE' })
   @JoinColumn({ name: 'userId' })
   user: User;
 
