@@ -31,4 +31,4 @@ import { User } from "src/users/user.entity";
   providers: [SeederService],
   exports: [SeederService],
 })
-export class SeederModule {}
+export class SeederModule { }
