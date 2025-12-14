@@ -13,8 +13,8 @@ export class UserLab {
   userId: number;
 
   @Exclude()
-  @Column()
-  labId: number;
+  @Column({ type: 'uuid' })
+  labId: string;
 
   @ManyToOne(() => User, (user) => user.userLabs)
   @JoinColumn({ name: 'userId' })

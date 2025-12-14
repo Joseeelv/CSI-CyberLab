@@ -24,19 +24,15 @@ export class UserLabService {
   }
 
   async create(userLab: UserLabDto): Promise<UserLab> {
-    try {
-      const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
-      if (existingUserLab) {
-        throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
-      }
-      const newUserLab = this.userLabRepository.create({
-        ...userLab,
-        labId: parseInt(userLab.labId, 10),
-      });
-      return this.userLabRepository.save(newUserLab);
-    } catch (error) {
-      throw error;
+    const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
+    if (existingUserLab) {
+      throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
     }
+    const newUserLab = this.userLabRepository.create({
+      ...userLab,
+      labId: parseInt(userLab.labId, 10),
+    });
+    return this.userLabRepository.save(newUserLab);
   }
 
   async update(id: number, userLab: Partial<UserLab>): Promise<UserLab> {

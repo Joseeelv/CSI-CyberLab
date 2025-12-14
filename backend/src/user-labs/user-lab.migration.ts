@@ -17,13 +17,13 @@ export class CreateUserLabTableMigration implements MigrationInterface {
         foreignKeys: [
           {
             columnNames: ['userId'],
-            referencedTableName: 'users',
+            referencedTableName: 'user',
             referencedColumnNames: ['id'],
             onDelete: 'CASCADE',
           },
           {
             columnNames: ['labId'],
-            referencedTableName: 'labs',
+            referencedTableName: 'lab',
             referencedColumnNames: ['uuid'],
             onDelete: 'CASCADE',
           },
