@@ -4,6 +4,7 @@ export interface ApiError {
   message: string;
   statusCode?: number;
 }
+
 export async function fetcher(url: string, options?: RequestInit) {
   const response = await fetch(`${API_URL}${url}`, {
     ...options,

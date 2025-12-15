@@ -56,7 +56,13 @@ export default function Dashboard() {
 
   // Check authentication
   useEffect(() => {
+
     const check = async () => {
+      if (!loading) {
+        setLoading(false);
+        router.replace('/login');
+        return;
+      }
       try {
         const data = await fetcher('/auth/me', {
           method: 'GET',
@@ -120,10 +126,33 @@ export default function Dashboard() {
 
   // Load labs
   useEffect(() => {
-    if (!loading && !userPayload) {
-      router.replace('/login');
+    const documentId = userPayload?.payload?.sub;
+    if (!documentId) {
+      // No hacer fetch si no hay documentId
+      return;
     }
-  }, [loading, userPayload, router]);
+    const fetchUserName = async () => {
+      try {
+        const data = await fetcher(`/users/document-id/${documentId}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        setUserPayload((prev) => ({
+          ...prev,
+          username: data.username ?? prev?.username,
+          fullName: data.fullName ?? prev?.fullName,
+          email: data.email ?? prev?.email,
+          id: data.documentId ?? prev?.id,
+        }));
+      } catch (err) {
+        console.error('Failed to fetch user name:', err?.message || err);
+      }
+    };
+    fetchUserName();
+  }, [userPayload?.payload?.sub]);
 
   // Load labs
   useEffect(() => {
