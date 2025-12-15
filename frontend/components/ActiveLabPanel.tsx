@@ -7,7 +7,7 @@ import { Lab, ActiveLab } from '@/types/lab';
 interface User {
   id: string;
   name?: string;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 interface ActiveLabPanelProps {

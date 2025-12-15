@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+overrides:
+  pg: ^8.11.3
+
 importers:
 
   .:
@@ -123,7 +126,7 @@ importers:
 =======
 >>>>>>> Stashed changes
       pg:
-        specifier: ^8.11.0
+        specifier: ^8.11.3
         version: 8.16.3
       reflect-metadata:
         specifier: ^0.2.2
@@ -132,7 +135,7 @@ importers:
         specifier: ^7.8.1
         version: 7.8.2
       typeorm:
-        specifier: ^0.3.20
+        specifier: ^0.3.28
         version: 0.3.28(pg@8.16.3)(ts-node@10.9.2(@types/node@20.19.25)(typescript@5.9.3))
     devDependencies:
       '@nestjs/cli':
@@ -3276,7 +3279,7 @@ packages:
   pg-pool@3.10.1:
     resolution: {integrity: sha512-Tu8jMlcX+9d8+QVzKIvM/uJtp07PKr82IUOYEphaWcoBhIYkoHpLXN3qO59nAI11ripznDsEzEv8nUxBVWajGg==}
     peerDependencies:
-      pg: '>=8.0'
+      pg: ^8.11.3
 
   pg-protocol@1.10.3:
     resolution: {integrity: sha512-6DIBgBQaTKDJyxnXaLiLR8wBpQQcGWuAESkRBX/t6OwA8YsqP+iVSiond2EDy6Y/dsGk8rh/jtax3js5NeV7JQ==}
@@ -3956,7 +3959,7 @@ packages:
 >>>>>>> c1c4440 (Revert "Backend lab entity fix")
       mysql2: ^2.2.5 || ^3.0.1
       oracledb: ^6.3.0
-      pg: ^8.5.1
+      pg: ^8.11.3
       pg-native: ^3.0.0
       pg-query-stream: ^4.0.0
       redis: ^3.1.1 || ^4.0.0 || ^5.0.14
