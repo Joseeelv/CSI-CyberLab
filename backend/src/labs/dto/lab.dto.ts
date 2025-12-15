@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsNumber, IsOptional, IsArray } from "class-validator";
+import { IsString, IsNumber, IsOptional } from "class-validator";
 
 export class LabDto {
   @IsString()

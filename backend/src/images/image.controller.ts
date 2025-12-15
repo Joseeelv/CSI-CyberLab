@@ -1,10 +1,10 @@
-import { Controller, Body, Get, Post } from '@nestjs/common';
-import { ImageService } from './image.service';
-import { Image } from './image.entity';
+import { Controller, Body, Get, Post } from "@nestjs/common";
+import { ImageService } from "./image.service";
+import { Image } from "./image.entity";
 
-@Controller('images')
+@Controller("images")
 export class ImageController {
-  constructor(private readonly imageService: ImageService) { }
+  constructor(private readonly imageService: ImageService) {}
 
   @Get()
   async getImages() {
@@ -15,5 +15,4 @@ export class ImageController {
   async createImage(@Body() imageData: Partial<Image>): Promise<Image> {
     return await this.imageService.createImage(imageData);
   }
-
 }

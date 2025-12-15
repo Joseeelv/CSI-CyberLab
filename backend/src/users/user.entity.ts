@@ -1,7 +1,15 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable, OneToMany, JoinColumn } from "typeorm";
+import {
+  Entity,
+  Column,
+  PrimaryGeneratedColumn,
+  ManyToMany,
+  ManyToOne,
+  JoinTable,
+  OneToMany,
+} from "typeorm";
 import { Container } from "src/containers/container.entity";
 import { Role } from "src/role/role.entity";
-import { UserLab } from '../user-lab/user-lab.entity';
+import { UserLab } from "../user-lab/user-lab.entity";
 import { Exclude } from "class-transformer";
 
 @Entity("User")
@@ -10,7 +18,7 @@ export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column('uuid', { default: () => 'uuid_generate_v4()', unique: true })
+  @Column("uuid", { default: () => "uuid_generate_v4()", unique: true })
   documentId: string;
 
   @Column({ nullable: true })
@@ -27,13 +35,13 @@ export class User {
   password: string;
 
   @ManyToOne(() => Role, (role) => role.id, {
-    nullable: false
+    nullable: false,
   })
   roleId: Role;
 
   @ManyToMany(() => Container, (container) => container.userId, {
     nullable: false,
-    eager: true
+    eager: true,
   })
   @JoinTable({ name: "User_Container" })
   containers: Container[];
@@ -41,11 +49,19 @@ export class User {
   @OneToMany(() => UserLab, (userLab) => userLab.user)
   userLabs: UserLab[];
 
-  @Column({ type: 'text', nullable: true })
+  @Column({ type: "text", nullable: true })
   refreshToken: string | null;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: false })
+  @Column({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    nullable: false,
+  })
   created: Date;
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: "timestamp",
+    default: () => "CURRENT_TIMESTAMP",
+    onUpdate: "CURRENT_TIMESTAMP",
+  })
   updated: Date;
 }

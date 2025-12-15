@@ -1,6 +1,10 @@
-
-import { IsNumber, IsString, IsBoolean, IsOptional, IsDateString } from 'class-validator';
-
+import {
+  IsNumber,
+  IsString,
+  IsBoolean,
+  IsOptional,
+  IsDateString,
+} from "class-validator";
 
 export class UserLabDto {
   @IsString()

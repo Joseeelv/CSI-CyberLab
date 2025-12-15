@@ -1,12 +1,22 @@
-import { Controller, Get, Post, Put, Delete, Param, Body, ParseIntPipe, UseGuards } from '@nestjs/common';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
-import { UserLabService } from './user-lab.service';
-import { UserLab } from './user-lab.entity';
-import { UserLabDto } from './dto/user-lab.dto';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Param,
+  Body,
+  ParseIntPipe,
+  UseGuards,
+} from "@nestjs/common";
+import { JwtAuthGuard } from "../auth/jwt-auth.guard";
+import { UserLabService } from "./user-lab.service";
+import { UserLab } from "./user-lab.entity";
+import { UserLabDto } from "./dto/user-lab.dto";
 
-@Controller('user-lab')
+@Controller("user-lab")
 export class UserLabController {
-  constructor(private readonly userLabService: UserLabService) { }
+  constructor(private readonly userLabService: UserLabService) {}
 
   @Get()
   @UseGuards(JwtAuthGuard)
@@ -14,9 +24,9 @@ export class UserLabController {
     return this.userLabService.findAll();
   }
 
-  @Get(':id')
+  @Get(":id")
   @UseGuards(JwtAuthGuard)
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<UserLab> {
+  async findOne(@Param("id", ParseIntPipe) id: number): Promise<UserLab> {
     return this.userLabService.findOne(id);
   }
 
@@ -26,11 +36,11 @@ export class UserLabController {
     return this.userLabService.create(userLab);
   }
 
-  @Put(':id')
+  @Put(":id")
   @UseGuards(JwtAuthGuard)
   async update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() userLabDto: UserLabDto
+    @Param("id", ParseIntPipe) id: number,
+    @Body() userLabDto: UserLabDto,
   ): Promise<UserLab> {
     // Convertir el DTO a un objeto Partial<UserLab> con los tipos correctos
     const updateData: Partial<UserLab> = {
@@ -47,10 +57,9 @@ export class UserLabController {
     return this.userLabService.update(id, updateData);
   }
 
-
-  @Delete(':id')
+  @Delete(":id")
   @UseGuards(JwtAuthGuard)
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<void> {
+  async delete(@Param("id", ParseIntPipe) id: number): Promise<void> {
     return this.userLabService.delete(id);
   }
 }

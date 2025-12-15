@@ -1,24 +1,28 @@
-import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
-import { UserLab } from './user-lab.entity';
-import { UserLabDto } from './dto/user-lab.dto';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from "@nestjs/common";
+import { InjectRepository } from "@nestjs/typeorm";
+import { Repository } from "typeorm";
+import { UserLab } from "./user-lab.entity";
+import { UserLabDto } from "./dto/user-lab.dto";
 
 @Injectable()
 export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) { }
+  ) {}
 
   async findAll(): Promise<UserLab[]> {
-    return this.userLabRepository.find({ relations: ['user', 'lab'] });
+    return this.userLabRepository.find({ relations: ["user", "lab"] });
   }
 
   async findOne(id: number): Promise<UserLab> {
     const userLab = await this.userLabRepository.findOne({
       where: { id },
-      relations: ['user', 'lab']
+      relations: ["user", "lab"],
     });
     if (!userLab) {
       throw new NotFoundException(`UserLab with id ${id} does not exist`);
@@ -28,17 +32,17 @@ export class UserLabService {
 
   async create(userLab: UserLabDto): Promise<UserLab> {
     // Verificar si ya existe un UserLab para este usuario y lab
-    console.log('Creando UserLab con datos:', userLab);
+    console.log("Creando UserLab con datos:", userLab);
     const existingUserLab = await this.userLabRepository.findOne({
       where: {
         userId: userLab.userId,
-        labId: userLab.labUuid
-      }
+        labId: userLab.labUuid,
+      },
     });
 
     if (existingUserLab) {
       throw new ConflictException(
-        `UserLab for userId ${userLab.userId} and labId ${userLab.labUuid} already exists`
+        `UserLab for userId ${userLab.userId} and labId ${userLab.labUuid} already exists`,
       );
     }
 
@@ -56,7 +60,9 @@ export class UserLabService {
   }
 
   async update(id: number, userLab: Partial<UserLab>): Promise<UserLab> {
-    const existingUserLab = await this.userLabRepository.findOne({ where: { id } });
+    const existingUserLab = await this.userLabRepository.findOne({
+      where: { id },
+    });
     if (!existingUserLab) {
       throw new NotFoundException(`UserLab with id ${id} does not exist`);
     }

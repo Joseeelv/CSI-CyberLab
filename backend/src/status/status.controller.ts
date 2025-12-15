@@ -1,17 +1,19 @@
-import { Controller, Body, Get, Post, NotFoundException } from '@nestjs/common';
-import { Status } from './status.entity';
-import { StatusService } from './status.service';
+import { Controller, Body, Get, Post, NotFoundException } from "@nestjs/common";
+import { Status } from "./status.entity";
+import { StatusService } from "./status.service";
 
-@Controller('status')
+@Controller("status")
 export class StatusController {
-  constructor(private readonly statusService: StatusService) { }
+  constructor(private readonly statusService: StatusService) {}
 
   @Get()
   async getStatuses() {
     try {
       return await this.statusService.getAllStatuses();
     } catch (error) {
-      throw new NotFoundException(`Could not retrieve statuses: ${error.message}`);
+      throw new NotFoundException(
+        `Could not retrieve statuses: ${error.message}`,
+      );
     }
   }
 
@@ -22,7 +24,9 @@ export class StatusController {
     }
     const existStatus = await this.statusService.findByName(statusData.name);
     if (existStatus) {
-      throw new NotFoundException(`Status with name ${statusData.name} already exists`);
+      throw new NotFoundException(
+        `Status with name ${statusData.name} already exists`,
+      );
     }
     return await this.statusService.createStatus(statusData);
   }

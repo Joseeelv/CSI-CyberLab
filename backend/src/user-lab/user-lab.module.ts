@@ -1,13 +1,12 @@
-import { Module } from '@nestjs/common';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserLab } from './user-lab.entity';
-import { User } from '../users/user.entity';
-import { UserLabService } from './user-lab.service';
-import { UserLabController } from './user-lab.controller';
-import { UserExistsConstraint } from './dto/user-exists.validator';
-import { LabExistsConstraint } from './dto/lab-exists.validator';
-import { AppModule } from 'src/app.module';
-import { Lab } from 'src/labs/lab.entity';
+import { Module } from "@nestjs/common";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { UserLab } from "./user-lab.entity";
+import { User } from "../users/user.entity";
+import { UserLabService } from "./user-lab.service";
+import { UserLabController } from "./user-lab.controller";
+import { UserExistsConstraint } from "./dto/user-exists.validator";
+import { LabExistsConstraint } from "./dto/lab-exists.validator";
+import { Lab } from "src/labs/lab.entity";
 
 @Module({
   imports: [TypeOrmModule.forFeature([UserLab, User, Lab])],
@@ -15,4 +14,4 @@ import { Lab } from 'src/labs/lab.entity';
   controllers: [UserLabController],
   exports: [UserLabService],
 })
-export class UserLabModule { }
+export class UserLabModule {}
