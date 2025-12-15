@@ -15,7 +15,7 @@ import { LabService } from "./lab.service";
 import { LabDto } from "./dto/lab.dto";
 
 @Controller("labs")
-export class LabsController {
+export class LabController {
   constructor(private readonly labService: LabService) {}
 
   @Get()
