@@ -38,12 +38,18 @@ export class ImageService {
 
   async createImage(imageData: Partial<Image>): Promise<Image> {
     if (!imageData.name || !imageData.tag) {
-      throw new ConflictException("El nombre y la versión de la imagen son obligatorios");
+      throw new ConflictException(
+        "El nombre y la versión de la imagen son obligatorios",
+      );
     }
 
-    const existingImage = await this.imageRepository.findOne({ where: { name: imageData.name, tag: imageData.tag } });
+    const existingImage = await this.imageRepository.findOne({
+      where: { name: imageData.name, tag: imageData.tag },
+    });
     if (existingImage) {
-      throw new ConflictException(`La imagen con nombre ${imageData.name} y versión ${imageData.tag} ya existe`);
+      throw new ConflictException(
+        `La imagen con nombre ${imageData.name} y versión ${imageData.tag} ya existe`,
+      );
     }
 
     const image = this.imageRepository.create(imageData);

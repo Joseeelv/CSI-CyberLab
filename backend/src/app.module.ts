@@ -36,7 +36,7 @@ import { UserLabModule } from "./user-lab/user-lab.module";
         entities: [__dirname + "/**/*.entity{.ts,.js}"],
         synchronize: true,
       }),
-      inject: [ConfigService,],
+      inject: [ConfigService],
     }),
 
     UserModule,

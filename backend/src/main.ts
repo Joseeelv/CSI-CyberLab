@@ -40,7 +40,9 @@ async function bootstrap() {
   }
 
   if (!allowedOrigins.length) {
-    throw new Error('No se ha definido FRONTEND_URL ni orígenes permitidos para CORS');
+    throw new Error(
+      "No se ha definido FRONTEND_URL ni orígenes permitidos para CORS",
+    );
   }
 
   app.enableCors({

@@ -72,16 +72,17 @@ export class UserController {
     }
   }
 
-  @Get('/document-id/:documentId')
+  @Get("/document-id/:documentId")
   @UseGuards(JwtAuthGuard)
-  async findByDocumentId(@Param('documentId') documentId: string): Promise<UserBasicDto | null | String> {
+  async findByDocumentId(
+    @Param("documentId") documentId: string,
+  ): Promise<UserBasicDto | null | string> {
     try {
       return await this.userService.findByDocumentId(documentId);
     } catch (error) {
-      throw new Error('User not found ' + error.message);
+      throw new Error("User not found " + error.message);
     }
   }
-
 
   // Endpoint para buscar un usuario por su correo electrónico
   @Get("/email/:email")

@@ -25,7 +25,6 @@ export class LabController {
     return await this.labService.getAllLabs();
   }
 
-
   @Post()
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
@@ -45,7 +44,6 @@ export class LabController {
   async remove(@Param("name") name: string) {
     await this.labService.remove(name);
   }
-
 
   @Delete()
   @UseGuards(JwtAuthGuard)
