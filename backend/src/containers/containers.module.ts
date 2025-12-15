@@ -7,11 +7,12 @@ import { Lab } from "src/labs/lab.entity";
 import { User } from "src/users/user.entity";
 import { ContainerService } from "./container.service";
 import { ContainerController } from "./container.controller";
+import { DockerService } from "../docker/docker.service";
 
 @Module({
   imports: [TypeOrmModule.forFeature([Container, Image, Status, Lab, User])],
   controllers: [ContainerController],
-  providers: [ContainerService],
-  exports: [ContainerService],
+  providers: [ContainerService, DockerService],
+  exports: [ContainerService, DockerService],
 })
 export class ContainersModule {}
