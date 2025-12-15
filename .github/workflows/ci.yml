@@ -21,15 +21,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v2.4.0
         with:
-          version: latest
+          version: 10.22.0
           cache-dependency-path: ./frontend/pnpm-lock.yaml
 
       - name: Setup Node.js (Frontend)
         uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: 22.17.1
           cache: 'pnpm'
 
       - name: Install Frontend Dependencies
@@ -56,15 +56,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Install pnpm
-        uses: pnpm/action-setup@v2
+        uses: pnpm/action-setup@v2.4.0
         with:
-          version: latest
+          version: 10.22.0
           cache-dependency-path: ./backend/pnpm-lock.yaml
 
       - name: Setup Node.js (Backend)
         uses: actions/setup-node@v4
         with:
-          node-version: latest
+          node-version: 22.17.1
           cache: 'pnpm'
 
       - name: Install Backend Dependencies
