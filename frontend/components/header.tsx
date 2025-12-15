@@ -1,22 +1,18 @@
 "use client";
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { Button } from './ui/button';
-import { useState, useEffect, use } from 'react';
+import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { fetcher } from '@/lib/api';
 import { useRouter } from 'next/navigation';
 
 export function Header() {
-  const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    setMounted(true);
-
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
     };
@@ -25,7 +21,7 @@ export function Header() {
 
     // Evitar que la rueda del ratón haga scroll cuando el cursor está sobre el header
     const headerEl = document.querySelector('header');
-    const onWheel = (e: WheelEvent) => {
+    const onWheel = () => {
       // si quieres bloquear TODO el scroll sobre header descomenta la siguiente línea
       // e.preventDefault();
     };
@@ -45,13 +41,18 @@ export function Header() {
       await fetcher('/auth/logout', {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
       });
-      router.push('/');
+      localStorage.removeItem('accessToken');
+      localStorage.removeItem('refreshToken');
+      window.location.href = '/';
     } catch (err) {
       console.error('Logout failed' + err);
       alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.'); // Mostrar un mensaje al usuario
-    };
-  }
+    }
+  };
 
   return (
     <header
@@ -72,7 +73,7 @@ export function Header() {
             CyberLabs
           </span>
         </Link>
-        {mounted && !isAuthenticated && (
+        {!isAuthenticated && (
           <div className="flex items-center gap-3 flex-col sm:flex-row ">
             <Link
               href="/login"
@@ -90,14 +91,11 @@ export function Header() {
             </Link>
           </div>
         )}
-        {mounted && isAuthenticated && (
+        {isAuthenticated && (
           <div className="flex items-center gap-3 flex-col sm:flex-row ">
-            {mounted && (
-
-              <Button variant="ghost" onClick={handleLogoutClick}>
-                Cerrar Sesión
-              </Button>
-            )}
+            <Button variant="ghost" onClick={handleLogoutClick}>
+              Cerrar Sesión
+            </Button>
           </div>
         )}
       </nav>

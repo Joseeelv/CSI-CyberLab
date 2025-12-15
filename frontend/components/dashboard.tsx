@@ -50,18 +50,32 @@ export default function Dashboard() {
   const [completedLabs, setCompletedLabs] = useState<string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [info, setInfo] = useState<string | null>(null);
   const activePanelRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
-
   // Check authentication
   useEffect(() => {
+
     const check = async () => {
+      if (!loading) {
+        setLoading(false);
+        router.replace('/login');
+        return;
+      }
       try {
-        const data = await fetcher('/auth/me');
-        setUserPayload(data.payload ?? data);
+        const data = await fetcher('/auth/me', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
+        setUserPayload(data);
       } catch (err) {
-        console.error('Auth check failed:', err);
+        console.error('Auth check failed:', err?.message || err);
+        setUserPayload(null);
+        router.replace('/login');
       } finally {
         setLoading(false);
       }
@@ -69,22 +83,59 @@ export default function Dashboard() {
     check();
   }, [router]);
 
-  // Redirect if not authenticated
+  //Obtener el nombre de usuario por documentId
   useEffect(() => {
-    if (!loading && !userPayload) {
-      router.replace('/login');
+    const documentId = userPayload?.payload?.sub;
+    if (!documentId) {
+      // No hacer fetch si no hay documentId
+      return;
     }
-  }, [loading, userPayload, router]);
+    const fetchUserName = async () => {
+      try {
+        const data = await fetcher(`/users/document-id/${documentId}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+        setUserPayload((prev) => ({
+          ...prev,
+          username: data.username ?? prev?.username,
+          fullName: data.fullName ?? prev?.fullName,
+          email: data.email ?? prev?.email,
+          id: data.documentId ?? prev?.id,
+        }));
+      } catch (err) {
+        console.error('Failed to fetch user name:', err?.message || err);
+      }
+    };
+    fetchUserName();
+  }, [userPayload?.payload?.sub]);
 
   // Load labs
   useEffect(() => {
     const loadLabs = async () => {
       try {
-        const data = await fetcher('/labs');
+        const data = await fetcher('/labs', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
         setLabs(data);
         setFilteredLabs(data);
       } catch (error) {
-        console.error('Error loading labs:', error);
+        // Intenta mostrar el mensaje de error si existe
+        if (error?.message) {
+          console.error('Error loading labs:', error.message, error);
+        } else if (error?.response) {
+          // Si usas axios, puede venir aquí
+          console.error('Error loading labs:', error.response.data, error);
+        } else {
+          console.error('Error loading labs:', error);
+        }
         setLabs([]);
         setFilteredLabs([]);
       }
@@ -109,7 +160,6 @@ export default function Dashboard() {
     }
 
     if (searchQuery) {
-      console.log("Filtering with search query:", searchQuery);
       const query = searchQuery.toLowerCase();
       filtered = filtered.filter(lab =>
         lab.name.toLowerCase().includes(query) ||
@@ -124,37 +174,26 @@ export default function Dashboard() {
   }, [selectedDifficulties, selectedCategories, selectedOS, searchQuery, labs]);
 
   // Load completed labs
+  // Sincroniza completedLabs con el backend usando isFinished
   useEffect(() => {
     const fetchCompletedLabs = async () => {
       if (!userPayload?.id) {
         setCompletedLabs([]);
         return;
       }
-
-      const stored = localStorage.getItem(`completedLabs_${userPayload.id}`);
-      if (stored) {
-        try {
-          setCompletedLabs(JSON.parse(stored));
-          return;
-        } catch { }
-      }
-
       try {
-        const submissions = await fetcher(`/flag-submission?userId=${userPayload.id}`);
-        interface Submission {
-          isCorrect: boolean;
-          userId?: string;
-          user?: { id?: string };
-          labId?: { uuid?: string };
-          labUuid?: string;
-        }
-        const completed = Array.isArray(submissions)
-          ? (submissions as Submission[])
-            .filter((f) => f.isCorrect && (f.userId === userPayload.id || f.user?.id === userPayload.id))
-            .map((f) => (typeof f.labId === 'object' && f.labId?.uuid) || f.labUuid || (typeof f.labId === 'string' ? f.labId : undefined))
-            .filter((id): id is string => !!id)
-          : [];
-        setCompletedLabs([...new Set(completed)]);
+        const userLabs = await fetcher('/user-lab', { credentials: 'include' });
+        // Filtra los labs completados por el usuario
+        const completed = (userLabs || [])
+          .filter((ul) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
+          .map((ul) => {
+            // Si labId es objeto con uuid, usa uuid, si es string, usa string
+            if (typeof ul.labId === 'object' && ul.labId !== null && 'uuid' in ul.labId) {
+              return ul.labId.uuid;
+            }
+            return String(ul.labId);
+          });
+        setCompletedLabs(completed);
       } catch {
         setCompletedLabs([]);
       }
@@ -210,6 +249,39 @@ export default function Dashboard() {
       url: `https://lab-${labId}.cyberlabs.com`
     };
 
+    // Si iniciamos un nuevo laboratorio, lo registramos en el backend
+    const registerUserLab = async () => {
+      if (!userPayload) return;
+      try {
+        console.log('Datos para registrar UserLab:', {
+          labUuid: labId,
+          userId: userPayload.id,
+        });
+        const response = await fetcher('/user-lab', {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            labUuid: labId,
+            userId: userPayload.id,
+          }),
+        });
+        // Si ya está registrado, no hacemos nada
+        if (response && response.exists) {
+          return;
+        }
+      } catch (err) {
+        // Si el error es porque ya existe, no hacemos nada
+        if (err?.message?.includes('already exists') || err?.response?.status === 409) {
+          return;
+        }
+        console.error('Error registering user lab:', err);
+      }
+    };
+    registerUserLab();
+
     setActiveLab(newActiveLab);
     setTimeout(() => {
       activePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -220,9 +292,28 @@ export default function Dashboard() {
     setActiveLab(null);
   };
 
-  const handleLabComplete = (labId: string) => {
-    if (!completedLabs.includes(labId)) {
-      setCompletedLabs([...completedLabs, labId]);
+  const handleLabComplete = async (labId: string) => {
+    if (!userPayload?.id) return;
+    try {
+      // Buscar el registro UserLab correspondiente
+      const userLabs = await fetcher('/user-lab', { credentials: 'include' });
+      const userLab = (userLabs || []).find((ul) => ul.userId === userPayload.id && ul.labId === labId);
+      if (userLab) {
+        await fetcher(`/user-lab/${userLab.id}`, {
+          method: 'PUT',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isFinished: true })
+        });
+        // Refresca la lista de labs completados
+        const updatedUserLabs = await fetcher('/user-lab', { credentials: 'include' });
+        const completed = (updatedUserLabs || [])
+          .filter((ul) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
+          .map((ul) => ul.labId);
+        setCompletedLabs(completed);
+      }
+    } catch {
+      // Manejo de error opcional
     }
   };
 
@@ -237,7 +328,7 @@ export default function Dashboard() {
         <h1 className="text-4xl mt-4 text-white">
           Bienvenido{' '}
           <span className="font-semibold text-cyan-400">
-            {userPayload?.name ?? userPayload?.email ?? 'Usuario'}
+            {userPayload.username ?? 'Usuario'}
           </span>
           !
         </h1>
@@ -339,62 +430,86 @@ export default function Dashboard() {
                 <p className="text-gray-300 mb-4">Aquí puedes actualizar tu perfil, cambiar contraseña y ajustar preferencias.</p>
                 <section className="bg-gray-800/50 border border-gray-700 rounded-lg p-6">
                   <h3 className="text-xl font-semibold text-white mb-4">Información del Perfil</h3>
-                  <form className="space-y-4" onSubmit={async (e) => {
-                    e.preventDefault();
-                    setError(null);
-                    const form = e.currentTarget;
-                    const formData = new FormData(form);
-                    const name = formData.get('name')?.toString().trim();
-                    const email = formData.get('email')?.toString().trim();
-                    const password = formData.get('password')?.toString();
-                    const body: Partial<{ username: string; email: string; password: string }> = {};
-                    let shouldLogout = false;
-                    if (name && name !== userPayload?.username) {
-                      body.username = name;
-                      shouldLogout = true;
-                    }
-                    if (email && email !== userPayload?.email) {
-                      body.email = email;
-                      shouldLogout = true;
-                    }
-                    if (password) {
-                      body.password = password;
-                      shouldLogout = true;
-                    }
-                    if (Object.keys(body).length === 0) {
-                      alert('No hay cambios para guardar.');
-                      return;
-                    }
-                    try {
-                      const response = await fetcher(`/users/${userPayload?.id}`, {
-                        method: 'PATCH',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body),
-                      });
-                      // Si el backend devuelve un nuevo JWT, recargar sesión y mostrar mensaje profesional
-                      if (response && response.accessToken) {
-                        // Guardar JWT en cookie (el backend ya lo setea, pero por si acaso en localStorage)
-                        try {
-                          localStorage.setItem('jwt', response.accessToken);
-                        } catch { }
-                        setUserPayload({ ...userPayload, ...body });
-                        window.location.reload();
+                  <form
+                    className="space-y-4"
+                    onSubmit={async (e) => {
+                      e.preventDefault();
+                      setError(null);
+                      setSuccess(null);
+                      setInfo(null);
+                      const form = e.currentTarget;
+                      const formData = new FormData(form);
+                      const name = formData.get('fullName')?.toString().trim();
+                      const username = formData.get('username')?.toString().trim();
+                      const email = formData.get('email')?.toString().trim();
+                      const password = formData.get('password')?.toString();
+                      const body: Partial<{ username: string; fullName: string; email: string; password: string }> = {};
+                      if (username && username !== userPayload?.username) {
+                        body.username = username;
+                      }
+                      if (name && name !== userPayload?.fullName) {
+                        body.fullName = name;
+                      }
+                      if (email && email !== userPayload?.email) {
+                        body.email = email;
+                      }
+                      if (password) {
+                        body.password = password;
+                      }
+                      if (Object.keys(body).length === 0) {
+                        setInfo('No hay cambios para guardar.');
                         return;
                       }
-                      setUserPayload({ ...userPayload, ...body });
-                      setSuccess('Datos actualizados correctamente.');
-                    } catch (err: any) {
-                      let msg = 'Error al actualizar los datos';
-                      if (err?.message) msg += `: ${err.message}`;
-                      setError(msg);
-                    }
-                  }}>
+                      try {
+                        await fetcher(`/users/${userPayload?.id}`, {
+                          method: 'PATCH',
+                          credentials: 'include',
+                          headers: {
+                            'Content-Type': 'application/json',
+                          },
+                          body: JSON.stringify(body),
+                        });
+                        // Volver a pedir los datos actualizados
+                        const updated = await fetcher(`/users/document-id/${userPayload?.id}`, {
+                          method: 'GET',
+                          credentials: 'include',
+                          headers: { 'Content-Type': 'application/json' }
+                        });
+                        setUserPayload((prev) => ({
+                          ...prev,
+                          username: updated.username ?? prev?.username,
+                          fullName: updated.fullName ?? prev?.fullName,
+                          email: updated.email ?? prev?.email,
+                          id: updated.documentId ?? prev?.id,
+                        }));
+                        setSuccess('Datos actualizados correctamente.');
+                      } catch (err) {
+                        let msg = 'Error al actualizar los datos';
+                        if (err?.message) msg += `: ${err.message}`;
+                        setError(msg);
+                      }
+                    }}
+                    onChange={() => {
+                      setError(null);
+                      setSuccess(null);
+                      setInfo(null);
+                    }}
+                  >
                     <div>
-                      <label className="block text-gray-400 mb-1">Nombre de Usuario</label>
+                      <label className="block text-gray-400 mb-1">Nick del Usuario</label>
                       <input
                         type="text"
-                        name="name"
-                        defaultValue={userPayload?.name || ''}
+                        name="username"
+                        defaultValue={userPayload?.username || ''}
+                        className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 transition-colors"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-gray-400 mb-1">Nombre del Usuario</label>
+                      <input
+                        type="text"
+                        name="fullName"
+                        defaultValue={userPayload?.fullName || ''}
                         className="w-full px-4 py-2 bg-gray-900/50 border border-gray-700 rounded-lg text-white focus:outline-none focus:border-cyan-500 transition-colors"
                       />
                     </div>
@@ -421,6 +536,9 @@ export default function Dashboard() {
                     )}
                     {success && (
                       <div className="text-green-400 text-sm mb-2">{success}</div>
+                    )}
+                    {info && (
+                      <div className='text-blue-400 text-sm mb-2'>{info}</div>
                     )}
                     <Button variant="ghost" size="md" type="submit">
                       Guardar Cambios

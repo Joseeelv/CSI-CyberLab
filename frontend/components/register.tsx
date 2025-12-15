@@ -51,9 +51,8 @@ export default function Register() {
         method: 'POST',
         body: JSON.stringify({ username, email, password }),
       });
-
       router.push('/login');
-    } catch (err: any) {
+    } catch (err) {
       // Manejar errores del backend
       if (err.message) {
         if (Array.isArray(err.message)) {
@@ -142,7 +141,7 @@ export default function Register() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-40 animate-pulse" />
                   <div className="relative rounded-full p-3">
-                    <Image src="/logo.png" alt="Logo" width={80} height={80} />
+                    <Image src="/Logo.png" alt="Logo" width={80} height={80} />
                   </div>
                 </div>
               </div>

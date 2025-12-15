@@ -12,7 +12,7 @@ export default function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
   const router = useRouter();
 
@@ -32,12 +32,16 @@ export default function Login() {
       setIsLoading(false);
       return; // Detener el flujo si hay errores
     }
-
     try {
       const data = await fetcher('/auth/login', {
         method: 'POST',
+        credentials: 'include',
         body: JSON.stringify({ email, password }),
       });
+
+      localStorage.setItem('accessToken', data.accessToken);
+      localStorage.setItem('refreshToken', data.refreshToken);
+
       // Comprobar el rol y redirigir en consecuencia
       if (data && data.role) {
         if (data.role === 'student') router.push('/dashboard');
@@ -115,7 +119,7 @@ export default function Login() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-40 animate-pulse" />
                   <div className="relative rounded-full p-3">
-                    <Image src="/logo.png" alt="Logo" width={80} height={80} />
+                    <Image src="/Logo.png" alt="Logo" width={80} height={80} />
                   </div>
                 </div>
               </div>
