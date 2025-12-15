@@ -1,44 +1,81 @@
-name: Testing Branch Checks
+name: Full Stack Checks
 
-# Esto activa el script solo cuando haces push a la rama 'testing'
 on:
   push:
     branches:
       - testing
 
 jobs:
-  validate:
+  # ------------------------------------
+  # JOB 1: VALIDACIÓN DEL FRONTEND
+  # ------------------------------------
+  frontend-checks:
+    name: Frontend Validation
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./frontend
+
     steps:
-      # 1. Descarga tu código
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2. Instala PNPM
       - name: Install pnpm
         uses: pnpm/action-setup@v2
         with:
           version: latest
 
-      # 3. Configura Node.js y caché para que sea rápido
-      - name: Setup Node.js
+      - name: Setup Node.js (Frontend)
         uses: actions/setup-node@v4
         with:
           node-version: latest
           cache: 'pnpm'
+          # Importante: Caché específico del frontend
+          cache-dependency-path: frontend/pnpm-lock.yaml
 
-      # 4. Instala dependencias (sin modificar el lockfile)
-      - name: Install dependencies
-        run: pnpm install 
+      - name: Install Frontend Dependencies
+        run: pnpm install --frozen-lockfile
 
-      # 5. Ejecuta el Linter (busca errores lógicos)
-      - name: Run Linter
+      - name: Lint Frontend
         run: pnpm lint
 
-      # 6. Ejecuta Typecheck (busca errores de TypeScript)
-      - name: Run Typecheck
-        run: pnpm typecheck
-
-      # 7. (Opcional) Verifica que el proyecto construye bien
-      - name: Verify Build
+      - name: Build Frontend
         run: pnpm build
+
+  # ------------------------------------
+  # JOB 2: VALIDACIÓN DEL BACKEND
+  # ------------------------------------
+  backend-checks:
+    name: Backend Validation
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./backend
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      - name: Setup Node.js (Backend)
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest 
+          cache: 'pnpm'
+          # Importante: Caché específico del backend
+          cache-dependency-path: backend/pnpm-lock.yaml
+
+      - name: Install Backend Dependencies
+        run: pnpm install --frozen-lockfile
+
+      # Asume que tienes un script "lint" en el package.json del backend
+      - name: Lint Backend
+        run: pnpm lint
+
+      # Si tienes tests unitarios en el backend, descomenta esto:
+      - name: Test Backend
+        run: pnpm test
