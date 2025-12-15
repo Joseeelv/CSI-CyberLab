@@ -30,8 +30,6 @@ jobs:
         with:
           node-version: latest
           cache: 'pnpm'
-          # Importante: Caché específico del frontend
-          cache-dependency-path: frontend/pnpm-lock.yaml
 
       - name: Install Frontend Dependencies
         run: pnpm install --frozen-lockfile
@@ -64,10 +62,8 @@ jobs:
       - name: Setup Node.js (Backend)
         uses: actions/setup-node@v4
         with:
-          node-version: latest 
+          node-version: latest
           cache: 'pnpm'
-          # Importante: Caché específico del backend
-          cache-dependency-path: backend/pnpm-lock.yaml
 
       - name: Install Backend Dependencies
         run: pnpm install --frozen-lockfile
