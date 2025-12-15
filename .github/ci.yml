@@ -1,0 +1,44 @@
+name: Testing Branch Checks
+
+# Esto activa el script solo cuando haces push a la rama 'testing'
+on:
+  push:
+    branches:
+      - testing
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      # 1. Descarga tu código
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # 2. Instala PNPM
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+        with:
+          version: latest
+
+      # 3. Configura Node.js y caché para que sea rápido
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: latest
+          cache: 'pnpm'
+
+      # 4. Instala dependencias (sin modificar el lockfile)
+      - name: Install dependencies
+        run: pnpm install 
+
+      # 5. Ejecuta el Linter (busca errores lógicos)
+      - name: Run Linter
+        run: pnpm lint
+
+      # 6. Ejecuta Typecheck (busca errores de TypeScript)
+      - name: Run Typecheck
+        run: pnpm typecheck
+
+      # 7. (Opcional) Verifica que el proyecto construye bien
+      - name: Verify Build
+        run: pnpm build
