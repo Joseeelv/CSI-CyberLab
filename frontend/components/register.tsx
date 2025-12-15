@@ -13,7 +13,7 @@ export default function Register() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-  const [isVisible, setIsVisible] = useState(false);
+  const [, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
   const router = useRouter();
 

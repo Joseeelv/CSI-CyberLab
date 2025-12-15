@@ -1,7 +1,6 @@
 import { Play, Square, Clock, Award, Tag } from 'lucide-react';
 import type { Lab } from '@/types/lab';
 import { useAuth } from '@/hooks/useAuth';
-import { useEffect } from 'react';
 
 interface LabCardProps {
   lab: Lab;

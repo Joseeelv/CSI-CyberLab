@@ -5,12 +5,10 @@ import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/hooks/useAuth';
 import { fetcher } from '@/lib/api';
-import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [scrolled, setScrolled] = useState(false);
   const { isAuthenticated } = useAuth();
-  const router = useRouter();
 
   useEffect(() => {
     const handleScroll = () => {

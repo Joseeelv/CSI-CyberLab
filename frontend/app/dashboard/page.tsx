@@ -1,8 +1,5 @@
 "use client";
 import { useState, useEffect, useRef } from 'react';
-import { LabCard } from '@/components/LabCard';
-import { LabFilters } from '@/components/LabFilters';
-import { ActiveLabPanel } from '@/components/ActiveLabPanel';
 import { Header } from '@/components/header';
 import { fetcher } from '@/lib/api';
 import { Lab, ActiveLab } from '@/types/lab';
@@ -12,16 +9,17 @@ import Dashboard from '@/components/dashboard';
 
 export default function LabPage() {
   const [labs, setLabs] = useState<Lab[]>([]);
-  const [filteredLabs, setFilteredLabs] = useState<Lab[]>([]);
-  const [selectedDifficulties, setSelectedDifficulties] = useState<string[]>([]);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
-  const [selectedOS, setSelectedOS] = useState<string[]>([]);
+  const [, setFilteredLabs] = useState<Lab[]>([]);
+  const [selectedDifficulties] = useState<string[]>([]);
+  const [selectedCategories] = useState<string[]>([]);
+  const [selectedOS] = useState<string[]>([]);
   const [activeLab, setActiveLab] = useState<ActiveLab | null>(null);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [searchQuery] = useState('');
+  const [, setLoading] = useState(true);
   const { user } = useAuth(); // Obtén el usuario autenticado
   const [completedLabs, setCompletedLabs] = useState<string[]>([]);
   const activePanelRef = useRef<HTMLDivElement>(null);
+
 
   // Fetch labs on mount
   useEffect(() => {
@@ -106,7 +104,7 @@ export default function LabPage() {
           }
         });
         const completed = Array.isArray(submissions)
-          ? submissions.filter((f: any) => f.isCorrect && (f.userId === user.id || f.user?.id === user.id)).map((f: any) => f.labId?.uuid || f.labUuid || f.labId)
+          ? submissions.filter((f) => f.isCorrect && (f.userId === user.id || f.user?.id === user.id)).map((f) => f.labId?.uuid || f.labUuid || f.labId)
           : [];
         setCompletedLabs([...new Set(completed)]);
       } catch {
@@ -152,15 +150,7 @@ export default function LabPage() {
     }
   }, [activeLab]);
 
-  useEffect(() => {
-    const labToActivate = localStorage.getItem('labToActivate');
-    if (labToActivate && labs.length > 0) {
-      handleStartLab(labToActivate);
-      localStorage.removeItem('labToActivate');
-    }
-  }, [labs]);
-
-  const handleStartLab = (labId: string) => {
+  const handleStartLab = useCallback((labId: string) => {
     const lab = labs.find(l => l.uuid === labId);
     if (!lab) return;
 
@@ -177,12 +167,15 @@ export default function LabPage() {
     setTimeout(() => {
       activePanelRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }, 100);
-  };
+  }, [labs]);
 
-  const handleStopLab = () => {
-    setActiveLab(null);
-  };
-
+  useEffect(() => {
+    const labToActivate = localStorage.getItem('labToActivate');
+    if (labToActivate && labs.length > 0) {
+      handleStartLab(labToActivate);
+      localStorage.removeItem('labToActivate');
+    }
+  }, [labs, handleStartLab]);
 
   return (
     <div className="min-h-screen bg-[#0a0a0a]">

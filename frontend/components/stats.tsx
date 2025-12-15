@@ -20,12 +20,9 @@ export const StatCard: React.FC<StatCardProps> = ({
   variant = 'default',
   icon
 }) => {
-  const [mounted, setMounted] = useState(false);
   const [animatedProgress, setAnimatedProgress] = useState(0);
 
   useEffect(() => {
-    setMounted(true);
-    
     if (progress !== undefined) {
       const timer = setTimeout(() => {
         setAnimatedProgress(progress);
@@ -60,7 +57,7 @@ export const StatCard: React.FC<StatCardProps> = ({
   const colors = variantColors[variant];
 
   return (
-    <div 
+    <div
       className={`
         relative overflow-hidden rounded-2xl p-6 
         bg-gradient-to-br from-gray-900/50 to-gray-800/50 
@@ -83,25 +80,25 @@ export const StatCard: React.FC<StatCardProps> = ({
           {icon}
         </div>
       )}
-      
+
       <div className={`relative text-5xl font-black font-mono leading-none mb-2 bg-gradient-to-r ${colors.gradient} bg-clip-text text-transparent`}>
         {value}
       </div>
-      
+
       <div className="relative text-xs text-gray-400 uppercase tracking-widest font-semibold mb-3">
         {label}
       </div>
-      
-      {trend && mounted && (
+
+      {trend && (
         <div className={`relative inline-flex items-center gap-1 text-xs font-semibold ${trend.positive ? 'text-emerald-400' : 'text-red-400'}`}>
           <span className="text-base">{trend.positive ? '↑' : '↓'}</span>
           <span>{trend.value}</span>
         </div>
       )}
-      
-      {progress !== undefined && mounted && (
+
+      {progress !== undefined && (
         <div className="relative mt-3 h-1.5 bg-gray-800/80 rounded-full overflow-hidden">
-          <div 
+          <div
             className={`h-full bg-gradient-to-r ${colors.gradient} rounded-full transition-all duration-1000 ease-out relative`}
             style={{ width: `${animatedProgress}%` }}
           >
@@ -132,23 +129,23 @@ export const Stats: React.FC = () => {
   return (
     <section className="max-w-7xl mx-auto px-5 py-12">
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <StatCard 
-          value="99.9%" 
-          label="Uptime" 
+        <StatCard
+          value="99.9%"
+          label="Uptime"
           trend={{ value: "2.1%", positive: true }}
           variant="success"
           progress={99.9}
           icon="✓"
         />
-        <StatCard 
-          value="1.2M" 
-          label="Tests Executed" 
+        <StatCard
+          value="1.2M"
+          label="Tests Executed"
           progress={75}
           icon="⚡"
         />
-        <StatCard 
-          value="24" 
-          label="Critical Alerts" 
+        <StatCard
+          value="24"
+          label="Critical Alerts"
           trend={{ value: "8.3%", positive: false }}
           variant="critical"
           icon="⚠"
