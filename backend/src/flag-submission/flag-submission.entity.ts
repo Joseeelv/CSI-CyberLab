@@ -1,8 +1,9 @@
 import { Exclude } from "class-transformer";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
-import { User } from "src/users/user.entity";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { UserLab } from "src/user-lab/user-lab.entity";
 import { Lab } from "src/labs/lab.entity";
-@Entity()
+
+@Entity("FlagSubmission")
 export class FlagSubmission {
 
   @Exclude()
@@ -18,11 +19,17 @@ export class FlagSubmission {
   @CreateDateColumn()
   created: Date;
 
-  @ManyToOne(() => User, (user) => user.flagSubmissions, { onDelete: 'CASCADE' })
-  @JoinColumn({ name: 'userId' })
-  user: User;
+  @Column({ name: 'userLabId', type: 'int' })
+  userLabId: number;
 
-  @ManyToOne(() => Lab, (lab) => lab.flagSubmissions)
-  @JoinColumn({ name: 'labId' })
+  @ManyToOne(() => UserLab, (userLab) => userLab.flagSubmissions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'userLabId' })
+  userLab: UserLab;
+
+  @Column({ name: 'labId', type: 'uuid' })
+  labId: string;
+
+  @ManyToOne(() => Lab, (lab) => lab.flagSubmissions, { onDelete: 'CASCADE' })
+  @JoinColumn({ name: 'labId', referencedColumnName: 'uuid' })
   lab: Lab;
 }

@@ -1,17 +1,20 @@
-import { Controller } from '@nestjs/common';
+import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 import { ContainerService } from './container.service';
-import { Get, Post, Param, Body } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+
 
 @Controller('container')
 export class ContainerController {
   constructor(private readonly containerService: ContainerService) { }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getContainers() {
     return await this.containerService.getContainers();
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async createContainer(@Body() containerData) {
     return await this.containerService.createContainer(containerData);
   }

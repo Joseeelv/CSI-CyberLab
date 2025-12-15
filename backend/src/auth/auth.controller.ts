@@ -1,9 +1,10 @@
-import { Body, Controller, Post, Req, Res, Get, HttpCode, HttpStatus, UnauthorizedException, BadRequestException } from '@nestjs/common';
-import { Response, Request } from 'express';
+import { Body, Controller, Post, Req, Get, HttpCode, HttpStatus, UnauthorizedException, BadRequestException, UseGuards, Res } from '@nestjs/common';
+import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './register.dto';
 import { LoginUserDto } from './login.dto';
 import { JwtService } from '@nestjs/jwt';
+import { JwtAuthGuard } from './jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -32,17 +33,21 @@ export class AuthController {
       if (!loginData.email || !loginData.password) {
         throw new BadRequestException('Credentials are required');
       }
-      const { accessToken, role } = await this.authService.login(loginData);
-
-      // Set cookie
-      res.cookie('jwt', accessToken, {
+      const { accessToken, refreshToken, role, documentId } = await this.authService.login(loginData);
+      // Enviar tokens como cookies HTTP-only
+      res.cookie('accessToken', accessToken, {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: 3600000, // 1 hora
+        maxAge: 15 * 60 * 1000,
       });
-
-      return { message: 'Login successful', accessToken, role };
+      res.cookie('refreshToken', refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return { message: 'Login successful', role, documentId };
     } catch (error) {
       throw new UnauthorizedException('Invalid credentials');
     }
@@ -50,8 +55,10 @@ export class AuthController {
 
   @Get('me')
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async me(@Req() req: Request) {
-    const token = req.cookies?.jwt;
+    // Leer accessToken de cookies
+    const token = req.cookies['accessToken'];
     if (!token) {
       throw new UnauthorizedException('No token provided');
     }
@@ -65,16 +72,42 @@ export class AuthController {
 
   @Post('logout')
   @HttpCode(HttpStatus.OK)
-  async logout(@Res({ passthrough: true }) res: Response) {
-    if (!res) {
-      throw new BadRequestException('No JWT cookie found');
-    }
-    res.clearCookie('jwt', {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-    });
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    return await this.authService.logout(req);
+  }
 
-    return { message: 'Logout successful' };
+  @Post('refresh')
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body('refreshToken') refreshToken: string) {
+    // Leer refreshToken de cookies si no viene en el body
+    const token = refreshToken || (arguments[1] && arguments[1].req && arguments[1].req.cookies['refreshToken']);
+    if (!token) {
+      throw new UnauthorizedException('No refresh token provided');
+    }
+    try {
+      const oldPayload = this.jwtService.verify(token);
+      const user = await this.authService.findUserByEmail(oldPayload.email);
+      if (!user || user.refreshToken !== token) {
+        throw new UnauthorizedException('Refresh token inválido');
+      }
+      const { iat, exp, nbf, ...payload } = oldPayload;
+      const newAccessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+      // Setear nuevo accessToken en cookie
+      const res = (arguments[1] && arguments[1].res) || (arguments[0] && arguments[0].res);
+      if (res) {
+        res.cookie('accessToken', newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 15 * 60 * 1000,
+        });
+      }
+      return { message: 'Token refreshed' };
+    } catch (err) {
+      throw new UnauthorizedException('Invalid or expired refresh token');
+    }
   }
 }

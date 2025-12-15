@@ -7,7 +7,9 @@ RUN npm install -g pnpm \
     && npm cache clean --force
 
 # Copy package files AND lockfile
-COPY package.json pnpm-lock.yaml* ./
+COPY package.json ./
+COPY pnpm-lock.yaml* ./
+
 
 # Install dependencies with frozen lockfile
 RUN pnpm install

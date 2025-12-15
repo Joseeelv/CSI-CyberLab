@@ -15,7 +15,7 @@ import { DifficultyModule } from './difficulty/difficulty.module';
 import { RoleModule } from './role/role.module';
 import { SeederModule } from './database/seeder.module';
 import { FlagSubmissionModule } from './flag-submission/flag-submission.module';
-
+import { UserLabModule } from './user-lab/user-lab.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -28,15 +28,15 @@ import { FlagSubmissionModule } from './flag-submission/flag-submission.module';
       imports: [ConfigModule],
       useFactory: (configService: ConfigService) => ({
         type: 'postgres',
-        host: configService.get('DATABASE_HOST'),
-        port: configService.get<number>('DATABASE_PORT'),
-        username: configService.get('DATABASE_USER'),
-        password: configService.get('DATABASE_PASSWORD'),
-        database: configService.get('DATABASE_NAME'),
+        host: configService.get('DATABASE_HOST') || 'localhost',
+        port: configService.get<number>('DATABASE_PORT') || 5432,
+        username: configService.get('DATABASE_USER') || 'user',
+        password: configService.get('DATABASE_PASSWORD') || 'secret',
+        database: configService.get('DATABASE_NAME') || 'postgres-db',
         entities: [__dirname + '/**/*.entity{.ts,.js}'],
         synchronize: true,
       }),
-      inject: [ConfigService],
+      inject: [ConfigService,],
     }),
 
     UserModule,
@@ -51,6 +51,7 @@ import { FlagSubmissionModule } from './flag-submission/flag-submission.module';
     RoleModule,
     SeederModule,
     FlagSubmissionModule,
+    UserLabModule,
   ],
   controllers: [AppController],
   providers: [AppService],

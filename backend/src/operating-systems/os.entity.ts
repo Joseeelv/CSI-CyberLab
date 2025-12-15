@@ -3,7 +3,7 @@ import { Lab } from 'src/labs/lab.entity';
 import { Image } from 'src/images/image.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity("OperatingSystem")
 export class OperatingSystem {
   @Exclude()
   @PrimaryGeneratedColumn()
@@ -22,8 +22,8 @@ export class OperatingSystem {
   @JoinColumn({ name: 'image' })
   images: Image[];
 
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   created: Date;
-  @Column({type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP'})
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', onUpdate: 'CURRENT_TIMESTAMP' })
   updated: Date;
 }
