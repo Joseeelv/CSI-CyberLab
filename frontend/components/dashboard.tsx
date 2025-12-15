@@ -73,7 +73,10 @@ export default function Dashboard() {
         });
         setUserPayload(data);
       } catch (err) {
-        console.error('Auth check failed:', err?.message || err);
+        console.error(
+          'Auth check failed:',
+          typeof err === "object" && err !== null && "message" in err ? (err as { message: string }).message : err
+        );
         setUserPayload(null);
         router.replace('/login');
       } finally {
