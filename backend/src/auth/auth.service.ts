@@ -32,7 +32,7 @@ export class AuthService {
     user.username = registerData.username;
     user.email = registerData.email;
 
-    const saltRounds = Number(this.configService.get<string>('SALT_ROUNDS'));
+    const saltRounds = Number(this.configService.get<string>('SALT_ROUNDS') || 10);
     if (!saltRounds) {
       console.error('SALT_ROUNDS environment variable is not defined:');
       throw new BadRequestException('SALT_ROUNDS environment variable is not defined');
@@ -61,37 +61,53 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
-
     const isPasswordValid = await bcrypt.compare(loginData.password, user.password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('Credenciales inválidas');
     }
-
-
-    const payload = { id: user.id, name: user.username, email: user.email, role: user.roleId };
-    const accessToken = this.jwtService.sign(payload);
-    return { accessToken, role: user.roleId };
+    const payload = {
+      sub: user.documentId,
+      email: user.email,
+      role: user.roleId.name
+    };
+    try {
+      const accessToken = this.jwtService.sign(payload, { expiresIn: '15m' });
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: '7d' });
+      // Guardar el refreshToken en la base de datos
+      user.refreshToken = refreshToken;
+      await this.userService.saveUser(user);
+      return {
+        accessToken,
+        refreshToken,
+        role: payload.role,
+        documentId: user.documentId
+      };
+    } catch (error) {
+      throw new UnauthorizedException('Error generando token');
+    }
   }
 
-  //Funcion para logout
-  async logout(@Req() req): Promise<any> {
+  //Funcion para logout seguro (revoca refresh token)
+  async logout(req): Promise<any> {
     try {
-      const res = req.res;
-      if (!res) {
-        throw new Error('Response object not found in request');
+      const user = req.user;
+      if (!user || !user.email) {
+        throw new UnauthorizedException('Usuario no autenticado');
       }
-
-      res.clearCookie('jwt', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-      });
-
+      const dbUser = await this.userService.findByEmail(user.email);
+      if (dbUser) {
+        dbUser.refreshToken = null;
+        await this.userService.saveUser(dbUser);
+      }
       return { message: 'Logout successful' };
     } catch (error) {
-      console.error('Error during logout:', error.message);
       return { error: error.message };
     }
+  }
+
+  // Permitir buscar usuario por email desde el controlador
+  async findUserByEmail(email: string) {
+    return this.userService.findByEmail(email);
   }
 
 }

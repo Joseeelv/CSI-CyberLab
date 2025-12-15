@@ -7,7 +7,8 @@ RUN npm install -g pnpm \
     && npm cache clean --force
 
 # Copy package files 
-COPY package.json pnpm-lock.yaml ./
+COPY package.json ./
+COPY pnpm-lock.yaml* ./
 
 # Install dependencies with pnpm
 RUN pnpm install 

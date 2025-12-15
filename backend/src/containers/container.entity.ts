@@ -6,7 +6,7 @@ import { User } from 'src/users/user.entity';
 import { Image } from 'src/images/image.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity("Container")
 export class Container {
   @Exclude()
   @PrimaryGeneratedColumn()

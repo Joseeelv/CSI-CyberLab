@@ -3,7 +3,7 @@ import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity("Status")
 export class Status {
   @Exclude()
   @PrimaryGeneratedColumn()

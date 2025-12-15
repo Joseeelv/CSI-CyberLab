@@ -6,9 +6,9 @@ import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { Container } from 'src/containers/container.entity';
 import { Status } from 'src/status/status.entity';
 import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
-import { User } from 'src/users/user.entity';
+import { UserLab } from 'src/user-lab/user-lab.entity';
 
-@Entity()
+@Entity("Lab")
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
@@ -66,9 +66,8 @@ export class Lab {
   @OneToMany(() => Container, (container) => container.labId, { nullable: true })
   containers: Container[];
 
-  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable({ name: 'Lab_User' })
-  users: User[];
+  @OneToMany(() => UserLab, (userLab) => userLab.lab)
+  userLabs: UserLab[];
 
   @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
   flagSubmissions: FlagSubmission[];

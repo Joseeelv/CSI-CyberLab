@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { authFetch, ApiError } from '@/lib/api';
-import { User } from '@/types/user';
 import { AuthState } from '@/types/AuthState';
 
 
@@ -12,10 +11,17 @@ export function useAuth() {
     isAuthenticated: false,
   });
 
+
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const data = await authFetch('/auth/me');
+        const data = await authFetch('/auth/me', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        });
         const user = data?.payload ?? data; // Add fallback logic to handle different response structures
         setState({
           user,
@@ -28,12 +34,37 @@ export function useAuth() {
 
         // 401 is expected when not logged in, don't treat as error
         if (error.statusCode === 401) {
-          setState({
-            user: null,
-            loading: false,
-            error: null,
-            isAuthenticated: false,
-          });
+          // Si recibes 401, intenta refrescar usando cookie
+          try {
+            await fetcher('/auth/refresh', {
+              method: 'POST',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' }
+            });
+            // Reintenta la petición original
+            const retry = await authFetch('/auth/me', {
+              method: 'GET',
+              credentials: 'include',
+              headers: { 'Content-Type': 'application/json' },
+            });
+            const user = retry?.payload ?? retry;
+            setState({
+              user,
+              loading: false,
+              error: null,
+              isAuthenticated: !!user,
+            });
+            return;
+          } catch {
+            // El refresh falló, forzar logout
+            setState({
+              user: null,
+              loading: false,
+              error: null,
+              isAuthenticated: false,
+            });
+            return;
+          }
         } else {
           setState({
             user: null,
@@ -44,7 +75,6 @@ export function useAuth() {
         }
       }
     };
-
     loadUser();
   }, []);
 

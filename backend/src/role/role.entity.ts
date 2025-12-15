@@ -1,7 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
 import { Exclude } from "class-transformer";
 
-@Entity()
+@Entity("Role")
 export class Role {
   @Exclude()
   @PrimaryGeneratedColumn()
