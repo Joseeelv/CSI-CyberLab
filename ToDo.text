@@ -1,0 +1,45 @@
+# Lista de Tareas Pendientes (ToDo)
+
+## Backend
+
+### Relaciones
+
+1. **Implementar relación User-Role**
+   - Cambiar `role` en `User` de un string a una relación `ManyToOne` con la entidad `Role`.
+2. **Corregir relación Image-OperatingSystem**
+   - Cambiar de `OneToMany` a `ManyToOne` para reflejar que una imagen tiene un único sistema operativo base.
+3. **Asegurar consistencia en relación Category-Lab**
+   - Corregir la relación en `Category` para que sea `ManyToMany` en lugar de `OneToMany`.
+4. **Cambiar relación User-Container a OneToMany**
+   - Ajustar la relación para que cada contenedor pertenezca a un único usuario.
+5. **Corregir definición de relación Status-Labs**
+   - Eliminar `@JoinColumn` en el lado `OneToMany` y asegurar que la relación apunta correctamente a `lab.status`.
+
+### Nuevas Entidades
+
+6. **Crear entidad UserLabEnrollment**
+   - Gestionar inscripciones, progreso y calificaciones de usuarios en laboratorios.
+7. **Crear entidad Challenge**
+   - Representar desafíos dentro de los laboratorios.
+8. **Crear entidad FlagSubmission**
+   - Registrar intentos de flags capturadas por los usuarios.
+
+### Optimización y Seguridad
+
+9. **Agregar índices en User y Lab**
+   - Mejorar el rendimiento de consultas frecuentes (e.g., `email` en `User`, `status` en `Lab`).
+10. **Implementar soft deletes**
+    - Permitir eliminaciones lógicas en entidades principales.
+11. **Optimizar consultas con eager/lazy loading estratégico**
+    - Cargar relaciones principales de manera eficiente.
+
+## Funcionalidades Adicionales
+
+12. **Implementar sistema de ratings/reviews para laboratorios**
+    - Permitir a los usuarios calificar y comentar laboratorios.
+13. **Crear sistema de notificaciones para usuarios**
+    - Enviar alertas y recordatorios personalizados.
+14. **Agregar logs de actividad para auditoría**
+    - Registrar acciones importantes como inicio/detención de contenedores.
+15. **Optimizar rendimiento del backend**
+    - Implementar caché y paginación en listados de laboratorios.
