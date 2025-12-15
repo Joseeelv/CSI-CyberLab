@@ -88,7 +88,7 @@ export default function Dashboard() {
 
   //Obtener el nombre de usuario por documentId
   useEffect(() => {
-    const documentId = userPayload?.payload?.sub;
+    const documentId = userPayload?.id;
     if (!documentId) {
       // No hacer fetch si no hay documentId
       return;
@@ -114,7 +114,7 @@ export default function Dashboard() {
       }
     };
     fetchUserName();
-  }, [userPayload?.payload?.sub]);
+  }, [userPayload?.id]);
 
   // Load labs
   useEffect(() => {
