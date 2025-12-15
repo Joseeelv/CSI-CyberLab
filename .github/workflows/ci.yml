@@ -24,14 +24,13 @@ jobs:
         uses: pnpm/action-setup@v2.4.0
         with:
           version: 10.22.0
-          run_install: true
-          cache-dependency-path: ./frontend/pnpm-lock.yaml
 
       - name: Setup Node.js (Frontend)
         uses: actions/setup-node@v4
         with:
           node-version: 22.17.1
           cache: 'pnpm'
+          cache-dependency-path: ./frontend/pnpm-lock.yaml
 
       - name: Install Frontend Dependencies
         run: pnpm install --frozen-lockfile
@@ -60,22 +59,19 @@ jobs:
         uses: pnpm/action-setup@v2.4.0
         with:
           version: 10.22.0
-          run_install: true
-          cache-dependency-path: ./backend/pnpm-lock.yaml
 
       - name: Setup Node.js (Backend)
         uses: actions/setup-node@v4
         with:
           node-version: 22.17.1
           cache: 'pnpm'
+          cache-dependency-path: ./backend/pnpm-lock.yaml
 
       - name: Install Backend Dependencies
         run: pnpm install --frozen-lockfile
 
-      # Asume que tienes un script "lint" en el package.json del backend
       - name: Lint Backend
         run: pnpm lint
 
-      # Si tienes tests unitarios en el backend, descomenta esto:
       - name: Test Backend
         run: pnpm test
