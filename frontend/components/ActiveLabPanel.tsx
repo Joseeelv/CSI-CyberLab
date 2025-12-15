@@ -39,16 +39,19 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
   const [isLoadingFlags, setIsLoadingFlags] = useState(true);
   const [labCompleted, setLabCompleted] = useState(false);
 
-
   // Función para cargar las flags del usuario para este laboratorio
   const fetchUserFlags = useCallback(async () => {
-    if (!user || !lab) return;
-
+    if (!user && !lab) return;
     setIsLoadingFlags(true);
     try {
       // Consulta solo submissions correctas del usuario para este lab
-      const submissions: FlagSubmission[] = await fetcher(
-        `/flag-submission?userId=${user.id}&labUuid=${lab.uuid}`
+      const submissions: FlagSubmission[] = await fetcher(`/flag-submission?userId=${user?.id}&labUuid=${lab?.uuid}`, {
+        method: 'GET',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      }
       );
       // Filtrar solo las correctas y ordenar por fecha
       const correctSubmissions = Array.isArray(submissions)
@@ -68,7 +71,14 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
         setLabCompleted(false);
       }
     } catch (err) {
-      console.error("Error cargando flags:", err);
+      // Mejor manejo de errores
+      if (err instanceof Error) {
+        console.error("Error cargando flags:", err.message, err);
+      } else if (typeof err === 'object' && err !== null) {
+        console.error("Error cargando flags:", JSON.stringify(err), err);
+      } else {
+        console.error("Error cargando flags:", err);
+      }
       setCorrectFlag1(null);
       setCorrectFlag2(null);
       setLabCompleted(false);
@@ -82,7 +92,7 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
     fetchUserFlags();
   }, [fetchUserFlags]);
 
-  // Limpiar estado al cambiar de lab o usuario
+  // Limpiar estado al cambiar de lab 
   useEffect(() => {
     setFlag1('');
     setFlag2('');
@@ -183,6 +193,10 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
           flag: flag.trim(),
           userId: user.id,
         }),
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        }
       });
 
       // Mostrar mensaje de éxito

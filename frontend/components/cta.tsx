@@ -22,7 +22,7 @@ export function CTA() {
           setUserCount(null);
         }
         setUserCount(Number(res.count ?? 0));
-      } catch (err) {
+      } catch {
         setUserCount(null);
       }
     };

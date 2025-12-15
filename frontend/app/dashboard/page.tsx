@@ -27,7 +27,13 @@ export default function LabPage() {
   useEffect(() => {
     const loadLabs = async () => {
       try {
-        const data = await fetcher('/labs');
+        const data = await fetcher('/labs', {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
         setLabs(data);
         setFilteredLabs(data);
       } catch (error) {
@@ -92,7 +98,13 @@ export default function LabPage() {
       }
       // Si no hay en localStorage, consulta al backend
       try {
-        const submissions = await fetcher(`/flag-submission?userId=${user.id}`);
+        const submissions = await fetcher(`/flag-submission?userId=${user.id}`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          }
+        });
         const completed = Array.isArray(submissions)
           ? submissions.filter((f: any) => f.isCorrect && (f.userId === user.id || f.user?.id === user.id)).map((f: any) => f.labId?.uuid || f.labUuid || f.labId)
           : [];

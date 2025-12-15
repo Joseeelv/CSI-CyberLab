@@ -65,11 +65,11 @@ export const Hero: React.FC = () => {
               {$texto}
             </Button>
           </Link>
-          <Link href="/labs">
+          {/* <Link href="/labs">
             <Button variant="ghost" size="lg">
               Ver Laboratorios
             </Button>
-          </Link>
+          </Link> */}
         </div>
       </div>
 
