@@ -21,6 +21,7 @@ export default function LabPage() {
   const [completedLabs, setCompletedLabs] = useState<string[]>([]);
   const activePanelRef = useRef<HTMLDivElement>(null);
 
+
   // Fetch labs on mount
   useEffect(() => {
     const loadLabs = async () => {
