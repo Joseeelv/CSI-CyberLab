@@ -84,9 +84,8 @@ export class Lab {
   })
   containers: Container[];
 
-  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable({ name: 'Lab_User' })
-  users: User[];
+  @OneToMany(() => UserLab, (userLab) => userLab.lab)
+  userLabs: UserLab[];
 
   @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
   flagSubmissions: FlagSubmission[];

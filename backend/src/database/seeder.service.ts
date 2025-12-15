@@ -43,7 +43,6 @@ export class SeederService {
       await this.seedCategories();
       await this.seedRoles();
       await this.seedImages();
-      await this.seedUsers();
       await this.seedLabs();
       await this.seedContainers();
 
@@ -293,46 +292,6 @@ export class SeederService {
           await this.containerRepository.save(container);
           this.logger.log(`   ✓ Contenedor creado: ${container.name}`);
         }
-      }
-    }
-  }
-  private async seedUsers() {
-    // Limpiar flag_submission para evitar errores de clave foránea
-    const flagSubmissionRepo = (this as any).flagSubmissionRepository;
-    if (flagSubmissionRepo) {
-      await flagSubmissionRepo.clear();
-      this.logger.log('   ✓ Tabla flag_submission limpiada');
-    }
-
-    const users = [
-      {
-        username: 'admin',
-        fullName: 'Administrador',
-        email: 'admin@gmail.com',
-        password: 'admin123',
-        roleId: { id: 1 } as any,
-      },
-      {
-        username: 'student1',
-        fullName: 'Estudiante Uno',
-        email: 'student1@gmail.com',
-        password: 'student123',
-        roleId: { id: 2 } as any,
-      },
-      {
-        username: 'teacher1',
-        fullName: 'Profesor Uno',
-        email: 'teacher1@gmail.com',
-        password: 'teacher123',
-        roleId: { id: 3 } as any,
-      }
-    ];
-    for (const user of users) {
-      const exists = await this.userRepository.findOne({ where: { username: user.username } });
-      if (!exists) {
-        const newUser = this.userRepository.create(user);
-        await this.userRepository.save(newUser);
-        this.logger.log(`   ✓ Usuario creado: ${user.username}`);
       }
     }
   }

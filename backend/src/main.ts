@@ -39,6 +39,10 @@ async function bootstrap() {
     );
   }
 
+  if (!allowedOrigins.length) {
+    throw new Error('No se ha definido FRONTEND_URL ni orígenes permitidos para CORS');
+  }
+
   app.enableCors({
     origin: (origin, callback) => {
       // Permitir peticiones sin origen (como Postman) o si está en la lista

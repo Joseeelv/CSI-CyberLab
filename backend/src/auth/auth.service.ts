@@ -115,7 +115,6 @@ export class AuthService {
       }
       return { message: "Logout successful" };
     } catch (error) {
-      console.error('Error during logout:', error.message);
       return { error: error.message };
     }
   }

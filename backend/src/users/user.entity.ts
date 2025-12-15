@@ -14,7 +14,7 @@ import { Exclude } from "class-transformer";
 
 @Entity("User")
 export class User {
-
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -64,10 +64,4 @@ export class User {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   updated: Date;
-
-  @OneToMany(() => UserLab, (userLab) => userLab.user)
-  userLabs: UserLab[];
-
-  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.user)
-  flagSubmissions: FlagSubmission[];
 }

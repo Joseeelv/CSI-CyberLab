@@ -153,8 +153,19 @@ export class FlagSubmissionService {
 
       const saved = await this.flagSubmissionRepository.save(newFlagSubmission);
 
-      // Determinar si es la primera o segunda flag
+      // Actualizar progreso y score en el UserLab existente
+      userLab.progress = existingCorrectSubmissions.length + 1;
+      userLab.score = score;
+
+      // Si el usuario ha completado todas las flags, marcar como finalizado
       const flagNumber = existingCorrectSubmissions.length + 1;
+      if (flagNumber === validFlags.length) {
+        userLab.isFinished = true;
+      }
+      await this.userLabRepository.save(userLab);
+
+
+      const saved = await this.flagSubmissionRepository.save(newFlagSubmission);
 
       return {
         success: true,

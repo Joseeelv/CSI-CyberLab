@@ -18,14 +18,16 @@ import { LabDto } from "./dto/lab.dto";
 export class LabController {
   constructor(private readonly labService: LabService) {}
 
+
   @Get()
   @UseGuards(JwtAuthGuard)
   async getLabs() {
     return await this.labService.getAllLabs();
   }
 
+
   @Post()
-  // @UseGuards(JwtAuthGuard)
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createLabDto: LabDto) {
     return this.labService.createLab(createLabDto);
@@ -43,6 +45,7 @@ export class LabController {
   async remove(@Param("name") name: string) {
     await this.labService.remove(name);
   }
+
 
   @Delete()
   @UseGuards(JwtAuthGuard)
