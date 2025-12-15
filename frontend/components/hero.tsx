@@ -28,15 +28,8 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* Glowing orbs */}
-      <div
-        className="absolute top-20 left-10 w-64 h-64 rounded-full blur-10xl animate-pulse"
-        style={{ background: 'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)'}}
-      />
-      <div
-        className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-2xl animate-pulse"
-        style={{ background: 'radial-gradient(circle, rgba(134, 59, 246, 0.4) 0%, transparent 70%)', animationDelay: '1s' }}
-      />
-
+      <div className="absolute top-20 left-10 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
+      <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tight">
@@ -61,7 +54,7 @@ export const Hero: React.FC = () => {
             </Button>
           </Link>
           <Link href="/labs">
-            <Button variant="ghost" size="lg">
+            <Button variant="inverse" size="lg">
               Ver Laboratorios
             </Button>
           </Link>

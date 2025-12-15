@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { HeaderAuth } from './authHeader';
+import HeaderAuth from './authHeader';
 import { Header } from './header';
 
 export default function HeaderSwitcher() {
@@ -12,7 +12,7 @@ export default function HeaderSwitcher() {
     let mounted = true;
     (async () => {
       try {
-        const base = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000/api';
+        const base = process.env.NEXT_PUBLIC_API_URL ?? '';
         const res = await fetch(`${base}/auth/me`, {
           credentials: 'include',
         });

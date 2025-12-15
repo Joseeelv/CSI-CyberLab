@@ -1,7 +1,9 @@
 services:
   postgres:
-    image: postgres:15
-    container_name: postgres
+    image: postgres:18
+    restart: always
+    networks:
+      - app-network
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
@@ -9,24 +11,14 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql/data
-    networks:
-      - app-network
+      - postgres-data:/var/lib/postgresql
 
+  
   backend:
-    container_name: backend
     build:
       context: ./backend
       dockerfile: Dockerfile
-    working_dir: /app
-    volumes:
-      - ./backend/src:/app/src:delegated
-      - ./backend/package.json:/app/package.json:ro
-      - ./backend/tsconfig.json:/app/tsconfig.json:ro
-      - ./backend/tsconfig.build.json:/app/tsconfig.build.json:ro
-      - ./backend/nest-cli.json:/app/nest-cli.json:ro
-      - /app/node_modules
-      - /app/dist
+    restart: always
     networks:
       - app-network
     environment:
@@ -35,49 +27,30 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      SALT_ROUNDS: ${SALT_ROUNDS}
       JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
-      NODE_ENV: development
     ports:
       - "3000:3000"
     depends_on:
       - postgres
-
   frontend:
-    container_name: frontend
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    working_dir: /app
-    volumes:
-      - ./frontend/app:/app/app:delegated
-      - ./frontend/components:/app/components:delegated
-      - ./frontend/hooks:/app/hooks:delegated
-      - ./frontend/lib:/app/lib:delegated
-      - ./frontend/public:/app/public:delegated
-      - ./frontend/package.json:/app/package.json:ro
-      - ./frontend/next.config.ts:/app/next.config.ts:ro
-      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
-      - ./frontend/tailwind.config.js:/app/tailwind.config.js:ro
-      - /app/node_modules
-      - /app/.next
+    restart: always
     networks:
       - app-network
     environment:
+      NEXT_PUBLIC_BACKEND_URL: http://localhost:3000
       PORT: 3001
-      HOSTNAME: 0.0.0.0
-      NEXT_TELEMETRY_DISABLED: 1
-      NEXT_PUBLIC_API_URL: http://localhost/api
-      NODE_ENV: development
     ports:
       - "3001:3001"
     depends_on:
       - backend
 
+
   nginx:
     image: nginx:latest
-    container_name: nginx
     restart: always
     networks:
       - app-network
@@ -90,8 +63,6 @@ services:
 
 volumes:
   postgres-data:
-  backend-node-modules:
-  frontend-node-modules:
 
 networks:
   app-network:

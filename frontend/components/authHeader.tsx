@@ -1,14 +1,14 @@
 "use client";
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
-import Image from 'next/image';
 
 export function HeaderAuth() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  // const [getImage, setGetImage] = useState(false);
+
   useEffect(() => {
     setMounted(true);
 
@@ -54,28 +54,6 @@ export function HeaderAuth() {
       }
     }
   };
-  
-  // const API_URL = process.env.NEXT_PUBLIC_API_URL;
-  //   React.useEffect(() => {
-  //     const fetchCount = async () => {
-  //       try {
-  //         const res = await fetch(`${API_URL}/users/getImage`, {
-  //           method: 'GET',
-  //           credentials: 'include',
-  //           headers: { 'Content-Type': 'application/json' }
-  //         });
-  //         if (!res.ok) {
-  //           setGetImage(false);
-  //           return;
-  //         }
-  //         const data = await res.json();
-  //         setGetImage(Boolean(data?.image ?? false));
-  //       } catch (err) {
-  //         setGetImage(false);
-  //       }
-  //     };
-  //     fetchCount();
-  //   }, []);
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a0e1a]/95 backdrop-blur-xl shadow-lg shadow-cyan-500/5 border-b border-cyan-500/20' : 'bg-transparent border-b border-gray-800/50'}`}>
@@ -88,21 +66,14 @@ export function HeaderAuth() {
             CyberLabs
           </span>
         </Link>
-        <div className="flex items-center gap-3 flex-col sm:flex-row ">
-          {mounted && (
+        {mounted && (
+          <div className="flex items-center gap-3 flex-col sm:flex-row ">
 
             <Button variant="ghost" onClick={handleLogoutClick}>
               Cerrar Sesión
             </Button>
-          )}
-          <Image
-            src="/images/robot-cyberlabs.png"
-            alt="CyberLabs Robot"
-            width={50}
-            height={50}
-            className="hidden md:block"
-          />
-        </div>
+          </div>
+        )}
       </nav>
     </header>
   );

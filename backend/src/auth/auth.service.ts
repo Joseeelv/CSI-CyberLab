@@ -47,7 +47,7 @@ export class AuthService {
 
     const newUser = {
       username: user.username,
-      fullName: user.username,
+      fullName: user.username, // Assuming full
       email: user.email,
       password: user.password,
       isPremium: false,

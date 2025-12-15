@@ -14,13 +14,6 @@ export class UserController {
     return this.userService.findAll();
   }
 
-  //Endpoitn para obtener el número de estudiantes registrados
-  @Get('count')
-  async getCount() {
-    const count = await this.userService.countUsers();
-    return { count };
-  }
-  
   // Endpoint para actualizar un usuario por su ID
   @Put('/update-user/:id')
   updateUser(
