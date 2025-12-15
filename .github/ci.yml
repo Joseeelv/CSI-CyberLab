@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - testing
+      - dev
 
 jobs:
   validate:
