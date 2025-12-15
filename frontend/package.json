@@ -6,8 +6,8 @@
     "dev": "next dev --port=3001 --hostname=0.0.0.0 --turbopack",
     "build": "next build",
     "start": "next start --port=3001 --hostname=0.0.0.0",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
     "format": "prettier --write .",
     "typecheck": "tsc --noEmit"
   },

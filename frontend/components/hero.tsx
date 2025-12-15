@@ -1,20 +1,13 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import { useAuth } from '@/hooks/useAuth';
 import Link from 'next/link';
 
 export const Hero: React.FC = () => {
-  const [mounted, setMounted] = useState(false);
-
   const { isAuthenticated } = useAuth();
 
   const $texto = !isAuthenticated ? 'Comenzar ahora' : 'Ir al Dashboard';
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <section className="relative overflow-hidden py-24 px-5">

@@ -81,7 +81,7 @@ export default function Dashboard() {
       }
     };
     check();
-  }, [router]);
+  }, [loading, router]);
 
   //Obtener el nombre de usuario por documentId
   useEffect(() => {

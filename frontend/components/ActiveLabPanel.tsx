@@ -7,7 +7,7 @@ import { Lab, ActiveLab } from '@/types/lab';
 interface User {
   id: string;
   name?: string;
-  [key: string]: any;
+  [key: string];
 }
 
 interface ActiveLabPanelProps {
@@ -378,7 +378,7 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
 
       {/* Flag 1 */}
       <div className="mb-4">
-        <label htmlFor="flag1" className="text-gray-400 text-sm mb-2 block flex items-center gap-2">
+        <label htmlFor="flag1" className="text-gray-400 text-sm mb-2 block items-center gap-2">
           Introduce Flag 1:
           {correctFlag1 && <CheckCircle className="w-4 h-4 text-green-400" />}
         </label>
@@ -427,7 +427,7 @@ export function ActiveLabPanel({ activeLab, lab, onStop, user, onComplete }: Act
 
       {/* Flag 2 */}
       <div className="mb-6">
-        <label htmlFor="flag2" className="text-gray-400 text-sm mb-2 block flex items-center gap-2">
+        <label htmlFor="flag2" className="text-gray-400 text-sm mb-2 block items-center gap-2">
           Introduce Flag 2:
           {correctFlag2 && <CheckCircle className="w-4 h-4 text-green-400" />}
         </label>
