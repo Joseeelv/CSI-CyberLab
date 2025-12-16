@@ -10,7 +10,10 @@ import { User } from "src/users/user.entity";
 import { DockerModule } from "src/docker/docker.module";
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Container])],
+  imports: [
+    TypeOrmModule.forFeature([Container, Image, Status, Lab, User]),
+    DockerModule,
+  ],
   controllers: [ContainerController],
   providers: [ContainerService],
 })

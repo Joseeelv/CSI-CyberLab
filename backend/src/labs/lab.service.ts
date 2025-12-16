@@ -49,12 +49,13 @@ export class LabService {
     const lab = this.labRepository.create({
       name: labData.name.trim(),
       description: labData.description,
-      status: labData.status,
-      categoryId: Number(labData.categoryId),
-      operatingSystemId: Number(labData.operatingSystemId),
-      difficultyId: Number(labData.difficultyId),
-      containerId: Number(labData.containerId),
-    };
+      points: labData.points,
+      estimatedTime: labData.estimatedTime,
+      tags: Array.isArray(labData.tags) ? labData.tags : [],
+      status: { id: 1 } as any,
+      operatingSystem: { id: labData.operatingSystemId } as any,
+      difficulty: { id: labData.difficultyId } as any,
+    });
 
     return lab;
   }

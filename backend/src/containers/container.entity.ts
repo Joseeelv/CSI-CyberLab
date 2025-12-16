@@ -61,6 +61,4 @@ export class Container {
     onUpdate: "CURRENT_TIMESTAMP",
   })
   lastActivity: Date;
-  @Column({ type: 'timestamp', nullable: false })
-  created: Date;
 }
