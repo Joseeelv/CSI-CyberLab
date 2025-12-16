@@ -4,6 +4,10 @@
 		"cors": "^2.8.5",
 		"pg": "^8.16.3",
 		"reflect-metadata": "^0.2.2",
-		"typeorm": "^0.3.27"
+		"typeorm": "^0.3.27",
+		"eslint": "^9.39.2",
+    "eslint-config-next": "16.0.3",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4"
 	}
 }
