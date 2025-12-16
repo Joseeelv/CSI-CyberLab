@@ -7,6 +7,6 @@ export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ type: 'varchar', length: 50, unique: true })
+  @Column({ type: "varchar", length: 50, unique: true })
   name: string;
 }

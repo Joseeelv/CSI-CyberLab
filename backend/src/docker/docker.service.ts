@@ -1,5 +1,5 @@
-import * as Dockerode from 'dockerode';
-import { Injectable, Logger } from '@nestjs/common';
+import * as Dockerode from "dockerode";
+import { Injectable, Logger } from "@nestjs/common";
 
 @Injectable()
 export class DockerService {
@@ -7,7 +7,7 @@ export class DockerService {
   private readonly logger = new Logger(DockerService.name);
 
   constructor() {
-    this.docker = new Dockerode({ socketPath: '/var/run/docker.sock' }); // Nos conectamos al socket de Docker
+    this.docker = new Dockerode({ socketPath: "/var/run/docker.sock" }); // Nos conectamos al socket de Docker
   }
 
   async pullImageIfNotExists(imageName: string): Promise<void> {
@@ -19,14 +19,18 @@ export class DockerService {
       await new Promise((resolve, reject) => {
         this.docker.pull(imageName, (err, stream) => {
           if (err) {
-            this.logger.error(`Error pulling image ${imageName}: ${err.message}`);
+            this.logger.error(
+              `Error pulling image ${imageName}: ${err.message}`,
+            );
             return reject(err);
           }
           this.docker.modem.followProgress(
             stream,
             (pullErr, output) => {
               if (pullErr) {
-                this.logger.error(`Error during pull progress for image ${imageName}: ${pullErr.message}`);
+                this.logger.error(
+                  `Error during pull progress for image ${imageName}: ${pullErr.message}`,
+                );
                 return reject(pullErr);
               }
               this.logger.log(`Successfully pulled image ${imageName}.`);
@@ -34,7 +38,9 @@ export class DockerService {
             },
             (event) => {
               if (event.status) {
-                this.logger.log(event.status + (event.progress ? `: ${event.progress}` : ''));
+                this.logger.log(
+                  event.status + (event.progress ? `: ${event.progress}` : ""),
+                );
               }
             },
           );
@@ -44,7 +50,10 @@ export class DockerService {
     }
   }
 
-  async createContainer(imageName: string, containerName: string): Promise<Dockerode.Container> {
+  async createContainer(
+    imageName: string,
+    containerName: string,
+  ): Promise<Dockerode.Container> {
     await this.pullImageIfNotExists(imageName); //Comprobar si la imagen existe, si no, descargarla
     return await this.docker.createContainer({
       Image: imageName,
@@ -65,7 +74,9 @@ export class DockerService {
     this.logger.log(`Container ${containerName} stopped`);
   }
 
-  async inspectContainer(containerName: string): Promise<Dockerode.ContainerInspectInfo> {
+  async inspectContainer(
+    containerName: string,
+  ): Promise<Dockerode.ContainerInspectInfo> {
     const container = this.docker.getContainer(containerName);
     return await container.inspect();
   }
