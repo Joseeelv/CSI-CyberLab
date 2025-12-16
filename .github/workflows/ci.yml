@@ -81,24 +81,6 @@ jobs:
           echo "Contenido de node_modules/.bin:"
           ls -la node_modules/.bin || echo "node_modules/.bin no existe"
 
-      - name: Verify installation
-        working-directory: ./frontend
-        run: |
-          echo "Checking node_modules..."
-          if [ -d "node_modules" ]; then
-            echo "✓ node_modules exists"
-            echo "Checking for eslint..."
-            if [ -f "node_modules/.bin/eslint" ]; then
-              echo "✓ eslint binary found"
-            else
-              echo "✗ eslint binary NOT found"
-              echo "Contents of node_modules/.bin:"
-              ls -la node_modules/.bin/ || echo "node_modules/.bin does not exist"
-            fi
-          else
-            echo "✗ node_modules does NOT exist"
-            exit 1
-          fi
 
       - name: List package.json scripts
         working-directory: ./frontend
