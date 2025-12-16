@@ -54,13 +54,25 @@ jobs:
         working-directory: ./frontend
         run: |
           echo "Installing dependencies in: $(pwd)"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo ""
+          echo "Checking for pnpm-lock.yaml..."
           if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "Warning: pnpm-lock.yaml not found, will create one"
-            pnpm install
+            echo "❌ pnpm-lock.yaml NOT found - this is the problem!"
+            echo "Files in current directory:"
+            ls -la
+            echo ""
+            echo "Creating pnpm-lock.yaml..."
+            pnpm install --no-frozen-lockfile
           else
-            echo "pnpm-lock.yaml found, using frozen lockfile"
-            pnpm install --frozen-lockfile
+            echo "✓ pnpm-lock.yaml found"
+            echo ""
+            echo "Running pnpm install --frozen-lockfile..."
+            pnpm install --frozen-lockfile --verbose
           fi
+          echo ""
+          echo "Installation completed with exit code: $?"
 
       - name: Verify installation
         working-directory: ./frontend
@@ -159,13 +171,25 @@ jobs:
         working-directory: ./backend
         run: |
           echo "Installing dependencies in: $(pwd)"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo ""
+          echo "Checking for pnpm-lock.yaml..."
           if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "Warning: pnpm-lock.yaml not found, will create one"
-            pnpm install
+            echo "❌ pnpm-lock.yaml NOT found - this is the problem!"
+            echo "Files in current directory:"
+            ls -la
+            echo ""
+            echo "Creating pnpm-lock.yaml..."
+            pnpm install --no-frozen-lockfile
           else
-            echo "pnpm-lock.yaml found, using frozen lockfile"
-            pnpm install --frozen-lockfile
+            echo "✓ pnpm-lock.yaml found"
+            echo ""
+            echo "Running pnpm install --frozen-lockfile..."
+            pnpm install --frozen-lockfile --verbose
           fi
+          echo ""
+          echo "Installation completed with exit code: $?"
 
       - name: Verify installation
         working-directory: ./backend
