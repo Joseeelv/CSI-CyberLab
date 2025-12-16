@@ -110,7 +110,7 @@ export default function Dashboard() {
           id: data.documentId ?? prev?.id,
         }));
       } catch (err) {
-        console.error('Failed to fetch user name:', err?.message || err);
+        console.error('Failed to fetch user name:', (err as Error)?.message || err);
       }
     };
     fetchUserName();
