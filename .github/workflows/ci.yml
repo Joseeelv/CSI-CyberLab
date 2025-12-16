@@ -50,9 +50,10 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install Dependencies (root)
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
         run: |
-          echo "Installing dependencies in root: $(pwd)"
+          echo "Installing dependencies in frontend: $(pwd)"
           echo "Node version: $(node --version)"
           echo "pnpm version: $(pnpm --version)"
           echo ""
@@ -108,7 +109,7 @@ jobs:
 
       - name: Lint Frontend
         working-directory: ./frontend
-        run: pnpm exec eslint .
+        run: pnpm lint
 
       - name: Build Frontend
         working-directory: ./frontend
