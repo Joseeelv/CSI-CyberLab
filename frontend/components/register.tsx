@@ -2,9 +2,10 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import Home from '@/app/page';
 import { fetcher, ApiError } from '@/lib/api';
 import Image from 'next/image';
+import Home from '@/app/page';
+import { motion } from 'framer-motion';
 
 export default function Register() {
   const [username, setUsername] = useState('');
@@ -18,7 +19,7 @@ export default function Register() {
 
   useEffect(() => {
     // Animación de entrada cuando el componente se monta
-    const timer = setTimeout(() => setIsVisible(true), 300);
+    const timer = setTimeout(() => setIsVisible(true), 100);
     return () => clearTimeout(timer);
   }, []);
 
@@ -51,9 +52,16 @@ export default function Register() {
     // Inicia la animación de cierre
     setIsClosing(true);
 
+    // Espera a que termine la animación antes de redirigir
     setTimeout(() => {
       router.push('/');
-    }, 200);
+    }, 100);
+  };
+
+  const formAnimation = {
+    initial: { opacity: 1, scale: 1 },
+    animate: isClosing ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 },
+    transition: { duration: 0.5 },
   };
 
   return (
@@ -64,136 +72,141 @@ export default function Register() {
         </div>
         <div className="absolute inset-0 bg-black/20" />
       </div>
-
-      {/* El formulario con la animación aplicada */}
-      <div
-        id="login-form"
-        style={{ willChange: 'transform, opacity' }}
-        className={`w-full max-w-md relative z-10 ${isClosing
-          ? 'animate-fadeOutSlideDown'
-          : isVisible
-            ? 'animate-fadeInSlideUp'
-            : 'opacity-0'
-          }`}
+      <motion.div
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 50 }}
+        transition={{ duration: 0.5 }}
+        className="min-h-screen flex items-center justify-center bg-transparent p-4 relative overflow-hidden h-full w-full"
       >
-        <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
-          {/* Close button */}
-          <Button
-            variant="close"
-            size="sm"
-            onClick={handleClose}
-            aria-label="Cerrar"
-          >
-            X
-          </Button>
+        {/* El formulario con la animación aplicada */}
+        <motion.form
+          {...formAnimation}
+          id="login-form"
+          className="w-full max-w-lg rounded-xl shadow-2xl relative z-10 space-y-6 overflow-hidden"
+          onSubmit={handleSubmit}
+        >
 
-          <div className="p-8">
-            {/* Logo */}
-            <div className="flex justify-center mb-8">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-40 animate-pulse" />
-                <div className="relative rounded-full p-3">
-                  <Image src="/logo.png" alt="Logo" width={80} height={80} />
-                </div>
-              </div>
-            </div>
-
-            <h2 className="text-center text-3xl font-bold text-white mb-2 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Crea tu cuenta
-            </h2>
-            <p className="text-center text-gray-400 mb-8">
-              Empieza tu viaje en ciberseguridad hoy mismo.
-            </p>
-
-            {error && (
-              <div className="mb-6 rounded-lg bg-red-500/10 p-4 border border-red-500/30 backdrop-blur-sm">
-                <div className="flex items-start gap-3">
-                  <svg className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
-                  </svg>
-                  <h3 className="text-sm font-medium text-red-300">{error}</h3>
-                </div>
-              </div>
-            )}
-
-            <form className="space-y-6" onSubmit={handleSubmit}>
-              <div>
-                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
-                  Nombre de Usuario
-                </label>
-                <div className="relative group">
-                  <input
-                    id="username"
-                    name="username"
-                    type="text"
-                    autoComplete="username"
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
-                    placeholder="yourusername"
-                    value={username}
-                    onChange={(e) => setUsername(e.target.value)}
-                  />
-                </div>
-                <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
-                  Email
-                </label>
-                <div className="relative group">
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    autoComplete="email"
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
-                    placeholder="tu@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                  />
-                </div>
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                    Contraseña
-                  </label>
-                  <div className="relative group">
-                    <input
-                      id="password"
-                      name="password"
-                      type="password"
-                      autoComplete="current-password"
-                      required
-                      className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
-                      placeholder="••••••••"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                    />
+          <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
+            <Button
+              variant="close"
+              size="sm"
+              onClick={(e) => {
+                e.preventDefault();
+                setIsClosing(true);
+                setTimeout(() => handleClose(), 500);
+              }}
+              aria-label="Cerrar"
+            >
+              X
+            </Button>
+            <div className="p-8">
+              {/* Logo */}
+              <div className="flex justify-center mb-8">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-xl opacity-40 animate-pulse" />
+                  <div className="relative rounded-full p-3">
+                    <Image src="/logo.png" alt="Logo" width={80} height={80} />
                   </div>
                 </div>
               </div>
-              <div>
-                <button
-                  type="submit"
-                  disabled={isLoading}
-                  className="relative w-full px-6 py-3 font-semibold rounded-lg overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
-                >
-                  <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
-                  <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
-                  <span className="relative z-10 text-[#0a0e1a] font-bold">
-                    {isLoading ? 'Resgistrando cuenta...' : 'Registrarse'}
-                  </span>
-                </button>
-              </div>
-            </form>
-            <div className="mt-6 text-center">
-              <p className="text-sm text-gray-400">
-                ¿Tienes cuenta?{' '}
-                <a href="/login" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-                  Inicia sesión
-                </a>
+              <h2 className="text-center text-3xl font-bold text-white mb-2 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
+                Bienvenido de Nuevo
+              </h2>
+              <p className="text-center text-gray-400 mb-8">
+                Inicia sesión en tu cuenta
               </p>
+
+              {error && (
+                <div className="mb-6 rounded-lg bg-red-500/10 p-4 border border-red-500/30 backdrop-blur-sm">
+                  <div className="flex items-start gap-3">
+                    <svg className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    </svg>
+                    <h3 className="text-sm font-medium text-red-300">{error}</h3>
+                  </div>
+                </div>
+              )}
+
+              <div className="space-y-6" onSubmit={handleSubmit}>
+                <div>
+                  <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                    Nombre de Usuario
+                  </label>
+                  <div className="relative group">
+                    <input
+                      id="username"
+                      name="username"
+                      type="text"
+                      autoComplete="username"
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                      placeholder="yourusername"
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                    />
+                  </div>
+                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                    Email
+                  </label>
+                  <div className="relative group">
+                    <input
+                      id="email"
+                      name="email"
+                      type="email"
+                      autoComplete="email"
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                      placeholder="tu@email.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                      Contraseña
+                    </label>
+                    <div className="relative group">
+                      <input
+                        id="password"
+                        name="password"
+                        type="password"
+                        autoComplete="current-password"
+                        required
+                        className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                        placeholder="••••••••"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                </div>
+                <div>
+                  <button
+                    type="submit"
+                    disabled={isLoading}
+                    className="relative w-full px-6 py-3 font-semibold rounded-lg overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-300"
+                  >
+                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
+                    <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
+                    <span className="relative z-10 text-[#0a0e1a] font-bold">
+                      {isLoading ? 'Resgistrando cuenta...' : 'Registrarse'}
+                    </span>
+                  </button>
+                </div>
+              </div>
+              <div className="mt-6 text-center">
+                <p className="text-sm text-gray-400">
+                  ¿Tienes cuenta?{' '}
+                  <a href="/login" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                    Inicia sesión
+                  </a>
+                </p>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
+        </motion.form>
+      </motion.div>
+    </div >
   );
 }
