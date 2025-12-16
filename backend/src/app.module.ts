@@ -38,7 +38,7 @@ import { UserLabModule } from "./user-lab/user-lab.module";
       }),
       inject: [ConfigService],
     }),
-    
+
     UserModule,
     AuthModule,
     ContainerModule,

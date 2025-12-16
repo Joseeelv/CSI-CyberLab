@@ -36,11 +36,10 @@ const categoryColors = {
 
 };
 
-export function LabCard({ lab, isActive, onStart, onStop, completedLabs = [] }: LabCardProps) {
 
+export function LabCard({ lab, isActive, onStart, onStop, completedLabs = [] }: LabCardProps) {
   const { isAuthenticated } = useAuth();
   const isCompleted = completedLabs.includes(lab.uuid);
-
 
   return (
     <div

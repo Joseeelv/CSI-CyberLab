@@ -56,13 +56,7 @@ export default function Dashboard() {
 
   // Check authentication
   useEffect(() => {
-
     const check = async () => {
-      if (!loading) {
-        setLoading(false);
-        router.replace('/login');
-        return;
-      }
       try {
         const data = await fetcher('/auth/me', {
           method: 'GET',
@@ -71,24 +65,32 @@ export default function Dashboard() {
             'Content-Type': 'application/json',
           }
         });
-        setUserPayload(data);
+        // Si la respuesta tiene .payload, usarla, si no, usar el objeto completo
+        if (data && typeof data === 'object' && 'payload' in data && data.payload) {
+          setUserPayload(data.payload);
+        } else {
+          setUserPayload(data);
+        }
       } catch (err) {
-        console.error(
-          'Auth check failed:',
-          typeof err === "object" && err !== null && "message" in err ? (err as { message: string }).message : err
-        );
+        // Oculta el error 401 (no autenticado), pero muestra otros errores
+        if (!(typeof err === 'object' && err !== null && 'statusCode' in err && (err as unknown).statusCode === 401)) {
+          console.error(
+            'Auth check failed:',
+            typeof err === "object" && err !== null && "message" in err ? (err as { message: string }).message : err
+          );
+        }
         setUserPayload(null);
-        router.replace('/login');
+        router.replace('/');
       } finally {
         setLoading(false);
       }
     };
     check();
-  }, [loading, router]);
+  }, [router]);
 
   //Obtener el nombre de usuario por documentId
   useEffect(() => {
-    const documentId = userPayload?.id;
+    const documentId = userPayload?.sub;
     if (!documentId) {
       // No hacer fetch si no hay documentId
       return;
@@ -114,7 +116,7 @@ export default function Dashboard() {
       }
     };
     fetchUserName();
-  }, [userPayload?.id]);
+  }, [userPayload?.sub]);
 
   // Load labs
   useEffect(() => {
@@ -278,10 +280,6 @@ export default function Dashboard() {
     const registerUserLab = async () => {
       if (!userPayload) return;
       try {
-        console.log('Datos para registrar UserLab:', {
-          labUuid: labId,
-          userId: userPayload.id,
-        });
         const response = await fetcher('/user-lab', {
           method: 'POST',
           credentials: 'include',

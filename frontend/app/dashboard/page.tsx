@@ -35,8 +35,7 @@ export default function LabPage() {
         });
         setLabs(data);
         setFilteredLabs(data);
-      } catch (error) {
-        console.error('Error loading labs:', error);
+      } catch {
         // Fallback to empty array or show error
         setLabs([]);
         setFilteredLabs([]);

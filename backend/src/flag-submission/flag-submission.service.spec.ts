@@ -1,4 +1,3 @@
-
 import { Test, TestingModule } from "@nestjs/testing";
 import { FlagSubmissionService } from "./flag-submission.service";
 import { getRepositoryToken } from "@nestjs/typeorm";
@@ -15,14 +14,19 @@ describe("FlagSubmissionService", () => {
       create: jest.fn(),
       save: jest.fn(),
       remove: jest.fn(),
-      createQueryBuilder: jest.fn().mockReturnValue({ delete: jest.fn().mockReturnThis(), execute: jest.fn() }),
+      createQueryBuilder: jest.fn().mockReturnValue({
+        delete: jest.fn().mockReturnThis(),
+        execute: jest.fn(),
+      }),
     };
-
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         FlagSubmissionService,
-        { provide: getRepositoryToken(FlagSubmission), useValue: mockRepository },
+        {
+          provide: getRepositoryToken(FlagSubmission),
+          useValue: mockRepository,
+        },
         { provide: getRepositoryToken(UserLab), useValue: mockRepository },
       ],
     }).compile();

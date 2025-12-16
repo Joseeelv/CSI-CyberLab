@@ -47,13 +47,12 @@ services:
         NODE_ENV: development
     working_dir: /app
     volumes:
-      - ./backend/src:/app/src:cached # cached en lugar de delegated para M1/M2
+      - ./backend/src:/app/src:cached
       - ./backend/package.json:/app/package.json:ro
       - ./backend/tsconfig.json:/app/tsconfig.json:ro
       - ./backend/tsconfig.build.json:/app/tsconfig.build.json:ro
       - ./backend/nest-cli.json:/app/nest-cli.json:ro
       - backend-node-modules:/app/node_modules
-      - backend-dist:/app/dist
     networks:
       - app-network
     environment:
@@ -92,21 +91,25 @@ services:
         NODE_ENV: development
     working_dir: /app
     volumes:
+      # Código fuente - montaje en tiempo real
       - ./frontend/app:/app/app:cached
       - ./frontend/components:/app/components:cached
       - ./frontend/hooks:/app/hooks:cached
       - ./frontend/lib:/app/lib:cached
       - ./frontend/public:/app/public:cached
+
+      # Archivos de configuración - solo lectura
       - ./frontend/package.json:/app/package.json:ro
       - ./frontend/next.config.ts:/app/next.config.ts:ro
       - ./frontend/tsconfig.json:/app/tsconfig.json:ro
       - ./frontend/tailwind.config.js:/app/tailwind.config.js:ro
+
+      # Volúmenes nombrados para mejor rendimiento
       - frontend-node-modules:/app/node_modules
       - frontend-next:/app/.next
     networks:
       - app-network
     environment:
-      NEXT_PUBLIC_BACKEND_URL: http://localhost:3000
       PORT: 3001
       HOSTNAME: 0.0.0.0
       NEXT_TELEMETRY_DISABLED: 1
