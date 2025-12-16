@@ -39,6 +39,7 @@ export default function Login() {
       body: JSON.stringify({ email, password }),
     });
 
+
       if (data.role === 'student') router.push('/dashboard');
       else if (data.role === 'admin') router.push('/admin');
       else router.push('/dashboard');

@@ -55,7 +55,7 @@ export function HeaderAuth() {
       }
     }
   };
-  
+
   // const API_URL = process.env.NEXT_PUBLIC_API_URL;
   //   React.useEffect(() => {
   //     const fetchCount = async () => {
@@ -96,13 +96,6 @@ export function HeaderAuth() {
               Cerrar Sesión
             </Button>
           )}
-          <Image
-            src="/images/robot-cyberlabs.png"
-            alt="CyberLabs Robot"
-            width={50}
-            height={50}
-            className="hidden md:block"
-          />
         </div>
       </nav>
     </header>

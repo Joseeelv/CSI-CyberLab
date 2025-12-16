@@ -7,9 +7,17 @@ export class LabDto {
   @IsString()
   description: string;
 
-  @IsBoolean()
-  status: boolean;
+  @IsNumber()
+  status: number;
 
+  @IsNumber()
+  points: number;
+
+  @IsNumber()
+  estimatedTime: number;
+  
+  tags: string[];
+  
   @IsNumber()
   categoryId: number;
   @IsNumber()

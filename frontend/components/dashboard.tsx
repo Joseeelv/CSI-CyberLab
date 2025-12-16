@@ -3,7 +3,8 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import Link from 'next/link';
+import { fetcher } from '@/lib/api';
+import { LabCard } from './LabCard';
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [userPayload, setUserPayload] = useState<any>(null);
@@ -34,16 +35,10 @@ export default function Dashboard() {
   useEffect(() => {
     const check = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        const endpoint = API_URL ? `${API_URL}/auth/me` : '/auth/me';
-        const res = await fetch(endpoint, { credentials: 'include' });
-        if (!res.ok) {
-          router.push('/login');
-          return;
-        }
-        const data = await res.json();
+        const data = await fetcher('/auth/me');
         setUserPayload(data.payload ?? data);
       } catch (err) {
+        console.error('Auth check failed:', err);
         router.push('/login');
       } finally {
         setLoading(false);
@@ -56,23 +51,7 @@ export default function Dashboard() {
   useEffect(() => {
     const check = async () => {
       try {
-        const API_URL = process.env.NEXT_PUBLIC_API_URL;
-        const endpoint = `${API_URL}/labs`;
-        const res = await fetch(endpoint, { credentials: 'include' });
-
-        if (!res.ok) {
-          console.error(`Error fetching labs: ${res.status} ${res.statusText}`);
-          return;
-        }
-
-        const contentType = res.headers.get('content-type');
-        if (!contentType || !contentType.includes('application/json')) {
-          const text = await res.text();
-          console.error('Response is not JSON:', text);
-          return;
-        }
-
-        const data = await res.json();
+        const data = await fetcher('/labs');
 
         if (!Array.isArray(data)) {
           console.error('Expected array, got:', typeof data);
@@ -85,8 +64,8 @@ export default function Dashboard() {
         // Create a map of difficulty IDs to names for easy lookup
         const map: { [key: number]: string } = {};
         data.forEach((lab) => {
-          if (lab.difficulty && lab.difficulty.uuid !== undefined) {
-            map[lab.difficulty.uuid] = lab.difficulty.name;
+          if (lab.difficulty && lab.difficulty.id !== undefined) {
+            map[lab.difficulty.id] = lab.difficulty.name;
           }
         });
         setDifficultyMap(map);
@@ -150,17 +129,11 @@ export default function Dashboard() {
         <div className="max-w-4xl mx-auto w-full px-6 text-white">
           {(selected == 'labs' || selected == null) && (
             <AnimatedPanel>
-              <section className="bg-gray-900/70 rounded-xl p-6 mt-4">
-                <h2 className="text-2xl font-bold text-white mb-2">Laboratorios</h2>
-                <p className="text-gray-300 mb-4">Lista de laboratorios disponibles y progreso.</p>
-                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {labs.map((lab) => (
-                    <li key={lab.uuid} className="p-4 bg-gray-800/60 rounded">
-                      {lab.name} — {difficultyMap[lab.difficulty?.id] ?? 'Dificultad desconocida'}
-                    </li>
-                  ))}
-                </ul>
-              </section>
+              <div className="grid md:grid-cols-2 gap-4 mb-6">
+                {labs.map((lab) => (
+                  <LabCard key={lab.id} lab={lab} isActive={false} />
+                ))}
+              </div>
             </AnimatedPanel>
           )}
 

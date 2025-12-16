@@ -48,8 +48,6 @@ importers:
       '@nestjs/platform-express':
         specifier: ^11.0.0
         version: 11.1.9(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)
-<<<<<<< Updated upstream
-=======
       '@nestjs/throttler':
         specifier: ^6.5.0
         version: 6.5.0(@nestjs/common@11.1.9(class-transformer@0.5.1)(class-validator@0.14.2)(reflect-metadata@0.2.2)(rxjs@7.8.2))(@nestjs/core@11.1.9)(reflect-metadata@0.2.2)
@@ -4047,7 +4045,6 @@ packages:
 =======
   uuid@10.0.0:
     resolution: {integrity: sha512-8XkAphELsDnEGrDxUOHB3RGvXz6TeuYSGEZBOjtTtPm2lwhGBjLgOzLHB63IUWfBpNucQjND6d3AOudO+H3RWQ==}
->>>>>>> Stashed changes
     hasBin: true
 
 >>>>>>> c1c4440 (Revert "Backend lab entity fix")
@@ -8352,9 +8349,6 @@ snapshots:
 
   tapable@2.3.0: {}
 
-<<<<<<< Updated upstream
-  terser-webpack-plugin@5.3.14(webpack@5.103.0):
-=======
   tar-fs@2.1.4:
     dependencies:
       chownr: 1.1.4
@@ -8635,7 +8629,6 @@ snapshots:
   utils-merge@1.0.1: {}
 
   uuid@10.0.0: {}
->>>>>>> Stashed changes
 
   uuid@11.1.0: {}
 
