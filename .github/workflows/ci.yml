@@ -97,5 +97,5 @@ jobs:
       - name: Lint Backend
         run: pnpm lint
 
-      - name: Test Backend
-        run: pnpm test
+      - name: Ejecutar tests
+        run: pnpm run test

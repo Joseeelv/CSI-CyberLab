@@ -36,10 +36,10 @@
     "helmet": "^7.1.0",
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
-    "pg": "^8.11.0",
-    "reflect-metadata": "^0.2.1",
+    "pg": "^8.11.3",
+    "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
-    "typeorm": "^0.3.20"
+    "typeorm": "^0.3.28"
   },
   "devDependencies": {
     "@nestjs/cli": "^11.0.0",
@@ -69,5 +69,10 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^5.3.3"
+  },
+  "pnpm": {
+    "overrides": {
+      "pg": "^8.11.3"
+    }
   }
 }
