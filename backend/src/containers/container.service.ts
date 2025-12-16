@@ -33,7 +33,7 @@ export class ContainerService {
 
   async createContainer(containerData: ContainerDto): Promise<Container> {
     //Buscamos la imagen en la BD
-    const image = await this.imageRepository.findOne({ where: { id: containerData.imageId }, relations: ['operatingSystem'] });
+    const image = await this.imageRepository.findOne({ where: { uuid: containerData.imageId }, relations: ['operatingSystem'] });
     if (!image) {
       throw new BadRequestException('Image not found');
     }

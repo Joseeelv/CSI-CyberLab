@@ -2,9 +2,11 @@ import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTabl
 import { Container } from "src/containers/container.entity";
 import { Lab } from "src/labs/lab.entity";
 import { Role } from "src/role/role.entity";
+import { Exclude } from "class-transformer";
 
 @Entity()
 export class User {
+  @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
 
@@ -20,6 +22,7 @@ export class User {
   @Column()
   password: string;
 
+  @Exclude()
   @ManyToOne(() => Role, (role) => role.id, {
     nullable: false
   })

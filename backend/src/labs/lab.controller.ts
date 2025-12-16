@@ -1,16 +1,4 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Body,
-  Param,
-  Query,
-  HttpCode,
-  HttpStatus,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, Post, Put, Delete, Body, Param, Query, HttpCode, HttpStatus, UseGuards} from '@nestjs/common';
 import { LabService } from './lab.service';
 import { LabDto } from './dto/lab.dto';
 
@@ -24,20 +12,10 @@ export class LabsController {
   }
 
   @Post()
-  async createLabDirect(@Body() labData: LabDto) {
-    return await this.labService.createLab(labData);
-  }
-
-  @Post('create')
-  async createLab(@Body() labData: LabDto) {
-    return await this.labService.createLab(labData);
-  }
-
-  @Post()
   // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createLabDto: LabDto) {
-    return this.labService.create(createLabDto);
+    return this.labService.createLab(createLabDto);
   }
 
   @Put(':name')

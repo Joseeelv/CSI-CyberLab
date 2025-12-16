@@ -1,4 +1,4 @@
-import { IsString, IsBoolean, IsNumber, IsOptional } from "class-validator";
+import { IsString, IsBoolean, IsNumber, IsOptional, IsArray } from "class-validator";
 
 export class LabDto {
   @IsString()
@@ -16,9 +16,8 @@ export class LabDto {
   @IsOptional()
   estimatedTime?: number;
 
-  @IsString()
   @IsOptional()
-  tags?: string;
+  tags?: string | string[];
 
   @IsNumber()
   @IsOptional()
