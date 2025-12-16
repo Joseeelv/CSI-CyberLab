@@ -5,8 +5,8 @@ import {
   HttpException,
   HttpStatus,
   Logger,
-} from '@nestjs/common';
-import { Request, Response } from 'express';
+} from "@nestjs/common";
+import { Request, Response } from "express";
 
 @Catch()
 export class AllExceptionsFilter implements ExceptionFilter {
@@ -18,16 +18,16 @@ export class AllExceptionsFilter implements ExceptionFilter {
     const request = ctx.getRequest<Request>();
 
     let status = HttpStatus.INTERNAL_SERVER_ERROR;
-    let message = 'Internal server error';
-    let error = 'Internal Server Error';
+    let message = "Internal server error";
+    let error = "Internal Server Error";
 
     if (exception instanceof HttpException) {
       status = exception.getStatus();
       const exceptionResponse = exception.getResponse();
 
-      if (typeof exceptionResponse === 'string') {
+      if (typeof exceptionResponse === "string") {
         message = exceptionResponse;
-      } else if (typeof exceptionResponse === 'object') {
+      } else if (typeof exceptionResponse === "object") {
         message = (exceptionResponse as any).message || message;
         error = (exceptionResponse as any).error || error;
       }
@@ -36,11 +36,11 @@ export class AllExceptionsFilter implements ExceptionFilter {
     }
 
     // No exponer stack traces en producción
-    const isDevelopment = process.env.NODE_ENV !== 'production';
+    const isDevelopment = process.env.NODE_ENV !== "production";
 
     this.logger.error(
       `${request.method} ${request.url}`,
-      exception instanceof Error ? exception.stack : 'Unknown error',
+      exception instanceof Error ? exception.stack : "Unknown error",
     );
 
     response.status(status).json({

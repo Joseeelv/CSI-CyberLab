@@ -3,10 +3,10 @@ import {
   Injectable,
   InternalServerErrorException,
   NotFoundException,
-} from '@nestjs/common';
-import { Session } from './session.entity';
-import { Repository } from 'typeorm';
-import { InjectRepository } from '@nestjs/typeorm';
+} from "@nestjs/common";
+import { Session } from "./session.entity";
+import { Repository } from "typeorm";
+import { InjectRepository } from "@nestjs/typeorm";
 
 @Injectable()
 export class SessionService {
@@ -18,7 +18,7 @@ export class SessionService {
   async getAllSessions(): Promise<Session[]> {
     try {
       return await this.sessionRepository.find({
-        relations: ['user'],
+        relations: ["user"],
       });
     } catch (error) {
       throw new InternalServerErrorException(
@@ -31,7 +31,7 @@ export class SessionService {
     try {
       return await this.sessionRepository.findOne({
         where: { token },
-        relations: ['user'],
+        relations: ["user"],
       });
     } catch (error) {
       throw new InternalServerErrorException(
@@ -40,12 +40,11 @@ export class SessionService {
     }
   }
 
-
   async getSessionsByUserId(userId: number): Promise<Session[]> {
     try {
       return await this.sessionRepository.find({
         where: { user: { id: userId } },
-        relations: ['user'],
+        relations: ["user"],
       });
     } catch (error) {
       throw new InternalServerErrorException(
@@ -54,17 +53,16 @@ export class SessionService {
     }
   }
 
-
   async createSession(
     sessionData: Partial<Session>,
     deleteOldSessions: boolean = false,
   ): Promise<Session> {
     if (!sessionData.user) {
-      throw new BadRequestException('User is required to create a session');
+      throw new BadRequestException("User is required to create a session");
     }
 
     if (!sessionData.token) {
-      throw new BadRequestException('Token is required to create a session');
+      throw new BadRequestException("Token is required to create a session");
     }
 
     try {
@@ -82,15 +80,14 @@ export class SessionService {
     }
   }
 
-
   async deleteSession(userId: number): Promise<{ message: string }> {
     const session = await this.sessionRepository.findOne({
       where: { user: { id: userId } },
-      relations: ['user'],
+      relations: ["user"],
     });
 
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException("Session not found");
     }
 
     try {
@@ -108,11 +105,11 @@ export class SessionService {
   async deleteSessionByToken(token: string): Promise<{ message: string }> {
     const session = await this.sessionRepository.findOne({
       where: { token },
-      relations: ['user'],
+      relations: ["user"],
     });
 
     if (!session) {
-      throw new NotFoundException('Session not found');
+      throw new NotFoundException("Session not found");
     }
 
     try {
@@ -150,18 +147,20 @@ export class SessionService {
     }
   }
 
-  async deleteExpiredSessions(expirationHours: number = 24): Promise<{ message: string }> {
+  async deleteExpiredSessions(
+    expirationHours: number = 24,
+  ): Promise<{ message: string }> {
     try {
       const expirationDate = new Date();
       expirationDate.setHours(expirationDate.getHours() - expirationHours);
 
       const expiredSessions = await this.sessionRepository
-        .createQueryBuilder('session')
-        .where('session.startTime < :expirationDate', { expirationDate })
+        .createQueryBuilder("session")
+        .where("session.startTime < :expirationDate", { expirationDate })
         .getMany();
 
       if (expiredSessions.length === 0) {
-        return { message: 'No expired sessions found' };
+        return { message: "No expired sessions found" };
       }
 
       await this.sessionRepository.remove(expiredSessions);

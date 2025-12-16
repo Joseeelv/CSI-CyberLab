@@ -1,4 +1,5 @@
 "use client";
+import type { ActiveLabPanelProps, FlagSubmission } from "@/types/lab";
 import { useState, useEffect, useCallback } from "react";
 import {
   Server,
@@ -11,8 +12,6 @@ import {
   Trophy,
 } from "lucide-react";
 import { fetcher } from "@/lib/api";
-import { Lab, ActiveLab } from "@/types/lab";
-import { User } from "@/types/user"; // Agrega esta línea y elimina la interfaz local User
 import { RankingLab } from "./ranking";
 
 export function ActiveLabPanel({
@@ -545,13 +544,17 @@ export function ActiveLabPanel({
 }
 
 // Puedes colocar esto en un hook o función utilitaria
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function safeInitUserLab(userId: string, labUuid: string) {
   // 1. Consultar si ya existe el registro
-  const existing = await fetcher(`/user-lab?userId=${userId}&labUuid=${labUuid}`, {
-    method: "GET",
-    credentials: "include",
-    headers: { "Content-Type": "application/json" },
-  });
+  const existing = await fetcher(
+    `/user-lab?userId=${userId}&labUuid=${labUuid}`,
+    {
+      method: "GET",
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
+    }
+  );
 
   // 2. Si no existe, registrar
   if (!existing || (Array.isArray(existing) && existing.length === 0)) {

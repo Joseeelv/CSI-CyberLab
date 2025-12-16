@@ -1,21 +1,21 @@
 "use client";
 import { useEffect, useState } from "react";
 import { fetcher } from "@/lib/api";
-import { Lab, ActiveLab } from "@/types/lab";
 import { User } from "@/types/user";
+import type { UserLab } from "@/types/userLab";
 
 // Ranking general sumando puntos de todos los labs por usuario
 export function RankingGeneral() {
-  const [ranking, setRanking] = useState<
-    Array<{ user: unknown; score: number }>
-  >([]);
+  const [ranking, setRanking] = useState<Array<{ user: User; score: number }>>(
+    []
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchRanking = async () => {
       try {
-        const data = await fetcher("/user-lab", {
+        const data: UserLab[] = await fetcher("/user-lab", {
           method: "GET",
           credentials: "include",
           headers: {
@@ -29,7 +29,7 @@ export function RankingGeneral() {
         // Agrupar por userId (no por user.id) y sumar scores de TODOS los labs
         const userScores: Record<string, { user: User; score: number }> = {};
 
-        data.forEach((item) => {
+        data.forEach((item: UserLab) => {
           // IMPORTANTE: Usar item.userId como clave (el UUID de la tabla User_Lab)
           const userId = item.userId;
 
@@ -164,7 +164,7 @@ export function RankingLab({ labId }: { labId?: string }) {
       console.log("Total user-labs en BD:", data.length);
 
       // Mostrar TODOS los labs con sus usuarios
-      const allLabsInfo = data.reduce((acc, item) => {
+      const allLabsInfo = data.reduce<Record<string, unknown[]>>((acc, item) => {
         const labName = item.lab?.name || item.labId;
         if (!acc[labName]) acc[labName] = [];
         acc[labName].push({

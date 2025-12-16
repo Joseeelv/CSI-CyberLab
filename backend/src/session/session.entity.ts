@@ -1,4 +1,10 @@
-import { Column, Entity, JoinColumn, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from "typeorm";
 import { User } from "src/users/user.entity";
 @Entity()
 export class Session {
@@ -15,10 +21,13 @@ export class Session {
   @Column({ type: "varchar", length: 255, nullable: true })
   userAgent: string;
 
-  @Column({ type: "timestamp", nullable: false, default: () => 'CURRENT_TIMESTAMP' })
+  @Column({
+    type: "timestamp",
+    nullable: false,
+    default: () => "CURRENT_TIMESTAMP",
+  })
   startTime: Date;
 
   @Column({ type: "timestamp", nullable: true, default: null })
   endTime: Date;
-
 }
