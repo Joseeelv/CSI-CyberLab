@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - testing
+  pull_request:
+    branches:
+      - testing
 
 jobs:
   frontend-checks:
@@ -15,19 +18,22 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Node.js (Frontend)
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.17.1
+          node-version: '22.x'
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
-          run_install: false
+
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
@@ -35,12 +41,23 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Install Frontend Dependencies
+
+      - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
       - name: Lint Frontend
         run: pnpm lint
+        continue-on-error: false
+
+      - name: Type Check (if available)
+        run: pnpm type-check || echo "No type-check script found"
+        continue-on-error: true
+
       - name: Build Frontend
         run: pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
 
   backend-checks:
     name: Backend Validation
@@ -48,6 +65,7 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
+
     services:
       postgres:
         image: postgres:15-alpine
@@ -58,33 +76,40 @@ jobs:
         ports:
           - 5432:5432
         options: >-
-          --health-cmd "pg_isready -U test_user -d test_db" \
-          --health-interval 10s \
-          --health-timeout 5s \
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
           --health-retries 5
+
     env:
       DATABASE_HOST: localhost
       DATABASE_PORT: 5432
       DATABASE_NAME: test_db
       DATABASE_USER: test_user
       DATABASE_PASSWORD: test_pass
+      JWT_SECRET: test-jwt-secret-key-for-ci
+      SALT_ROUNDS: 10
       NODE_ENV: test
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-      - name: Setup Node.js (Backend)
+
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 22.17.1
+          node-version: '22.x'
+
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
           version: 10.22.0
-          run_install: false
+
       - name: Get pnpm store directory
         shell: bash
         run: |
           echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
       - name: Setup pnpm cache
         uses: actions/cache@v4
         with:
@@ -92,15 +117,43 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-      - name: Install Backend Dependencies
+
+      - name: Install Dependencies
         run: pnpm install --frozen-lockfile
+
       - name: Lint Backend
         run: pnpm lint
-      - name: Wait for Postgres
+        continue-on-error: false
+
+      - name: Type Check (if available)
+        run: pnpm type-check || echo "No type-check script found"
+        continue-on-error: true
+
+      - name: Run Tests
+        run: pnpm test
+        env:
+          DATABASE_HOST: localhost
+          DATABASE_PORT: 5432
+          DATABASE_NAME: test_db
+          DATABASE_USER: test_user
+          DATABASE_PASSWORD: test_pass
+
+      - name: Build Backend
+        run: pnpm build
+        env:
+          NODE_ENV: production
+
+  # Job combinado para verificar que todo pasó
+  all-checks:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [frontend-checks, backend-checks]
+    if: always()
+    steps:
+      - name: Check all jobs
         run: |
-          for i in {1..10}; do
-            pg_isready -h localhost -p 5432 -U test_user -d test_db && break
-            sleep 3
-          done
-      - name: Ejecutar tests
-        run: pnpm run test
+          if [ "${{ needs.frontend-checks.result }}" != "success" ] || [ "${{ needs.backend-checks.result }}" != "success" ]; then
+            echo "One or more checks failed"
+            exit 1
+          fi
+          echo "All checks passed successfully!"
