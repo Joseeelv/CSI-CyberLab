@@ -8,6 +8,7 @@ import {
   Body,
   ParseIntPipe,
   UseGuards,
+  Query,
 } from "@nestjs/common";
 import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { UserLabService } from "./user-lab.service";
@@ -20,11 +21,16 @@ export class UserLabController {
 
   @Get()
   @UseGuards(JwtAuthGuard)
-  async findAll(): Promise<UserLab[]> {
+  async findAll(@Query("labUuid") labUuid?: string): Promise<UserLab[]> {
+    // Si se proporciona labUuid, filtrar por ese laboratorio
+    if (labUuid) {
+      return this.userLabService.findByLabUuid(labUuid);
+    }
+    // Si no, devolver todos
     return this.userLabService.findAll();
   }
 
-  @Get(":id")
+  @Get("by-id/:id")
   @UseGuards(JwtAuthGuard)
   async findOne(@Param("id", ParseIntPipe) id: number): Promise<UserLab> {
     return this.userLabService.findOne(id);
@@ -42,14 +48,12 @@ export class UserLabController {
     @Param("id", ParseIntPipe) id: number,
     @Body() userLabDto: UserLabDto,
   ): Promise<UserLab> {
-    // Convertir el DTO a un objeto Partial<UserLab> con los tipos correctos
     const updateData: Partial<UserLab> = {
       progress: userLabDto.progress,
       score: userLabDto.score,
       isFinished: userLabDto.isFinished,
     };
 
-    // Solo agregar started si está presente, convirtiéndolo a Date
     if (userLabDto.started) {
       updateData.started = new Date(userLabDto.started);
     }
