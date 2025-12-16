@@ -1,4 +1,4 @@
-require('dotenv').config();
+import "dotenv/config";
 import { APP_GUARD } from "@nestjs/core";
 import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";

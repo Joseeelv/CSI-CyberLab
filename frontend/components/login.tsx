@@ -33,8 +33,7 @@ export default function Login() {
       setIsLoading(false);
       return; // Detener el flujo si hay errores
     }
-
-    console.log('Intentando iniciar sesión con:', { email, password });
+    
     try {
       const data = await fetcher('/auth/login', {
         method: 'POST',

@@ -49,7 +49,7 @@ export function Register() {
     try {
       await fetcher('/auth/register', {
         method: 'POST',
-        include: 'credentials',
+        credentials: 'include',
         body: JSON.stringify({ username, email, password }),
       });
       router.push('/login');

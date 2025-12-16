@@ -90,9 +90,6 @@ export class Lab {
   @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
   flagSubmissions: FlagSubmission[];
 
-  @OneToMany(() => FlagSubmission, (flagSubmission) => flagSubmission.lab)
-  flagSubmissions: FlagSubmission[];
-
   @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
 

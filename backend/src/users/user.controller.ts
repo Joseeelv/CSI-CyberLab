@@ -60,17 +60,6 @@ export class UserController {
     }
   }
 
-  @Get("/document-id/:documentId")
-  @UseGuards(JwtAuthGuard)
-  async findByDocumentId(
-    @Param("documentId") documentId: string,
-  ): Promise<UserBasicDto | null | string> {
-    try {
-      return await this.userService.findByDocumentId(documentId);
-    } catch (error) {
-      throw new Error("User not found " + error.message);
-    }
-  }
 
   @Get("/document-id/:documentId")
   @UseGuards(JwtAuthGuard)

@@ -45,7 +45,7 @@ export class DockerService {
                   event.status + (event.progress ? `: ${event.progress}` : ""),
                 );
               }
-            }
+            },
           );
         });
       });

@@ -1,4 +1,4 @@
-require('dotenv').config();
+import "dotenv/config";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
 import { DifficultyModule } from "./difficulty.module";

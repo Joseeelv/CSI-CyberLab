@@ -58,11 +58,6 @@ export default function Dashboard() {
   useEffect(() => {
 
     const check = async () => {
-      if (!loading) {
-        setLoading(false);
-        router.replace('/login');
-        return;
-      }
       try {
         const data = await fetcher('/auth/me', {
           method: 'GET',
@@ -79,10 +74,20 @@ export default function Dashboard() {
         }
       } catch (err) {
         // Oculta el error 401 (no autenticado), pero muestra otros errores
-        if (!(typeof err === 'object' && err !== null && 'statusCode' in err && (err as unknown).statusCode === 401)) {
+        if (
+          !(
+            typeof err === 'object' &&
+            err !== null &&
+            'statusCode' in err &&
+            typeof (err as { statusCode?: unknown }).statusCode === 'number' &&
+            (err as { statusCode: number }).statusCode === 401
+          )
+        ) {
           console.error(
             'Auth check failed:',
-            typeof err === "object" && err !== null && "message" in err ? (err as { message: string }).message : err
+            typeof err === 'object' && err !== null && 'message' in err && typeof (err as { message?: unknown }).message === 'string'
+              ? (err as { message: string }).message
+              : err
           );
         }
         setUserPayload(null);
@@ -92,7 +97,7 @@ export default function Dashboard() {
       }
     };
     check();
-  }, [loading, router]);
+  }, [router]);
 
   //Obtener el nombre de usuario por documentId
   useEffect(() => {
@@ -124,9 +129,9 @@ export default function Dashboard() {
     fetchUserName();
   }, [userPayload?.sub]);
 
-  // Load labs
+  // Load labs (actualiza datos de usuario si cambia el id)
   useEffect(() => {
-    const documentId = userPayload?.payload?.sub;
+    const documentId = userPayload?.sub;
     if (!documentId) {
       // No hacer fetch si no hay documentId
       return;
@@ -148,11 +153,11 @@ export default function Dashboard() {
           id: data.documentId ?? prev?.id,
         }));
       } catch (err) {
-        console.error('Failed to fetch user name:', err?.message || err);
+        console.error('Failed to fetch user name:', (err as Error)?.message || err);
       }
     };
     fetchUserName();
-  }, [userPayload?.payload?.sub]);
+  }, [userPayload?.sub]);
 
   // Load labs
   useEffect(() => {
