@@ -28,10 +28,10 @@ export class OperatingSystem {
   @JoinColumn({ name: "image" })
   images: Image[];
 
-  @Column({ type: "timestamp", default: () => "CURRENT_TIMESTAMP" })
+  @Column({ type: "datetime", default: () => "CURRENT_TIMESTAMP" })
   created: Date;
   @Column({
-    type: "timestamp",
+    type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })

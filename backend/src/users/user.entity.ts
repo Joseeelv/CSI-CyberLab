@@ -53,7 +53,7 @@ export class User {
   refreshToken: string | null;
 
   @Column({
-    type: "timestamp",
+    type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
@@ -63,7 +63,7 @@ export class User {
   @Column({ nullable: true })
 =======
   @Column({
-    type: "timestamp",
+    type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })

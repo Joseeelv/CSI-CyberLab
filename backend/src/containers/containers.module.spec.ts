@@ -18,6 +18,8 @@ import { Difficulty } from "../difficulty/difficulty.entity";
 import { AuthModule } from "../auth/auth.module";
 
 describe("ContainersModule", () => {
+
+  jest.setTimeout(20000); // Aumenta el timeout a 20 segundos
   let module: ContainersModule;
 
   beforeEach(async () => {

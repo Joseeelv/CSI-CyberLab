@@ -74,6 +74,14 @@
   "pnpm": {
     "overrides": {
       "pg": "^8.11.3"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "@nestjs/core",
+      "bcrypt",
+      "cpu-features",
+      "protobufjs",
+      "sqlite3",
+      "ssh2"
+    ]
   }
 }

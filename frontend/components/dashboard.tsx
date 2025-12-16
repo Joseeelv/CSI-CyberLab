@@ -131,11 +131,11 @@ export default function Dashboard() {
         setFilteredLabs(data);
       } catch (error) {
         // Intenta mostrar el mensaje de error si existe
-        if (error?.message) {
-          console.error('Error loading labs:', error.message, error);
-        } else if (error?.response) {
+        if ((error as Error)?.message) {
+          console.error('Error loading labs:', (error as Error).message, error);
+        } else if ((error as any)?.response) {
           // Si usas axios, puede venir aquí
-          console.error('Error loading labs:', error.response.data, error);
+          console.error('Error loading labs:', (error as any).response.data, error);
         } else {
           console.error('Error loading labs:', error);
         }

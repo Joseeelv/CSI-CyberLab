@@ -48,14 +48,14 @@ export class Container {
   userId: User;
 
   @Column({
-    type: "timestamp",
+    type: "datetime",
     nullable: false,
     default: () => "CURRENT_TIMESTAMP",
   })
   created: Date;
 
   @Column({
-    type: "timestamp",
+    type: "datetime",
     nullable: true,
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
