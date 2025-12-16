@@ -80,7 +80,7 @@ export class AuthService {
       throw new UnauthorizedException("Credenciales inválidas");
     }
     const payload = {
-      sub: user.documentId,
+      id: user.documentId,
       email: user.email,
       role: user.roleId.name,
     };

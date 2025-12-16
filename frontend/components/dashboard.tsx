@@ -101,7 +101,7 @@ export default function Dashboard() {
 
   //Obtener el nombre de usuario por documentId
   useEffect(() => {
-    const documentId = userPayload?.sub;
+    const documentId = userPayload?.id;
     if (!documentId) {
       // No hacer fetch si no hay documentId
       return;
@@ -127,11 +127,11 @@ export default function Dashboard() {
       }
     };
     fetchUserName();
-  }, [userPayload?.sub]);
+  }, [userPayload?.id]);
 
   // Load labs (actualiza datos de usuario si cambia el id)
   useEffect(() => {
-    const documentId = userPayload?.sub;
+    const documentId = userPayload?.id;
     if (!documentId) {
       // No hacer fetch si no hay documentId
       return;
@@ -157,7 +157,7 @@ export default function Dashboard() {
       }
     };
     fetchUserName();
-  }, [userPayload?.sub]);
+  }, [userPayload?.id]);
 
   // Load labs
   useEffect(() => {

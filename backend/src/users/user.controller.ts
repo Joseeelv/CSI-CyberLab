@@ -60,7 +60,6 @@ export class UserController {
     }
   }
 
-
   @Get("/document-id/:documentId")
   @UseGuards(JwtAuthGuard)
   async findByDocumentId(
