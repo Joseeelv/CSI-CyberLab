@@ -133,9 +133,9 @@ export default function Dashboard() {
         // Intenta mostrar el mensaje de error si existe
         if ((error as Error)?.message) {
           console.error('Error loading labs:', (error as Error).message, error);
-        } else if ((error as any)?.response) {
+        } else if ((error as unknown)?.response) {
           // Si usas axios, puede venir aquí
-          console.error('Error loading labs:', (error as any).response.data, error);
+          console.error('Error loading labs:', (error as unknown).response.data, error);
         } else {
           console.error('Error loading labs:', error);
         }
