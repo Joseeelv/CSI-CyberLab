@@ -81,7 +81,7 @@ jobs:
           echo "Contenido de node_modules/.bin:"
           ls -la node_modules/.bin || echo "node_modules/.bin no existe"
 
-      - name: Verify installation
+º      - name: Verify installation
         working-directory: ./frontend
         run: |
           echo "Checking node_modules..."
