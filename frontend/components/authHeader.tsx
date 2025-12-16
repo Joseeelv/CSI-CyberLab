@@ -5,8 +5,6 @@ import Image from 'next/image';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
 import Image from 'next/image';
-import { fetcher } from '@/lib/api';
-
 
 export function HeaderAuth() {
   const [mounted, setMounted] = useState(false);
@@ -41,8 +39,9 @@ export function HeaderAuth() {
 
   const handleLogoutClick = async () => {
     try {
-      await fetcher(`/auth/logout`, {
-        method: 'DELETE',
+      const base = process.env.NEXT_PUBLIC_API_URL ?? '';
+      await fetch(`${base}/auth/logout`, {
+        method: 'POST',
         credentials: 'include',
       });
     } catch (err) {
@@ -56,7 +55,7 @@ export function HeaderAuth() {
       }
     }
   };
-
+  
   // const API_URL = process.env.NEXT_PUBLIC_API_URL;
   //   React.useEffect(() => {
   //     const fetchCount = async () => {
@@ -97,6 +96,13 @@ export function HeaderAuth() {
               Cerrar Sesión
             </Button>
           )}
+          <Image
+            src="/images/robot-cyberlabs.png"
+            alt="CyberLabs Robot"
+            width={50}
+            height={50}
+            className="hidden md:block"
+          />
         </div>
       </nav>
     </header>

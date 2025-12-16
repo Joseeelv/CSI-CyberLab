@@ -1,13 +1,11 @@
 import { IsEmail, IsNotEmpty, MinLength } from 'class-validator';
-import { Transform } from 'class-transformer';
 
 export class LoginUserDto {
-  @IsEmail({}, { message: 'Invalid email format' })
+  @IsEmail()
   @IsNotEmpty()
-  @Transform(({ value }) => value?.toLowerCase().trim())
   email: string;
 
-  @MinLength(8, { message: 'Invalid password' })
+  @MinLength(6)
   @IsNotEmpty()
   password: string;
 }

@@ -1,10 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, ManyToMany, JoinTable } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn, OneToMany, ManyToMany } from 'typeorm';
 import { OperatingSystem } from 'src/operating-systems/os.entity';
 import { Category } from 'src/categories/category.entity';
 import { Difficulty } from 'src/difficulty/difficulty.entity';
 import { User } from 'src/users/user.entity';
 import { Container } from 'src/containers/container.entity';
-import { Status } from 'src/status/status.entity';
 @Entity()
 export class Lab {
   @PrimaryGeneratedColumn('uuid')
@@ -16,21 +15,11 @@ export class Lab {
   @Column({ type: 'varchar', length: 100, nullable: true })
   description: string;
 
-  @Column({ type: 'float', default: 0.0 })
-  points: number;
+  @Column({ type: 'boolean', default: false })
+  status: boolean;
 
-  @Column({ type: 'int', default: 30 })
-  estimatedTime: number; // minutos
-
-  @Column({ type: 'varchar', length: 255, nullable: true })
-  tags: string; 
-  
-  @ManyToOne(() => Status, (status) => status.labs)
-  @JoinColumn({ name: 'statusId' })
-  status: Status;
-
-  @ManyToMany(() => Category, (category) => category.labs, { nullable: true })
-  @JoinTable()
+  @OneToMany(() => Category, (category) => category.labs, { nullable: true })
+  @JoinColumn({ name: 'categoryId' })
   categories: Category[];
 
   @ManyToOne(() => Difficulty, (difficulty) => difficulty.labs, { nullable: true })
@@ -40,12 +29,13 @@ export class Lab {
   @ManyToOne(() => OperatingSystem, (os) => os.labs, { nullable: true })
   @JoinColumn({ name: 'operatingSystemId' })
   operatingSystem: OperatingSystem;
-  
-  @OneToMany(() => Container, (container) => container.lab, { nullable: true })
+
+  @OneToMany(() => Container, (container) => container.lab, { nullable: false })
+  @JoinColumn({ name: 'containerId' })
   containers: Container[];
 
-  @ManyToMany(() => User, (user) => user.labs, { nullable: true })
-  @JoinTable()
+  @ManyToMany(() => User, (user) => user.labs, { nullable: false })
+  @JoinColumn({ name: 'userId' })
   users: User[];
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })

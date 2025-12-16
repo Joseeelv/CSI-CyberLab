@@ -3,8 +3,8 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { BackgroundGradient } from './backgroundGradient';
-import { fetcher, type ApiError } from '@/lib/api';
+import Home from '@/app/page';
+import { fetcher, ApiError } from '@/lib/api';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -19,7 +19,7 @@ export default function Login() {
     return () => clearTimeout(timer);
   }, []);
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     setError('');
@@ -39,19 +39,9 @@ export default function Login() {
       body: JSON.stringify({ email, password }),
     });
 
-      // Verificar que la respuesta tenga la estructura esperada
-      if (!data || typeof data !== 'object') {
-        throw new Error('Respuesta inválida del servidor');
-      }
-
-      // Redirigir según el rol
-      const roleData = (data as any);
-      const roleName = roleData?.role?.name || roleData?.user?.role?.name;
-      if (roleName === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
+      if (data.role === 'student') router.push('/dashboard');
+      else if (data.role === 'admin') router.push('/admin');
+      else router.push('/dashboard');
     } catch (err) {
       setError('Credenciales inválidas. Inténtalo de nuevo.');
     } finally {
@@ -61,7 +51,12 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-4 relative overflow-hidden">
-      <BackgroundGradient />
+      <div className="absolute inset-0 z-0 overflow-hidden">
+        <div className="opacity-30">
+          <Home />
+        </div>
+        <div className="absolute inset-0 bg-black/20" />
+      </div>
 
       <div className="w-full max-w-md relative z-10">
         <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">

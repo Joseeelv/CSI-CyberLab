@@ -1,28 +1,33 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { fetcher } from "@/lib/api";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export function CTA() {
 
   // Estado para almacenar el conteo de usuarios
-  const [userCount, setUserCount] = useState<number | null>(null);
+  const [userCount, setUserCount] = React.useState<number | null>(null);
 
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchCount = async () => {
       try {
-        const data = await fetcher(`/users/count`);
-        
-        // Manejar diferentes formatos de respuesta
-        const count = data?.count ?? data?.total ?? data;
-        setUserCount(Number(count) || 0);
+        const res = await fetch(`${API_URL}/users/count`, {
+          method: 'GET',
+          credentials: 'include',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) {
+          setUserCount(null);
+          return;
+        }
+        const data = await res.json();
+        setUserCount(Number(data?.count ?? 0));
       } catch (err) {
-        console.error('Error fetching user count:', err);
-        setUserCount(0); // Valor por defecto en caso de error
+        setUserCount(null);
       }
     };
     fetchCount();

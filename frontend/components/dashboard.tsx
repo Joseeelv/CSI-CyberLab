@@ -3,20 +3,20 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
-import { fetcher } from '@/lib/api';
-
+import Link from 'next/link';
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [userPayload, setUserPayload] = useState<any>(null);
   const [selected, setSelected] = useState<null | 'labs' | 'settings' | 'rankings'>(null);
   const [labs, setLabs] = useState<any[]>([]);
-  const [difficultyMap, setDifficultyMap] = useState<{ [key: string]: string }>({});
+  const [difficultyMap, setDifficultyMap] = useState<{ [key: number]: string }>({});
   const router = useRouter();
 
   function AnimatedPanel({ children }: { children: React.ReactNode }) {
     const [visible, setVisible] = useState(false);
 
     useEffect(() => {
+      // small delay to allow initial render then transition in
       const id = window.requestAnimationFrame(() => setVisible(true));
       return () => {
         window.cancelAnimationFrame(id);
@@ -33,15 +33,18 @@ export default function Dashboard() {
 
   useEffect(() => {
     const check = async () => {
-      setLoading(true);
       try {
-        const data = await fetcher('/auth/me');
-        const user = data.user ?? data.payload ?? data;
-        setUserPayload(user);
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        const endpoint = API_URL ? `${API_URL}/auth/me` : '/auth/me';
+        const res = await fetch(endpoint, { credentials: 'include' });
+        if (!res.ok) {
+          router.push('/login');
+          return;
+        }
+        const data = await res.json();
+        setUserPayload(data.payload ?? data);
       } catch (err) {
-        // Not authenticated or other error — redirect to login
         router.push('/login');
-        return;
       } finally {
         setLoading(false);
       }
@@ -49,34 +52,51 @@ export default function Dashboard() {
     check();
   }, [router]);
 
-  useEffect(() => {
-    const loadLabs = async () => {
-      try {
-        const res = await fetcher('/labs');
-        // API returns { data: Lab[], meta: {...} } — extraer la lista
-        const list = Array.isArray(res) ? res : (res?.data ?? []);
 
-        if (!Array.isArray(list)) {
-          console.error('Expected labs array, got:', res);
+  useEffect(() => {
+    const check = async () => {
+      try {
+        const API_URL = process.env.NEXT_PUBLIC_API_URL;
+        const endpoint = `${API_URL}/labs`;
+        const res = await fetch(endpoint, { credentials: 'include' });
+
+        if (!res.ok) {
+          console.error(`Error fetching labs: ${res.status} ${res.statusText}`);
+          return;
+        }
+
+        const contentType = res.headers.get('content-type');
+        if (!contentType || !contentType.includes('application/json')) {
+          const text = await res.text();
+          console.error('Response is not JSON:', text);
+          return;
+        }
+
+        const data = await res.json();
+
+        if (!Array.isArray(data)) {
+          console.error('Expected array, got:', typeof data);
           setLabs([]);
           return;
         }
 
-        setLabs(list);
-        // Crear mapa de dificultades con key string (si lo necesitas)
-        const map: { [key: string]: string } = {};
-        list.forEach((lab: any) => {
-          if (lab?.difficulty?.id && lab?.difficulty?.name) {
-            map[String(lab.difficulty.id)] = lab.difficulty.name;
+        setLabs(data);
+
+        // Create a map of difficulty IDs to names for easy lookup
+        const map: { [key: number]: string } = {};
+        data.forEach((lab) => {
+          if (lab.difficulty && lab.difficulty.uuid !== undefined) {
+            map[lab.difficulty.uuid] = lab.difficulty.name;
           }
         });
         setDifficultyMap(map);
+
       } catch (err) {
         console.error('Error fetching labs:', err);
         setLabs([]);
       }
     };
-    loadLabs();
+    check();
   }, []);
 
   if (loading) return <div className="p-8">Comprobando sesión...</div>;
@@ -96,7 +116,7 @@ export default function Dashboard() {
 
       <div className="text-center w-full px-6">
         <div className="flex flex-row flex-wrap gap-4 justify-start items-center px-6 mb-6">
-            <Button
+          <Button
             onClick={() => setSelected('labs')}
             variant={selected === 'labs' ? 'linkselected' : 'link'}
             size="lg"
@@ -106,7 +126,7 @@ export default function Dashboard() {
             Ver Laboratorios
           </Button>
 
-            <Button
+          <Button
             onClick={() => setSelected('settings')}
             variant={selected === 'settings' ? 'linkselected' : 'link'}
             size="lg"
@@ -116,7 +136,7 @@ export default function Dashboard() {
             Configuración
           </Button>
 
-            <Button
+          <Button
             onClick={() => setSelected('rankings')}
             variant={selected === 'rankings' ? 'linkselected' : 'link'}
             size="lg"
@@ -136,7 +156,7 @@ export default function Dashboard() {
                 <ul className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {labs.map((lab) => (
                     <li key={lab.uuid} className="p-4 bg-gray-800/60 rounded">
-                      {lab.name} — {lab.difficulty?.name ?? 'Dificultad desconocida'} — {lab.operatingSystem?.name ?? 'S.O. desconocido'}
+                      {lab.name} — {difficultyMap[lab.difficulty?.id] ?? 'Dificultad desconocida'}
                     </li>
                   ))}
                 </ul>
@@ -153,6 +173,8 @@ export default function Dashboard() {
                   <div className="p-4 bg-gray-800/60 rounded">Nombre: {userPayload?.name ?? '—'}</div>
                   <div className="p-4 bg-gray-800/60 rounded">Email: {userPayload?.email ?? '—'}</div>
                 </div>
+
+                {/* Poner formulario de configuración */}
               </section>
             </AnimatedPanel>
           )}
@@ -170,7 +192,10 @@ export default function Dashboard() {
           )}
         </div>
       </div>
-      <div></div>
+      {/* Mostrar el contenido de los botones aquí */}
+      <div>
+
+      </div>
     </div>
   );
 }
