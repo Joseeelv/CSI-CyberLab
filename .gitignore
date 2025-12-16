@@ -24,6 +24,9 @@ lerna-debug.log*
 
 # Coverage reports
 coverage/
+
+# Coverage reports
+coverage/
 .temp
 .tmp
 
@@ -38,5 +41,3 @@ coverage/
 .continue/
 
 *.text
-
-coverage/

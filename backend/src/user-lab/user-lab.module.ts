@@ -14,8 +14,4 @@ import { Lab } from "src/labs/lab.entity";
   controllers: [UserLabController],
   exports: [UserLabService],
 })
-<<<<<<< HEAD
-export class UserLabModule { }
-=======
 export class UserLabModule {}
->>>>>>> f8dcc52 (Refactor code style and improve consistency across user-lab and user modules)

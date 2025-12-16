@@ -31,12 +31,11 @@ export class UserLabService {
   }
 
   async create(userLab: UserLabDto): Promise<UserLab> {
-<<<<<<< HEAD:backend/src/user-labs/user-lab.service.ts
-<<<<<<< HEAD
+
     const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
     if (existingUserLab) {
       throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
-=======
+
     try {
       const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
       if (existingUserLab) {
@@ -49,25 +48,17 @@ export class UserLabService {
       return this.userLabRepository.save(newUserLab);
     } catch (error) {
       throw error;
->>>>>>> 252b568 (Minor fixes)
     }
     const newUserLab = this.userLabRepository.create({
       ...userLab,
       labId: userLab.labId,
-=======
     // Verificar si ya existe un UserLab para este usuario y lab
     console.log("Creando UserLab con datos:", userLab);
     const existingUserLab = await this.userLabRepository.findOne({
       where: {
         userId: userLab.userId,
-<<<<<<< HEAD
         labId: userLab.labUuid
-      }
->>>>>>> 0bb42e3 (feat: Refactor user-lab functionality and enhance user management):backend/src/user-lab/user-lab.service.ts
-=======
-        labId: userLab.labUuid,
       },
->>>>>>> f8dcc52 (Refactor code style and improve consistency across user-lab and user modules)
     });
 
     if (existingUserLab) {
@@ -103,11 +94,7 @@ export class UserLabService {
   async delete(id: number): Promise<void> {
     const userLab = await this.userLabRepository.findOne({ where: { id } });
     if (!userLab) {
-<<<<<<< HEAD
       throw new NotFoundException(`UserLab with id ${id} does not exist`);
-=======
-      throw new Error(`UserLab with id ${id} does not exist`);
->>>>>>> 77a5288 (Minor fixes)
     }
     await this.userLabRepository.delete(id);
   }

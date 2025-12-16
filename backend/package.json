@@ -20,6 +20,12 @@
     "migration:revert": "pnpm build && node ./node_modules/typeorm/cli.js migration:revert -d ./data-source.cjs",
     "migration:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./data-source.cjs",
     "migration:create": "node ./node_modules/typeorm/cli.js migration:create"
+    "test:e2e": "jest --config ./test/jest-e2e.json",
+    "typeorm": "typeorm-ts-node-commonjs",
+    "migration:run": "pnpm build && node ./node_modules/typeorm/cli.js migration:run -d ./data-source.cjs",
+    "migration:revert": "pnpm build && node ./node_modules/typeorm/cli.js migration:revert -d ./data-source.cjs",
+    "migration:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./data-source.cjs",
+    "migration:create": "node ./node_modules/typeorm/cli.js migration:create"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.8",
@@ -55,6 +61,8 @@
     "@typescript-eslint/eslint-plugin": "^7.0.0",
     "@typescript-eslint/parser": "^7.0.0",
     "class-transformer": "^0.5.1",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.3",
     "cookie-parser": "^1.4.7",
     "dotenv": "^17.2.3",
     "eslint": "^8.56.0",
