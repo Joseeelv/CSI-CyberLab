@@ -1,11 +1,12 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import Home from '@/app/page';
 import { fetcher } from '@/lib/api';
 import { motion } from 'framer-motion';
+import { Button } from './ui/button';
 
 export default function Login() {
   const [email, setEmail] = useState('');
@@ -32,15 +33,21 @@ export default function Login() {
       setIsLoading(false);
       return; // Detener el flujo si hay errores
     }
+
+    console.log('Intentando iniciar sesión con:', { email, password });
     try {
       const data = await fetcher('/auth/login', {
         method: 'POST',
         credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify({ email, password }),
       });
 
       localStorage.setItem('accessToken', data.accessToken);
       localStorage.setItem('refreshToken', data.refreshToken);
+      localStorage.setItem('documentId', data.documentId);
 
       // Comprobar el rol y redirigir en consecuencia
       if (data && data.role) {

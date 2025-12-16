@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Button } from "./ui/button";
 import Link from "next/link";
 import { fetcher } from "@/lib/api";
 
 export function CTA() {
 
   // Estado para almacenar el conteo de usuarios
-  const [userCount, setUserCount] = useState<number | null>(null);
+  const [, setUserCount] = useState<number | null>(null);
 
   useEffect(() => {
     const fetchCount = async () => {

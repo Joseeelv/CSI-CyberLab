@@ -1,57 +1,57 @@
 name: Full Stack Checks
 
 on:
-  push:
-    branches:
-      - testing
+push:
+  branches:
+    - testing
 
 jobs:
-  # ------------------------------------
-  # JOB 1: VALIDACIÓN DEL FRONTEND
-  # ------------------------------------
-  frontend-checks:
-    name: Frontend Validation
-    runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ./frontend
+# ------------------------------------
+# JOB 1: VALIDACIÓN DEL FRONTEND
+# ------------------------------------
+frontend-checks:
+  name: Frontend Validation
+  runs-on: ubuntu-latest
+  defaults:
+    run:
+      working-directory: ./frontend
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+  steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      - name: Setup Node.js (Frontend)
-        uses: actions/setup-node@v4
-        with:
-          node-version: 22.17.1
+    - name: Setup Node.js (Frontend)
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.17.1
 
-      - name: Install pnpm
-        uses: pnpm/action-setup@v4
-        with:
-          version: 10.22.0
-          run_install: false
+    - name: Install pnpm
+      uses: pnpm/action-setup@v4
+      with:
+        version: 10.22.0
+        run_install: false
 
-      - name: Get pnpm store directory
-        shell: bash
-        run: |
-          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+    - name: Get pnpm store directory
+      shell: bash
+      run: |
+        echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
 
-      - name: Setup pnpm cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ env.STORE_PATH }}
-          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
-          restore-keys: |
-            ${{ runner.os }}-pnpm-store-
+    - name: Setup pnpm cache
+      uses: actions/cache@v4
+      with:
+        path: ${{ env.STORE_PATH }}
+        key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-pnpm-store-
 
-      - name: Install Frontend Dependencies
-        run: pnpm install --frozen-lockfile
+    - name: Install Frontend Dependencies
+      run: pnpm install --frozen-lockfile
 
-      - name: Lint Frontend
-        run: pnpm lint
+    - name: Lint Frontend
+      run: pnpm lint
 
-      - name: Build Frontend
-        run: pnpm build
+    - name: Build Frontend
+      run: pnpm build
 
   # ------------------------------------
   # JOB 2: VALIDACIÓN DEL BACKEND
@@ -62,7 +62,27 @@ jobs:
     defaults:
       run:
         working-directory: ./backend
-
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U test_user -d test_db" \
+          --health-interval 10s \
+          --health-timeout 5s \
+          --health-retries 5
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_NAME: test_db
+      DATABASE_USER: test_user
+      DATABASE_PASSWORD: test_pass
+      NODE_ENV: test
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -96,6 +116,13 @@ jobs:
 
       - name: Lint Backend
         run: pnpm lint
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..10}; do
+            pg_isready -h localhost -p 5432 -U test_user -d test_db && break
+            sleep 3
+          done
 
       - name: Ejecutar tests
         run: pnpm run test

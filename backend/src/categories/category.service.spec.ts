@@ -13,7 +13,10 @@ describe("CategoryService", () => {
       create: jest.fn(),
       save: jest.fn(),
       remove: jest.fn(),
-      createQueryBuilder: jest.fn().mockReturnValue({ delete: jest.fn().mockReturnThis(), execute: jest.fn() }),
+      createQueryBuilder: jest.fn().mockReturnValue({
+        delete: jest.fn().mockReturnThis(),
+        execute: jest.fn(),
+      }),
     };
 
     const module: TestingModule = await Test.createTestingModule({

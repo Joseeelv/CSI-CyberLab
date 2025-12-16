@@ -20,12 +20,6 @@
     "migration:revert": "pnpm build && node ./node_modules/typeorm/cli.js migration:revert -d ./data-source.cjs",
     "migration:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./data-source.cjs",
     "migration:create": "node ./node_modules/typeorm/cli.js migration:create"
-    "test:e2e": "jest --config ./test/jest-e2e.json",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "migration:run": "pnpm build && node ./node_modules/typeorm/cli.js migration:run -d ./data-source.cjs",
-    "migration:revert": "pnpm build && node ./node_modules/typeorm/cli.js migration:revert -d ./data-source.cjs",
-    "migration:generate": "node ./node_modules/typeorm/cli.js migration:generate -d ./data-source.cjs",
-    "migration:create": "node ./node_modules/typeorm/cli.js migration:create"
   },
   "dependencies": {
     "@nestjs/common": "^11.1.8",
