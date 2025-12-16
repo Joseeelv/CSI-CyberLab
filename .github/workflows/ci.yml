@@ -74,6 +74,14 @@ jobs:
           echo ""
           echo "Installation completed with exit code: $?"
 
+      - name: Debug node_modules after install
+        working-directory: ./frontend
+        run: |
+          echo "Contenido de node_modules tras instalar:"
+          ls -la node_modules || echo "node_modules no existe"
+          echo "Contenido de node_modules/.bin:"
+          ls -la node_modules/.bin || echo "node_modules/.bin no existe"
+
       - name: Verify installation
         working-directory: ./frontend
         run: |
