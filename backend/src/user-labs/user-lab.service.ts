@@ -47,7 +47,11 @@ export class UserLabService {
   async delete(id: number): Promise<void> {
     const userLab = await this.userLabRepository.findOne({ where: { id } });
     if (!userLab) {
+<<<<<<< HEAD
       throw new NotFoundException(`UserLab with id ${id} does not exist`);
+=======
+      throw new Error(`UserLab with id ${id} does not exist`);
+>>>>>>> 77a5288 (Minor fixes)
     }
     await this.userLabRepository.delete(id);
   }
