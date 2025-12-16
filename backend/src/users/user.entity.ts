@@ -1,26 +1,41 @@
-import { Entity, Column, PrimaryGeneratedColumn } from "typeorm";
-
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, JoinTable, ManyToOne } from "typeorm";
+import { Container } from "src/containers/container.entity";
+import { Lab } from "src/labs/lab.entity";
+import { Role } from "src/role/role.entity";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'varchar', length: 100 })
   fullName: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 50, nullable: false })
   username: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100, nullable: false, unique: true })
   email: string;
 
-  @Column()
+  @Column({ type: 'varchar', length: 100 })
   password: string;
 
-  @Column({ nullable: true })
-  role: string; // admin, student, teacher
+  @ManyToOne(() => Role, { nullable: true })
+  @JoinColumn({ name: 'roleId' })
+  role: Role;
 
-  @Column({ nullable: true })
+  @ManyToMany(() => Container, (container) => container.user, {
+    nullable: false
+  })
+  @JoinTable()
+  containers: Container[];
+
+  @ManyToMany(() => Lab, (lab) => lab.users, {
+    nullable: false
+  })
+  @JoinTable()
+  labs: Lab[];
+
+  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP', nullable: false })
   created: Date;
 
   @Column({ nullable: true })
