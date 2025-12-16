@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, ManyToOne, JoinTable, JoinColumn } from "typeorm";
 import { Container } from "src/containers/container.entity";
 import { Lab } from "src/labs/lab.entity";
 import { Role } from "src/role/role.entity";
@@ -19,23 +19,25 @@ export class User {
   @Column({ unique: true })
   email: string;
 
+  @Exclude()
   @Column()
   password: string;
 
-  @Exclude()
   @ManyToOne(() => Role, (role) => role.id, {
     nullable: false
   })
   roleId: Role;
 
-  @ManyToMany(() => Container, (container) => container.user, {
-    nullable: false
+  @ManyToMany(() => Container, (container) => container.userId, {
+    nullable: false,
+    eager: true
   })
   @JoinTable({ name: "User_Container" })
   containers: Container[];
 
   @ManyToMany(() => Lab, (lab) => lab.users, {
-    nullable: false
+    nullable: false,
+    eager: true
   })
   @JoinTable({ name: "User_Lab" })
   labs: Lab[];

@@ -13,7 +13,7 @@ export class Status {
   name: string;
 
   @Exclude()
-  @OneToMany(() => Container, (container) => container.status, { nullable: true })
+  @OneToMany(() => Container, (container) => container.statusId, { nullable: true })
   @JoinColumn({ name: 'containerId' })
   containers: Container[];
 

@@ -3,11 +3,16 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, use } from 'react';
+import { useAuth } from '@/hooks/useAuth';
+import { fetcher } from '@/lib/api';
+import { useRouter } from 'next/navigation';
 
 export function Header() {
   const [mounted, setMounted] = useState(false);
   const [scrolled, setScrolled] = useState(false);
+  const { isAuthenticated } = useAuth();
+  const router = useRouter();
 
   useEffect(() => {
     setMounted(true);
@@ -35,6 +40,19 @@ export function Header() {
     };
   }, []);
 
+  const handleLogoutClick = async () => {
+    try {
+      await fetcher('/auth/logout', {
+        method: 'POST',
+        credentials: 'include',
+      });
+      router.push('/');
+    } catch (err) {
+      console.error('Logout failed' + err);
+      alert('Error al cerrar sesión. Por favor, inténtalo de nuevo.'); // Mostrar un mensaje al usuario
+    };
+  }
+
   return (
     <header
       className={`
@@ -54,7 +72,7 @@ export function Header() {
             CyberLabs
           </span>
         </Link>
-        {mounted && (
+        {mounted && !isAuthenticated && (
           <div className="flex items-center gap-3 flex-col sm:flex-row ">
             <Link
               href="/login"
@@ -72,8 +90,18 @@ export function Header() {
             </Link>
           </div>
         )}
+        {mounted && isAuthenticated && (
+          <div className="flex items-center gap-3 flex-col sm:flex-row ">
+            {mounted && (
+
+              <Button variant="ghost" onClick={handleLogoutClick}>
+                Cerrar Sesión
+              </Button>
+            )}
+          </div>
+        )}
       </nav>
-    </header>
+    </header >
   );
 }
 

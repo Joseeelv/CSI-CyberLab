@@ -1,6 +1,7 @@
+
 import { Injectable, UnauthorizedException, BadRequestException, Req } from '@nestjs/common';
-import { UserService } from '../users/user.service';
-import { User } from '../users/user.entity';
+import { UserService } from 'src/users/user.service';
+import { User } from 'src/users/user.entity';
 import { RegisterUserDto } from './register.dto';
 import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
@@ -59,8 +60,8 @@ export class AuthService {
   // Función para login
   async login(loginData: LoginUserDto): Promise<any> {
     const user = await this.userService.findByEmail(loginData.email);
+    console.log(user);
     if (!user) {
-      // Avoid leaking whether the user exists
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
@@ -69,7 +70,7 @@ export class AuthService {
       throw new UnauthorizedException('Credenciales inválidas');
     }
 
-    // Build a minimal payload (do not include sensitive data)
+
     const payload = { name: user.username, email: user.email, role: user.roleId };
     const accessToken = this.jwtService.sign(payload);
     return { accessToken, role: user.roleId };
@@ -77,17 +78,23 @@ export class AuthService {
 
   //Funcion para logout
   async logout(@Req() req): Promise<any> {
-    //Implementar la lógica de cierre de sesión
     try {
-      // Lógica para eliminar la cookie de sesión
-      req.res.clearCookie('jwt', {
+      const res = req.res;
+      if (!res) {
+        throw new Error('Response object not found in request');
+      }
+
+      res.clearCookie('jwt', {
         httpOnly: true,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
       });
+
       return { message: 'Logout successful' };
     } catch (error) {
+      console.error('Error during logout:', error.message);
       return { error: error.message };
     }
   }
+
 }

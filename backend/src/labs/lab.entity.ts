@@ -59,7 +59,7 @@ export class Lab {
   @JoinColumn({ name: 'operatingSystemId' })
   operatingSystem: OperatingSystem;
 
-  @OneToMany(() => Container, (container) => container.lab, { nullable: true })
+  @OneToMany(() => Container, (container) => container.labId, { nullable: true })
   containers: Container[];
 
   @ManyToMany(() => User, (user) => user.labs, { nullable: true })

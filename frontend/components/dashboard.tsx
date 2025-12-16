@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { Button } from './ui/button';
 import { fetcher } from '@/lib/api';
 import { LabCard } from './LabCard';
+
 export default function Dashboard() {
   const [loading, setLoading] = useState(true);
   const [userPayload, setUserPayload] = useState<any>(null);
@@ -35,11 +36,10 @@ export default function Dashboard() {
   useEffect(() => {
     const check = async () => {
       try {
-        const data = await fetcher('/auth/me'); // Corregido: se asigna el resultado de fetcher a 'data'
+        const data = await fetcher('/auth/me');
         setUserPayload(data.payload ?? data);
       } catch (err) {
         console.error('Auth check failed:', err);
-        router.push('/login');
       } finally {
         setLoading(false);
       }
@@ -76,7 +76,7 @@ export default function Dashboard() {
       }
     };
     check();
-  }, [difficultyMap]);
+  }, []);
 
   if (loading) return <div className="p-8">Comprobando sesión...</div>;
   if (!userPayload) return null;

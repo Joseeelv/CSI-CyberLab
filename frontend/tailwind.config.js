@@ -37,10 +37,16 @@ module.exports = {
             transform: "translateY(40px)",
           },
         },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "50%": { opacity: "0.5" },
+          "100%": { opacity: "1" },
+        },
       },
       animation: {
-        fadeInSlideUp: "fadeInSlideUp 0.6s ease-out forwards",
-        fadeOutSlideDown: "fadeOutSlideDown 0.6s ease-out forwards",
+        fadeInSlideUp: "fadeInSlideUp 0.1s ease-out forwards",
+        fadeOutSlideDown: "fadeOutSlideDown 0.1s ease-out forwards",
+        fadeIn: "fadeIn 0.3s ease-out",
       },
     },
   },

@@ -2,7 +2,7 @@ import { Controller } from '@nestjs/common';
 import { Get, Param, Post, Body, Put, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
-import { RegisterUserDto } from '../auth/register.dto';
+import { UserDto } from './user.dto';
 
 @Controller('users')
 export class UserController {
@@ -10,8 +10,8 @@ export class UserController {
 
   // Endpoint para obtener todos los usuarios
   @Get()
-  findAll(): Promise<User[]> {
-    return this.userService.findAll();
+  async getAllUsers() {
+    return await this.userService.getAllUsers();
   }
 
   //Endpoitn para obtener el número de estudiantes registrados
@@ -23,7 +23,7 @@ export class UserController {
 
   // Endpoint para actualizar un usuario por su ID
   @Put(':id')
-  updateUser(@Param('id') id: number, @Body() updateData: Partial<User>,): Promise<User | String | null> {
+  updateUser(@Param('id') id: number, @Body() updateData: UserDto,): Promise<User | String | null> {
     try {
       return this.userService.updateUser(id, updateData);
     }
@@ -50,7 +50,7 @@ export class UserController {
 
   // Endpoint para crear un nuevo usuario
   @Post()
-  createUser(@Body() userDto: RegisterUserDto): Promise<User> {
+  createUser(@Body() userDto: UserDto): Promise<User> {
     return this.userService.createUser(userDto);
   }
 
