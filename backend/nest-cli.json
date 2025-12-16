@@ -12,7 +12,7 @@
     "manualRestart": true,
     "tsConfigPath": "./tsconfig.build.json",
     "webpack": false,
-    "deleteOutDir": false,
+    "deleteOutDir": true,
     "assets": [],
     "watchAssets": false,
     "plugins": []

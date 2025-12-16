@@ -53,15 +53,20 @@ export class User {
   refreshToken: string | null;
 
   @Column({
-    type: "timestamp",
+    type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
     nullable: false,
   })
   created: Date;
+<<<<<<< HEAD
+
+  @Column({ nullable: true })
+=======
   @Column({
-    type: "timestamp",
+    type: "datetime",
     default: () => "CURRENT_TIMESTAMP",
     onUpdate: "CURRENT_TIMESTAMP",
   })
+>>>>>>> f8dcc52 (Refactor code style and improve consistency across user-lab and user modules)
   updated: Date;
 }

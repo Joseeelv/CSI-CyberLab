@@ -1,8 +1,6 @@
 # Nestjs specific
 /dist
 /node_modules
-./frontend/node_modules
-./backend/node_modules
 /build
 /tmp
 
@@ -23,6 +21,9 @@ lerna-debug.log*
 
 .DS_Store
 
+
+# Coverage reports
+coverage/
 
 # Coverage reports
 coverage/

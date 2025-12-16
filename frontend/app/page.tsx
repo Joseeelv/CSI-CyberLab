@@ -10,10 +10,22 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-black">
       <Header />
       <main >
-        <Hero />
-        <Features />
-        <CTA />
-        <Footer />
+        <section>
+          <Hero />
+        </section>
+        <section>
+
+          <Features />
+        </section>
+        <section>
+
+          <CTA />
+        </section>
+
+        <section>
+          <Footer />
+        </section>
+
       </main>
     </div>
   );

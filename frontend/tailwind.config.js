@@ -8,9 +8,9 @@ module.exports = {
   theme: {
     extend: {
       fontFamily: {
-        logo: ["var(--font-orbitron)"],
-        sans: ["var(--font-geist-sans)"],
-        mono: ["var(--font-geist-mono)"],
+        'logo': ['var(--font-orbitron)'],
+        'sans': ['var(--font-geist-sans)'],
+        'mono': ['var(--font-geist-mono)'],
       },
       colors: {
         background: "var(--background)",
@@ -51,4 +51,4 @@ module.exports = {
     },
   },
   plugins: [],
-};
+}

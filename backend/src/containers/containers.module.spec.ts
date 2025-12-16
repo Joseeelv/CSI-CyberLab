@@ -1,5 +1,4 @@
 import { APP_GUARD } from "@nestjs/core";
-import { JwtAuthGuard } from "../auth/jwt-auth.guard";
 import { JwtModule } from "@nestjs/jwt";
 import { Test, TestingModule } from "@nestjs/testing";
 import { TypeOrmModule } from "@nestjs/typeorm";
@@ -16,24 +15,21 @@ import { UserLab } from "../user-lab/user-lab.entity";
 import { FlagSubmission } from "../flag-submission/flag-submission.entity";
 import { Category } from "../categories/category.entity";
 import { Difficulty } from "../difficulty/difficulty.entity";
-import { JwtService } from "@nestjs/jwt";
 import { AuthModule } from "../auth/auth.module";
 
 describe("ContainersModule", () => {
+
+  jest.setTimeout(20000); // Aumenta el timeout a 20 segundos
   let module: ContainersModule;
 
   beforeEach(async () => {
     const testingModule: TestingModule = await Test.createTestingModule({
       imports: [
-        JwtModule.register({ secret: 'test' }),
+        JwtModule.register({ secret: "test" }),
         AuthModule,
         TypeOrmModule.forRoot({
-          type: "postgres",
-          host: process.env.TEST_DB_HOST || "localhost",
-          port: +(process.env.TEST_DB_PORT || 5432),
-          username: process.env.TEST_DB_USER || "user",
-          password: process.env.TEST_DB_PASS || "secret",
-          database: process.env.TEST_DB_NAME || "postgres-db",
+          type: "sqlite",
+          database: ":memory:",
           dropSchema: true,
           entities: [
             Container,

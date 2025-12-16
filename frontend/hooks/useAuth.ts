@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { authFetch, ApiError } from '@/lib/api';
+import { authFetch, fetcher, ApiError } from '@/lib/api';
 import { AuthState } from '@/types/AuthState';
 
 

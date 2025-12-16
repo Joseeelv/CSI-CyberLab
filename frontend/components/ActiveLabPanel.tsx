@@ -3,12 +3,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { Server, Globe, Clock, Copy, CheckCircle, AlertCircle, Send, Trophy } from 'lucide-react';
 import { fetcher } from '@/lib/api';
 import { Lab, ActiveLab } from '@/types/lab';
-
-interface User {
-  id: string;
-  name?: string;
-  [key: string];
-}
+import { User } from '@/types/user'; // Agrega esta línea y elimina la interfaz local User
 
 interface ActiveLabPanelProps {
   activeLab: ActiveLab;
