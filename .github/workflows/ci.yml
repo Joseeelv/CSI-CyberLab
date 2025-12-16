@@ -50,16 +50,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
+      - name: Install Dependencies (root)
         run: |
-          echo "Installing dependencies in: $(pwd)"
+          echo "Installing dependencies in root: $(pwd)"
           echo "Node version: $(node --version)"
           echo "pnpm version: $(pnpm --version)"
           echo ""
           echo "Checking for pnpm-lock.yaml..."
           if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml NOT found - this is the problem!"
+            echo "❌ pnpm-lock.yaml NOT found - this is el problema!"
             echo "Files in current directory:"
             ls -la
             echo ""
