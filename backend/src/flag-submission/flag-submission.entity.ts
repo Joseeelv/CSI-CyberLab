@@ -1,9 +1,10 @@
 import { Exclude } from "class-transformer";
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, ManyToOne, JoinColumn, OneToMany } from "typeorm";
 import { User } from "src/users/user.entity";
 import { Lab } from "src/labs/lab.entity";
 @Entity()
 export class FlagSubmission {
+
   @Exclude()
   @PrimaryGeneratedColumn()
   id: number;
@@ -17,11 +18,11 @@ export class FlagSubmission {
   @CreateDateColumn()
   created: Date;
 
-  @ManyToOne(() => User, (user) => user.id, { nullable: false })
+  @ManyToOne(() => User, (user) => user.flagSubmissions)
   @JoinColumn({ name: 'userId' })
-  userId: User;
+  user: User;
 
-  @ManyToOne(() => Lab, { onDelete: 'CASCADE' })
+  @ManyToOne(() => Lab, (lab) => lab.flagSubmissions)
   @JoinColumn({ name: 'labId' })
-  labId: Lab;
+  lab: Lab;
 }

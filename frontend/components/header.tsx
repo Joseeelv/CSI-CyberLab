@@ -68,7 +68,7 @@ export function Header() {
           href="/"
           className="flex items-center gap-3 group transition-all duration-300 hover:scale-105"
         >
-          <span className="h-10 text-4xl font-bold font-logo bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent hover:drop-shadow-[0_0_25px_rgba(0,212,255,0.6)] transition-all duration-300">
+          <span className="h-10 text-4xl font-bold font-logo bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 bg-clip-text text-transparent hover:drop-shadow-[0_0_25px_rgba(0,212,255,0.9)] transition-all duration-300 ">
             CyberLabs
           </span>
         </Link>

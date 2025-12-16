@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { FlagSubmission } from './flag-submission.entity';
 import { Lab } from 'src/labs/lab.entity';
-import { User } from 'src/users/user.entity'; // Asegúrate de importar User
+import { User } from 'src/users/user.entity';
 
 @Injectable()
 export class FlagSubmissionService {
@@ -17,7 +17,15 @@ export class FlagSubmissionService {
   ) { }
 
   async getAllFlagSubmissions(): Promise<FlagSubmission[]> {
-    return this.flagSubmissionRepository.find();
+    return await this.flagSubmissionRepository.find();
+  }
+
+  async find(where: any): Promise<FlagSubmission[]> {
+    return await this.flagSubmissionRepository.find({
+      where,
+      relations: ['user', 'lab'],
+      order: { created: 'ASC' } // Orden cronológico para determinar flag1 y flag2
+    });
   }
 
   async SubmitFlag(flagSubmissionData: {
@@ -38,14 +46,13 @@ export class FlagSubmissionService {
       // 2. Verificar que el laboratorio exista
       const lab = await this.labRepository.findOne({
         where: { uuid: flagSubmissionData.labUuid },
-        // NO uses select aquí, necesitamos todas las propiedades
       });
 
       if (!lab) {
         throw new NotFoundException(`Lab con UUID ${flagSubmissionData.labUuid} no encontrado`);
       }
 
-      // 4. Comprobar si la bandera es correcta
+      // 3. Comprobar si la bandera es correcta
       if (!lab.flag) {
         throw new BadRequestException('Este laboratorio no tiene flags configuradas');
       }
@@ -58,43 +65,60 @@ export class FlagSubmissionService {
         validFlags = [lab.flag];
       }
 
-      // Normalize flags (lowercase, trimmed) and input for a safe comparison
+      // Normalize flags (lowercase, trimmed) for safe comparison
       const normalizedValidFlags = validFlags.map((f) => f.trim().toLowerCase());
-      const isCorrect = normalizedValidFlags.includes(flagSubmissionData.flag.trim().toLowerCase());
+      const normalizedInputFlag = flagSubmissionData.flag.trim().toLowerCase();
+      const isCorrect = normalizedValidFlags.includes(normalizedInputFlag);
 
-      // Corregir la condición malformada
       if (!isCorrect) {
         throw new BadRequestException('Flag incorrecto');
       }
 
-      // 5. Opcional: Verificar si ya existe una submission para este usuario y lab
-      const existingSubmission = await this.flagSubmissionRepository.findOne({
+      // 4. AISLAMIENTO: Verificar cuántas flags correctas ya tiene este usuario para este lab
+      const existingCorrectSubmissions = await this.flagSubmissionRepository.find({
         where: {
-          userId: { id: user.id },
-          labId: { uuid: lab.uuid },
+          user: { id: user.id },
+          lab: { uuid: lab.uuid },
+          isCorrect: true,
         },
+        order: { created: 'ASC' }
       });
 
-      if (existingSubmission) {
-        // Evitamos duplicados
-        throw new ConflictException('Esta flag ya fue enviada anteriormente');
+      // Si ya tiene 2 flags correctas para este lab, no puede enviar más
+      if (existingCorrectSubmissions.length >= 2) {
+        throw new ConflictException('Ya has completado todas las flags de este laboratorio');
+      }
+
+      // 5. Verificar si esta flag específica ya fue enviada correctamente por este usuario en este lab
+      const alreadySubmitted = existingCorrectSubmissions.some(
+        submission => submission.name.trim().toLowerCase() === normalizedInputFlag
+      );
+
+      if (alreadySubmitted) {
+        throw new ConflictException('Esta flag ya fue enviada correctamente anteriormente');
       }
 
       // 6. Crear y guardar la submission
       const newFlagSubmission = this.flagSubmissionRepository.create({
-        userId: user,
-        labId: lab,
-        name: flagSubmissionData.flag,
+        user: user,
+        lab: lab,
+        name: flagSubmissionData.flag.trim(), // Guardar la flag original (no normalizada)
         isCorrect: isCorrect,
         created: new Date(),
       });
 
       const saved = await this.flagSubmissionRepository.save(newFlagSubmission);
 
+      // Determinar si es la primera o segunda flag
+      const flagNumber = existingCorrectSubmissions.length + 1;
+
       return {
         success: true,
-        message: '¡Flag correcta! Bien hecho 🎉',
+        message: `¡Flag ${flagNumber} correcta! Bien hecho`,
         submission: saved,
+        flagNumber: flagNumber,
+        totalCorrect: flagNumber,
+        isComplete: flagNumber === 2
       };
     } catch (error) {
       console.error('Error en SubmitFlag:', error);
@@ -112,25 +136,59 @@ export class FlagSubmissionService {
   }
 
   async findById(id: number): Promise<FlagSubmission | null> {
-    return this.flagSubmissionRepository.findOne({ where: { id } });
+    return this.flagSubmissionRepository.findOne({
+      where: { id },
+      relations: ['user', 'lab']
+    });
   }
 
   async deleteFlagSubmission(id: number): Promise<String> {
+    const submission = await this.findById(id);
+    if (!submission) {
+      throw new NotFoundException(`FlagSubmission with id ${id} not found`);
+    }
     await this.flagSubmissionRepository.delete(id);
     return `FlagSubmission with id ${id} has been deleted`;
   }
 
-  async deñleteAllFlagSubmissions(): Promise<String> {
+  async deleteAllFlagSubmissions(): Promise<String> {
     await this.flagSubmissionRepository.clear();
     return `All FlagSubmissions have been deleted`;
   }
 
   async updateFlagSubmission(id: number, updateData: Partial<FlagSubmission>): Promise<FlagSubmission> {
-    const updatedFlagSubmission = await this.findById(id);
-    if (!updatedFlagSubmission) {
-      throw new Error(`FlagSubmission with id ${id} not found`);
+    const existingSubmission = await this.findById(id);
+    if (!existingSubmission) {
+      throw new NotFoundException(`FlagSubmission with id ${id} not found`);
     }
     await this.flagSubmissionRepository.update(id, updateData);
-    return updatedFlagSubmission;
+    const updatedSubmission = await this.findById(id);
+    if (!updatedSubmission) {
+      throw new NotFoundException(`FlagSubmission with id ${id} not found after update`);
+    }
+    return updatedSubmission;
+  }
+
+  // Método auxiliar para obtener el progreso de un usuario en un lab
+  async getUserLabProgress(userId: number, labUuid: string): Promise<{
+    totalCorrect: number;
+    flags: FlagSubmission[];
+    isComplete: boolean;
+  }> {
+    const correctSubmissions = await this.flagSubmissionRepository.find({
+      where: {
+        user: { id: userId },
+        lab: { uuid: labUuid },
+        isCorrect: true,
+      },
+      order: { created: 'ASC' },
+      relations: ['user', 'lab']
+    });
+
+    return {
+      totalCorrect: correctSubmissions.length,
+      flags: correctSubmissions,
+      isComplete: correctSubmissions.length >= 2
+    };
   }
 }

@@ -45,7 +45,7 @@ export class UserLabService {
     }
     const newUserLab = this.userLabRepository.create({
       ...userLab,
-      labId: parseInt(userLab.labId, 10),
+      labId: userLab.labId,
     });
     return this.userLabRepository.save(newUserLab);
   }

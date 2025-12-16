@@ -1,12 +1,17 @@
-import { Controller } from '@nestjs/common';
-import { Get, Param, Post, Body, Put, Delete } from '@nestjs/common';
+import { Controller, Res, Req } from '@nestjs/common';
+import { Get, Param, Post, Body, Patch, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { User } from './user.entity';
 import { UserDto } from './user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { Response, Request } from 'express';
 
 @Controller('users')
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(
+    private readonly userService: UserService,
+    private readonly jwtService: JwtService,
+  ) { }
 
   // Endpoint para obtener todos los usuarios
   @Get()
@@ -22,12 +27,37 @@ export class UserController {
   }
 
   // Endpoint para actualizar un usuario por su ID
-  @Put(':id')
-  updateUser(@Param('id') id: number, @Body() updateData: UserDto,): Promise<User | String | null> {
+  @Patch(':id')
+  async updateUser(
+    @Param('id') id: number,
+    @Body() updateData: UserDto,
+    @Req() req: Request,
+    @Res({ passthrough: true }) res: Response
+  ): Promise<any> {
     try {
-      return this.userService.updateUser(id, updateData);
-    }
-    catch (error) {
+      const updatedUser = await this.userService.updateUser(id, updateData);
+      // Si se actualiza email, username o password, emitir nuevo JWT
+      const sensitiveFields = ['email', 'username', 'password'];
+      const changedSensitive = sensitiveFields.some(field => field in updateData);
+      if (changedSensitive) {
+        // Generar nuevo JWT
+        const payload = {
+          id: updatedUser.id,
+          name: updatedUser.username,
+          email: updatedUser.email,
+          role: updatedUser.roleId,
+        };
+        const jwt = this.jwtService.sign(payload);
+        res.cookie('jwt', jwt, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === 'production',
+          sameSite: 'lax',
+          maxAge: 3600000,
+        });
+        return { message: 'Usuario actualizado y nueva sesión emitida', user: updatedUser, accessToken: jwt };
+      }
+      return { message: 'Usuario actualizado', user: updatedUser };
+    } catch (error) {
       throw new Error('User not found ' + error.message);
     }
   }
