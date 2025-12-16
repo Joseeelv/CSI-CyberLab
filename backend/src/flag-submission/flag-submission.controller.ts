@@ -1,16 +1,5 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Patch,
-  Body,
-  Delete,
-  ConflictException,
-  NotFoundException,
-  Query,
-  Param,
-  ParseIntPipe
-} from '@nestjs/common';
+import { Controller, Get, Post, Patch, Body, Delete, ConflictException, NotFoundException, Query, Param, ParseIntPipe, UseGuards } from '@nestjs/common';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { FlagSubmissionService } from './flag-submission.service';
 import { FlagSubmission } from './flag-submission.entity';
 
@@ -19,37 +8,49 @@ export class FlagSubmissionController {
   constructor(private readonly flagSubmissionService: FlagSubmissionService) { }
 
   @Get()
+  @UseGuards(JwtAuthGuard)
   async getSubmissions(
-    @Query('userId') userId?: number,
+    @Query('userId') userId?: string,
     @Query('labUuid') labUuid?: string
   ): Promise<FlagSubmission[]> {
-    const where: any = {};
+    try {
+      // Llamar al servicio sin argumentos
+      const allSubmissions = await this.flagSubmissionService.find();
 
-    if (userId) {
-      where.user = { id: userId };
+      // Filtrar en el controlador si es necesario
+      let results = allSubmissions;
+
+      if (userId) {
+        results = results.filter(sub => sub.userLab?.userId === userId);
+      }
+
+      if (labUuid) {
+        results = results.filter(sub => sub.labId === labUuid);
+      }
+
+      return results || [];
+    } catch (error) {
+      console.error('Error fetching submissions:', error);
+      return [];
     }
-
-    if (labUuid) {
-      where.lab = { uuid: labUuid };
-    }
-
-    return await this.flagSubmissionService.find(where);
   }
 
   // Endpoint específico para obtener el progreso de un usuario en un lab
   @Get('progress/:userId/:labUuid')
+  @UseGuards(JwtAuthGuard)
   async getUserProgress(
-    @Param('userId', ParseIntPipe) userId: number,
+    @Param('userId') userId: string,
     @Param('labUuid') labUuid: string
   ) {
     return await this.flagSubmissionService.getUserLabProgress(userId, labUuid);
   }
 
   @Post()
+  @UseGuards(JwtAuthGuard)
   async SubmitFlag(@Body() flagSubmissionData: {
     labUuid: string;
     flag: string;
-    userId: number
+    userId: string
   }) {
     try {
       const result = await this.flagSubmissionService.SubmitFlag(flagSubmissionData);
@@ -65,13 +66,13 @@ export class FlagSubmissionController {
       if (error.getStatus && error.getResponse) {
         throw error;
       }
-
       // Si no es un error HTTP conocido, lanza un error genérico
       throw new ConflictException('Error creando flag submission');
     }
   }
 
   @Patch(':id')
+  @UseGuards(JwtAuthGuard)
   async updateFlagSubmission(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateData: Partial<FlagSubmission>
@@ -93,11 +94,13 @@ export class FlagSubmissionController {
   }
 
   @Delete()
+  @UseGuards(JwtAuthGuard)
   async deleteAllFlagSubmissions() {
     return await this.flagSubmissionService.deleteAllFlagSubmissions();
   }
 
   @Delete(':id')
+  @UseGuards(JwtAuthGuard)
   async deleteFlagSubmission(@Param('id', ParseIntPipe) id: number) {
     return await this.flagSubmissionService.deleteFlagSubmission(id);
   }

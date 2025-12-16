@@ -17,6 +17,9 @@ export class UserDto {
   @IsOptional()
   password: string;
 
+  @IsOptional()
+  documentId: string;
+
   @IsNumber()
   @IsOptional()
   roleId: number;

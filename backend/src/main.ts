@@ -29,11 +29,23 @@ async function bootstrap() {
     process.env.FRONTEND_URL,
   ].filter(Boolean);
 
+  if (!allowedOrigins.length) {
+    throw new Error('No se ha definido FRONTEND_URL ni orígenes permitidos para CORS');
+  }
+
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Permitir peticiones sin origen (como Postman) o si está en la lista
+      if (!origin || allowedOrigins.includes(origin)) {
+        callback(null, true);
+      } else {
+        callback(new Error('No permitido por CORS: ' + origin));
+      }
+    },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'X-CSRF-Token'],
+    exposedHeaders: ['Set-Cookie'],
   });
 
   const port = process.env.PORT || 3000;

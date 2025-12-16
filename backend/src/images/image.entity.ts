@@ -4,7 +4,7 @@ import { OperatingSystem } from 'src/operating-systems/os.entity';
 import { Exclude } from 'class-transformer';
 import { Lab } from 'src/labs/lab.entity';
 
-@Entity()
+@Entity("Image")
 export class Image {
   @PrimaryGeneratedColumn('uuid')
   uuid: string;
