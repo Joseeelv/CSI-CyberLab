@@ -9,7 +9,7 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) {}
+  ) { }
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ['user', 'lab'] });
@@ -24,9 +24,24 @@ export class UserLabService {
   }
 
   async create(userLab: UserLabDto): Promise<UserLab> {
+<<<<<<< HEAD
     const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
     if (existingUserLab) {
       throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
+=======
+    try {
+      const existingUserLab = await this.userLabRepository.findOne({ where: { user: { id: userLab.userId }, lab: { uuid: userLab.labId } } });
+      if (existingUserLab) {
+        throw new ConflictException(`UserLab for userId ${userLab.userId} and labId ${userLab.labId} already exists`);
+      }
+      const newUserLab = this.userLabRepository.create({
+        ...userLab,
+        labId: parseInt(userLab.labId, 10),
+      });
+      return this.userLabRepository.save(newUserLab);
+    } catch (error) {
+      throw error;
+>>>>>>> 252b568 (Minor fixes)
     }
     const newUserLab = this.userLabRepository.create({
       ...userLab,
