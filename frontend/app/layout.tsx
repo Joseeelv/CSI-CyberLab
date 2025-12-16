@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
+import { SessionKeepAliveClient } from "../components/SessionKeepAliveClient"; 
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -32,9 +33,12 @@ export default function RootLayout({
     <html lang="en">
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased`}
-        style={{ fontFamily: "var(--font-geist-sans), var(--font-geist-mono), var(--font-orbitron)" }}
+        style={{
+          fontFamily:
+            "var(--font-geist-sans), var(--font-geist-mono), var(--font-orbitron)",
+        }}
       >
-
+        <SessionKeepAliveClient />
         {children}
       </body>
     </html>

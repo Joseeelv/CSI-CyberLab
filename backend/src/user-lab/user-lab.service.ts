@@ -74,4 +74,11 @@ export class UserLabService {
     }
     await this.userLabRepository.delete(id);
   }
+
+  async findByLabUuid(labUuid: string): Promise<UserLab[]> {
+    return this.userLabRepository.find({
+      where: { labId: labUuid },
+      relations: ["user", "lab"],
+    });
+  }
 }

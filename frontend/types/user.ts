@@ -4,6 +4,7 @@ interface User {
   username: string;
   fullName?: string;
   role?: string;
+  points?: number;
 }
 
 export type { User };
