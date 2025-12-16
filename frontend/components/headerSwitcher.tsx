@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import HeaderAuth from './authHeader';
 import { Header } from './header';
-
+import { fetcher } from '@/lib/api';
 export default function HeaderSwitcher() {
   const [checked, setChecked] = useState(false);
   const [authed, setAuthed] = useState(false);
@@ -12,15 +12,25 @@ export default function HeaderSwitcher() {
     let mounted = true;
     (async () => {
       try {
-        const base = process.env.NEXT_PUBLIC_API_URL ?? '';
-        const res = await fetch(`${base}/auth/me`, {
+        const data = await fetcher(`/auth/me`, {
           credentials: 'include',
         });
+        
         if (!mounted) return;
-        setAuthed(res.ok);
+        
+        // Verificar si el usuario está autenticado
+        setAuthed(Boolean(data?.authenticated || data?.user || data?.payload));
       } catch (err) {
         if (!mounted) return;
-        setAuthed(false);
+        const error = err as ApiError;
+        
+        // 401 es esperado cuando no está autenticado
+        if (error.statusCode === 401) {
+          setAuthed(false);
+        } else {
+          console.error('Error checking auth:', error);
+          setAuthed(false);
+        }
       } finally {
         if (!mounted) return;
         setChecked(true);

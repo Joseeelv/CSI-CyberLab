@@ -1,7 +1,33 @@
+"use client";
+
+import React, { useState, useEffect } from "react";
+
 import { Button } from "./ui/button";
 import Link from "next/link";
+import { fetcher } from "@/lib/api";
+
 
 export function CTA() {
+
+  // Estado para almacenar el conteo de usuarios
+  const [userCount, setUserCount] = useState<number | null>(null);
+
+  useEffect(() => {
+    const fetchCount = async () => {
+      try {
+        const data = await fetcher(`/users/count`);
+        
+        // Manejar diferentes formatos de respuesta
+        const count = data?.count ?? data?.total ?? data;
+        setUserCount(Number(count) || 0);
+      } catch (err) {
+        console.error('Error fetching user count:', err);
+        setUserCount(0); // Valor por defecto en caso de error
+      }
+    };
+    fetchCount();
+  }, []);
+
   return (
     <section className="py-20 px-5 relative overflow-hidden">
       {/* Animated background */}

@@ -3,10 +3,13 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from './ui/button';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 export const Hero: React.FC = () => {
   const [mounted, setMounted] = useState(false);
-
+  const { isAuthenticated, loading } = useAuth();
+  const primaryText = loading ? 'Cargando...' : isAuthenticated ? 'Ir al Dashboard' : 'Comenzar ahora';
+  console.log('Hero render - isAuthenticated:', isAuthenticated, 'loading:', loading);
   useEffect(() => {
     setMounted(true);
   }, []);
@@ -28,8 +31,15 @@ export const Hero: React.FC = () => {
       </div>
 
       {/* Glowing orbs */}
-      <div className="absolute top-20 left-10 w-64 h-64 bg-cyan-500/20 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+      <div
+        className="absolute top-20 left-10 w-64 h-64 rounded-full blur-10xl animate-pulse"
+        style={{ background: 'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)' }}
+      />
+      <div
+        className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-2xl animate-pulse"
+        style={{ background: 'radial-gradient(circle, rgba(134, 59, 246, 0.4) 0%, transparent 70%)', animationDelay: '1s' }}
+      />
+
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tight">
@@ -48,9 +58,9 @@ export const Hero: React.FC = () => {
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link href="/register">
-            <Button variant="secondary" size="lg">
-              Comenzar ahora
+          <Link href={isAuthenticated ? '/dashboard' : '/register'}>
+            <Button variant="secondary" size="lg" disabled={loading}>
+              {primaryText}
             </Button>
           </Link>
           <Link href="/labs">

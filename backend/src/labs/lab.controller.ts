@@ -31,14 +31,14 @@ export class LabsController {
   }
 
   @Post()
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.CREATED)
   async create(@Body() createLabDto: CreateLabDto) {
     return this.labService.create(createLabDto);
   }
   
   @Put(':name')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async update(
     @Param('name') name: string,
     @Body() updateLabDto: UpdateLabDto,
@@ -47,7 +47,7 @@ export class LabsController {
   }
 
   @Delete(':name')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   async remove(@Param('name') name: string) {
     await this.labService.remove(name);

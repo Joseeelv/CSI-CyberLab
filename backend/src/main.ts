@@ -37,8 +37,12 @@ async function bootstrap() {
     'http://localhost',
     'http://localhost:80',
     'http://localhost:3001',
+    'http://127.0.0.1:3001',
+    'http://localhost:3000',
+    'http://127.0.0.1:3000',
     configService.get('FRONTEND_URL'),
   ].filter(Boolean);
+  logger.log(`CORS allowed origins: ${allowedOrigins.join(', ')}`);
 
   app.enableCors({
     origin: (origin, callback) => {
@@ -50,11 +54,12 @@ async function bootstrap() {
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'Cookie', 'Set-Cookie'],
+    exposedHeaders: ['Set-Cookie', 'Authorization'],
   });
 
   const port = configService.get<number>('PORT', 3000);
-  await app.listen(port, 'localhost');
+  await app.listen(port, '0.0.0.0');
 
   logger.log(`Backend running on http://localhost:${port}/api`);
   logger.log(`Environment: ${configService.get('NODE_ENV')}`);

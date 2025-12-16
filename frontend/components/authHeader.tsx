@@ -4,6 +4,9 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
 import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import { fetcher } from '@/lib/api';
+
 
 export function HeaderAuth() {
   const [mounted, setMounted] = useState(false);
@@ -38,9 +41,8 @@ export function HeaderAuth() {
 
   const handleLogoutClick = async () => {
     try {
-      const base = process.env.NEXT_PUBLIC_API_URL ?? '';
-      await fetch(`${base}/auth/logout`, {
-        method: 'POST',
+      await fetcher(`/auth/logout`, {
+        method: 'DELETE',
         credentials: 'include',
       });
     } catch (err) {
@@ -54,6 +56,28 @@ export function HeaderAuth() {
       }
     }
   };
+
+  // const API_URL = process.env.NEXT_PUBLIC_API_URL;
+  //   React.useEffect(() => {
+  //     const fetchCount = async () => {
+  //       try {
+  //         const res = await fetch(`${API_URL}/users/getImage`, {
+  //           method: 'GET',
+  //           credentials: 'include',
+  //           headers: { 'Content-Type': 'application/json' }
+  //         });
+  //         if (!res.ok) {
+  //           setGetImage(false);
+  //           return;
+  //         }
+  //         const data = await res.json();
+  //         setGetImage(Boolean(data?.image ?? false));
+  //       } catch (err) {
+  //         setGetImage(false);
+  //       }
+  //     };
+  //     fetchCount();
+  //   }, []);
 
   return (
     <header className={`sticky top-0 z-50 transition-all duration-300 ${scrolled ? 'bg-[#0a0e1a]/95 backdrop-blur-xl shadow-lg shadow-cyan-500/5 border-b border-cyan-500/20' : 'bg-transparent border-b border-gray-800/50'}`}>
@@ -72,8 +96,8 @@ export function HeaderAuth() {
             <Button variant="ghost" onClick={handleLogoutClick}>
               Cerrar Sesión
             </Button>
-          </div>
-        )}
+          )}
+        </div>
       </nav>
     </header>
   );

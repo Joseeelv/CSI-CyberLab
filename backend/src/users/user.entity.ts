@@ -1,7 +1,8 @@
-import { Entity, Column, PrimaryGeneratedColumn, ManyToMany, JoinColumn, JoinTable, ManyToOne } from "typeorm";
+import { Entity, Column, PrimaryGeneratedColumn, JoinColumn, ManyToOne, OneToMany, ManyToMany, JoinTable } from "typeorm";
 import { Container } from "src/containers/container.entity";
 import { Lab } from "src/labs/lab.entity";
 import { Role } from "src/role/role.entity";
+import { Session } from "src/session/session.entity";
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -23,11 +24,11 @@ export class User {
   @JoinColumn({ name: 'roleId' })
   role: Role;
 
-  @ManyToMany(() => Container, (container) => container.user, {
-    nullable: false
-  })
-  @JoinTable()
+  @OneToMany(() => Container, (container) => container.user)
   containers: Container[];
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
 
   @ManyToMany(() => Lab, (lab) => lab.users, {
     nullable: false

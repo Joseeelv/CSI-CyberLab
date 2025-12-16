@@ -1,21 +1,23 @@
-"use client";
-
-import { useState } from 'react';
+'use client';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import Image from 'next/image';
+import { Button } from './ui/button';
 import { BackgroundGradient } from './backgroundGradient';
 import { fetcher, type ApiError } from '@/lib/api';
+import Image from 'next/image';
 
-export default function Login() {
+export default function Register() {
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isVisible, setIsVisible] = useState(false);
+  const [isClosing, setIsClosing] = useState(false); // Nuevo estado para cerrar
   const router = useRouter();
-
   useEffect(() => {
     // Animación de entrada cuando el componente se monta
-    const timer = setTimeout(() => setIsVisible(true), 600);
+    const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
@@ -24,47 +26,61 @@ export default function Login() {
     setIsLoading(true);
     setError('');
 
-    if (!email || !password) {
+    if (!email || !password || !username) {
       setError('Por favor completa todos los campos');
       setIsLoading(false);
       return;
     }
 
-    const res = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      credentials: 'include',
-      body: JSON.stringify({ email, password }),
-    });
-
-      // Verificar que la respuesta tenga la estructura esperada
-      if (!data || typeof data !== 'object') {
-        throw new Error('Respuesta inválida del servidor');
-      }
-
-      // Redirigir según el rol
-      const roleData = (data as any);
-      const roleName = roleData?.role?.name || roleData?.user?.role?.name;
-      if (roleName === 'admin') {
-        router.push('/admin');
-      } else {
-        router.push('/dashboard');
-      }
+    try {
+      await fetcher(`/auth/register`, {
+        method: 'POST',
+        body: JSON.stringify({ username, email, password }),
+      });
+      router.push('/login');
     } catch (err) {
-      setError('Credenciales inválidas. Inténtalo de nuevo.');
+      const error = err as ApiError;
+      setError(error.message || 'No se ha podido registrar. Inténtalo de nuevo.');
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleClose = () => {
+    // Inicia la animación de cierre
+    setIsClosing(true);
+
+    setTimeout(() => {
+      router.push('/');
+    }, 200);
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#0a0e1a] p-4 relative overflow-hidden">
       <BackgroundGradient />
 
-      <div className="w-full max-w-md relative z-10">
+      {/* El formulario con la animación aplicada */}
+      <div
+        id="login-form"
+        style={{ willChange: 'transform, opacity' }}
+        className={`w-full max-w-md relative z-10 ${isClosing
+          ? 'animate-fadeOutSlideDown'
+          : isVisible
+            ? 'animate-fadeInSlideUp'
+            : 'opacity-0'
+          }`}
+      >
         <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">
+          {/* Close button */}
+          <Button
+            variant="close"
+            size="sm"
+            onClick={handleClose}
+            aria-label="Cerrar"
+          >
+            X
+          </Button>
+
           <div className="p-8">
             {/* Logo */}
             <div className="flex justify-center mb-8">
@@ -77,10 +93,10 @@ export default function Login() {
             </div>
 
             <h2 className="text-center text-3xl font-bold text-white mb-2 bg-gradient-to-r from-cyan-400 to-blue-500 bg-clip-text text-transparent">
-              Bienvenido de Nuevo
+              Crea tu cuenta
             </h2>
             <p className="text-center text-gray-400 mb-8">
-              Inicia sesión en tu cuenta
+              Empieza tu viaje en ciberseguridad hoy mismo.
             </p>
 
             {error && (
@@ -96,6 +112,22 @@ export default function Login() {
 
             <form className="space-y-6" onSubmit={handleSubmit}>
               <div>
+                <label htmlFor="username" className="block text-sm font-medium text-gray-300 mb-2">
+                  Nombre de Usuario
+                </label>
+                <div className="relative group">
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    autoComplete="username"
+                    required
+                    className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    placeholder="yourusername"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                </div>
                 <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
                   Email
                 </label>
@@ -111,38 +143,26 @@ export default function Login() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                   />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none" />
+                </div>
+                <div>
+                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                    Contraseña
+                  </label>
+                  <div className="relative group">
+                    <input
+                      id="password"
+                      name="password"
+                      type="password"
+                      autoComplete="current-password"
+                      required
+                      className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
-
-              <div>
-                <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
-                  Contraseña
-                </label>
-                <div className="relative group">
-                  <input
-                    id="password"
-                    name="password"
-                    type="password"
-                    autoComplete="current-password"
-                    required
-                    className="w-full px-4 py-3 rounded-lg border border-gray-700 bg-gray-900/50 text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                  />
-                  <div className="absolute inset-0 rounded-lg bg-gradient-to-r from-cyan-400 to-blue-500 opacity-0 group-focus-within:opacity-10 transition-opacity duration-300 pointer-events-none" />
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <div className="text-sm">
-                  <a href="#" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-                    ¿Olvidaste la contraseña?
-                  </a>
-                </div>
-              </div>
-
               <div>
                 <button
                   type="submit"
@@ -152,17 +172,16 @@ export default function Login() {
                   <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
                   <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
                   <span className="relative z-10 text-[#0a0e1a] font-bold">
-                    {isLoading ? 'Entrando...' : 'Iniciar Sesión'}
+                    {isLoading ? 'Resgistrando cuenta...' : 'Registrarse'}
                   </span>
                 </button>
               </div>
             </form>
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-400">
-                ¿No tienes cuenta?{' '}
-                <a href="/register" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
-                  Regístrate aquí
+                ¿Tienes cuenta?{' '}
+                <a href="/login" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                  Inicia sesión
                 </a>
               </p>
             </div>
