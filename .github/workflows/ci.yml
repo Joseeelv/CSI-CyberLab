@@ -58,32 +58,17 @@ jobs:
           echo ""
           echo "Checking for pnpm-lock.yaml..."
           if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml NOT found in root"
-            echo "This is expected for a monorepo structure"
-          else
-            echo "✓ pnpm-lock.yaml found in root"
-            pnpm install --frozen-lockfile
-          fi
-
-      - name: Install Frontend Dependencies
-        working-directory: ./frontend
-        run: |
-          echo "Installing dependencies in: $(pwd)"
-          echo "Node version: $(node --version)"
-          echo "pnpm version: $(pnpm --version)"
-          echo ""
-          echo "Checking for pnpm-lock.yaml..."
-          if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml NOT found - creating it..."
+            echo "❌ pnpm-lock.yaml NOT found - this is el problema!"
             echo "Files in current directory:"
             ls -la
             echo ""
+            echo "Creating pnpm-lock.yaml..."
             pnpm install --no-frozen-lockfile
           else
             echo "✓ pnpm-lock.yaml found"
             echo ""
             echo "Running pnpm install --frozen-lockfile..."
-            pnpm install --frozen-lockfile
+            pnpm install --frozen-lockfile --verbose
           fi
           echo ""
           echo "Installation completed with exit code: $?"
@@ -91,26 +76,29 @@ jobs:
       - name: Debug node_modules after install
         working-directory: ./frontend
         run: |
-          echo "Checking installation results..."
-          echo "Does node_modules exist?"
+          echo "Contenido de node_modules tras instalar:"
+          ls -la node_modules || echo "node_modules no existe"
+          echo "Contenido de node_modules/.bin:"
+          ls -la node_modules/.bin || echo "node_modules/.bin no existe"
+
+      - name: Verify installation
+        working-directory: ./frontend
+        run: |
+          echo "Checking node_modules..."
           if [ -d "node_modules" ]; then
             echo "✓ node_modules exists"
-            echo "Size: $(du -sh node_modules)"
-            echo "Sample of installed packages:"
-            ls node_modules | head -20
+            echo "Checking for eslint..."
+            if [ -f "node_modules/.bin/eslint" ]; then
+              echo "✓ eslint binary found"
+            else
+              echo "✗ eslint binary NOT found"
+              echo "Contents of node_modules/.bin:"
+              ls -la node_modules/.bin/ || echo "node_modules/.bin does not exist"
+            fi
           else
             echo "✗ node_modules does NOT exist"
+            exit 1
           fi
-          echo ""
-          echo "Does node_modules/.bin exist?"
-          if [ -d "node_modules/.bin" ]; then
-            echo "✓ node_modules/.bin exists"
-            echo "Available binaries:"
-            ls -la node_modules/.bin/
-          else
-            echo "✗ node_modules/.bin does NOT exist"
-          fi
-
 
       - name: List package.json scripts
         working-directory: ./frontend
@@ -195,16 +183,17 @@ jobs:
           echo ""
           echo "Checking for pnpm-lock.yaml..."
           if [ ! -f "pnpm-lock.yaml" ]; then
-            echo "❌ pnpm-lock.yaml NOT found - creating it..."
+            echo "❌ pnpm-lock.yaml NOT found - this is the problem!"
             echo "Files in current directory:"
             ls -la
             echo ""
+            echo "Creating pnpm-lock.yaml..."
             pnpm install --no-frozen-lockfile
           else
             echo "✓ pnpm-lock.yaml found"
             echo ""
             echo "Running pnpm install --frozen-lockfile..."
-            pnpm install --frozen-lockfile
+            pnpm install --frozen-lockfile --verbose
           fi
           echo ""
           echo "Installation completed with exit code: $?"
@@ -214,7 +203,6 @@ jobs:
         run: |
           if [ -d "node_modules" ]; then
             echo "✓ node_modules exists"
-            echo "Size: $(du -sh node_modules)"
           else
             echo "✗ node_modules does NOT exist"
             exit 1
