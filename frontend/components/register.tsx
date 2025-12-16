@@ -54,17 +54,20 @@ export default function Register() {
       router.push('/login');
     } catch (err) {
       // Manejar errores del backend
-      if (err.message) {
-        if (Array.isArray(err.message)) {
+      if (typeof err === 'object' && err !== null && 'message' in err) {
+        const message = (err as { message: unknown }).message;
+        if (Array.isArray(message)) {
           // Errores de validación del DTO
-          err.message.forEach((msg: string) => {
+          message.forEach((msg: string) => {
             if (msg.includes('email')) setError(msg);
             else if (msg.includes('password') || msg.includes('contraseña')) setError(msg);
             else if (msg.includes('username') || msg.includes('usuario')) setError(msg);
             else setError(msg);
           });
+        } else if (typeof message === 'string') {
+          setError(message);
         } else {
-          setError(err.message);
+          setError('Error al registrar. Por favor, intenta de nuevo.');
         }
       } else {
         setError('Error al registrar. Por favor, intenta de nuevo.');

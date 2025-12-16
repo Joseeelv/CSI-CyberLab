@@ -133,9 +133,19 @@ export default function Dashboard() {
         // Intenta mostrar el mensaje de error si existe
         if ((error as Error)?.message) {
           console.error('Error loading labs:', (error as Error).message, error);
-        } else if ((error as unknown)?.response) {
-          // Si usas axios, puede venir aquí
-          console.error('Error loading labs:', (error as unknown).response.data, error);
+        } else if (
+          typeof error === 'object' &&
+          error !== null &&
+          'response' in error &&
+          typeof (error as { response?: unknown }).response === 'object' &&
+          (error as { response?: { data?: unknown } }).response !== null &&
+          'data' in (error as { response?: { data?: unknown } }).response!
+        ) {
+          console.error(
+            'Error loading labs:',
+            (error as { response: { data?: unknown } }).response.data,
+            error
+          );
         } else {
           console.error('Error loading labs:', error);
         }
@@ -179,6 +189,12 @@ export default function Dashboard() {
   // Load completed labs
   // Sincroniza completedLabs con el backend usando isFinished
   useEffect(() => {
+    interface UserLab {
+      userId: string;
+      isFinished: boolean;
+      labId: string | { uuid: string };
+    }
+
     const fetchCompletedLabs = async () => {
       if (!userPayload?.id) {
         setCompletedLabs([]);
@@ -188,9 +204,15 @@ export default function Dashboard() {
         const userLabs = await fetcher('/user-lab', { credentials: 'include' });
         // Filtra los labs completados por el usuario
         const completed = (userLabs || [])
-          .filter((ul) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
-          .map((ul) => {
-            // Si labId es objeto con uuid, usa uuid, si es string, usa string
+          .filter((ul: unknown): ul is UserLab =>
+            typeof ul === 'object' &&
+            ul !== null &&
+            'userId' in ul &&
+            'isFinished' in ul &&
+            'labId' in ul
+          )
+          .filter((ul: UserLab) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
+          .map((ul: UserLab) => {
             if (typeof ul.labId === 'object' && ul.labId !== null && 'uuid' in ul.labId) {
               return ul.labId.uuid;
             }
@@ -277,7 +299,21 @@ export default function Dashboard() {
         }
       } catch (err) {
         // Si el error es porque ya existe, no hacemos nada
-        if (err?.message?.includes('already exists') || err?.response?.status === 409) {
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "message" in err &&
+          typeof (err as { message?: unknown }).message === "string" &&
+          ((err as { message: string }).message).includes('already exists')
+        ) {
+          return;
+        }
+        if (
+          typeof err === "object" &&
+          err !== null &&
+          "response" in err &&
+          (err as { response?: { status?: number } }).response?.status === 409
+        ) {
           return;
         }
         console.error('Error registering user lab:', err);
@@ -299,9 +335,22 @@ export default function Dashboard() {
     if (!userPayload?.id) return;
     try {
       // Buscar el registro UserLab correspondiente
+      interface UserLab {
+        id: string;
+        userId: string;
+        isFinished: boolean;
+        labId: string | { uuid: string };
+      }
       const userLabs = await fetcher('/user-lab', { credentials: 'include' });
-      const userLab = (userLabs || []).find((ul) => ul.userId === userPayload.id && ul.labId === labId);
-      if (userLab) {
+      const userLab = (userLabs || []).find(
+        (ul: unknown): ul is UserLab =>
+          typeof ul === 'object' &&
+          ul !== null &&
+          'userId' in ul &&
+          'labId' in ul &&
+          'id' in ul
+      );
+      if (userLab && userLab.userId === userPayload.id && userLab.labId === labId) {
         await fetcher(`/user-lab/${userLab.id}`, {
           method: 'PUT',
           credentials: 'include',
@@ -311,8 +360,20 @@ export default function Dashboard() {
         // Refresca la lista de labs completados
         const updatedUserLabs = await fetcher('/user-lab', { credentials: 'include' });
         const completed = (updatedUserLabs || [])
-          .filter((ul) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
-          .map((ul) => ul.labId);
+          .filter((ul: unknown): ul is UserLab =>
+            typeof ul === 'object' &&
+            ul !== null &&
+            'userId' in ul &&
+            'isFinished' in ul &&
+            'labId' in ul
+          )
+          .filter((ul: UserLab) => ul.userId === userPayload.id && ul.isFinished && ul.labId)
+          .map((ul: UserLab) => {
+            if (typeof ul.labId === 'object' && ul.labId !== null && 'uuid' in ul.labId) {
+              return ul.labId.uuid;
+            }
+            return String(ul.labId);
+          });
         setCompletedLabs(completed);
       }
     } catch {
@@ -488,7 +549,8 @@ export default function Dashboard() {
                         setSuccess('Datos actualizados correctamente.');
                       } catch (err) {
                         let msg = 'Error al actualizar los datos';
-                        if (err?.message) msg += `: ${err.message}`;
+                        const errorMsg = (err as Error)?.message ?? (typeof err === 'string' ? err : '');
+                        if (errorMsg) msg += `: ${errorMsg}`;
                         setError(msg);
                       }
                     }}
