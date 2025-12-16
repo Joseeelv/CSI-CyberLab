@@ -6,8 +6,6 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { fetcher } from "@/lib/api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
 export function CTA() {
 
   // Estado para almacenar el conteo de usuarios
