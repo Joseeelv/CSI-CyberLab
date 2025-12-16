@@ -10,7 +10,8 @@ import { Role } from 'src/role/role.entity';
 import { Image } from 'src/images/image.entity';
 import { Container } from 'src/containers/container.entity';
 import { Lab } from 'src/labs/lab.entity';
-
+import { FlagSubmission } from 'src/flag-submission/flag-submission.entity';
+import { User } from 'src/users/user.entity';
 @Module({
   imports: [
     TypeOrmModule.forFeature([
@@ -22,10 +23,12 @@ import { Lab } from 'src/labs/lab.entity';
       Image,
       Container,
       Lab,
+      User,
+      FlagSubmission,
     ]),
   ],
   controllers: [SeederController],
   providers: [SeederService],
   exports: [SeederService],
 })
-export class SeederModule {}
+export class SeederModule { }

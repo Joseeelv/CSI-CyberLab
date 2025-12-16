@@ -5,7 +5,7 @@ import { UserLab } from '../user-labs/user-lab.entity';
 
 @Entity()
 export class User {
-  @Exclude()
+
   @PrimaryGeneratedColumn()
   id: number;
 

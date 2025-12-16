@@ -25,7 +25,6 @@ async function bootstrap() {
   // Habilitar CORS para tu frontend. Usa FRONTEND_URL de .env si está disponible.
   const allowedOrigins = [
     'http://localhost',
-    'http://localhost:80',
     'http://localhost:3001',
     process.env.FRONTEND_URL,
   ].filter(Boolean);

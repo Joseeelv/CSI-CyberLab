@@ -2,6 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { Role } from './role.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { instanceToPlain } from 'class-transformer';
 
 @Injectable()
 export class RoleService {
@@ -23,8 +24,9 @@ export class RoleService {
     }
   }
 
-  async getAllRoles(): Promise<Role[]> {
-    return await this.roleRepository.find();
+  async getAllRoles(): Promise<any[]> {
+    const roles = await this.roleRepository.find();
+    return roles.map(r => instanceToPlain(r));
   }
 
   async getRoleById(id: number): Promise<Role> {

@@ -26,7 +26,7 @@ export class ContainerService {
   ) { }
 
   async getContainers() {
-    return await this.containerRepository.find({
+    return this.containerRepository.find({
       relations: ['image', 'lab', 'status', 'user'],
     });
   }

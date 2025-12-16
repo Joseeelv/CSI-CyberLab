@@ -43,7 +43,7 @@ export class UserController {
   }
 
   // Endpoint para buscar un usuario por su correo electrónico
-  @Get('email')
+  @Get('/email/:email')
   findByEmail(@Param('email') email: string): Promise<User | null> {
     return this.userService.findByEmail(email);
   }
