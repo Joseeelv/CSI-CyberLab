@@ -122,6 +122,7 @@ export function Register() {
               handleSubmit(e); // Llama al método handleSubmit
             }
           }}
+          autoComplete="off"
         >
 
           <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">

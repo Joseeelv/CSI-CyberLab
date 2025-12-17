@@ -33,5 +33,9 @@ export class UserDto {
 
   @IsString()
   @IsOptional()
+  roleName?: string;
+
+  @IsString()
+  @IsOptional()
   fullName: string;
 }

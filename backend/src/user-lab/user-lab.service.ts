@@ -81,4 +81,12 @@ export class UserLabService {
       relations: ["user", "lab"],
     });
   }
+
+  async deleteAll(): Promise<void> {
+    await this.userLabRepository
+      .createQueryBuilder()
+      .delete()
+      .from(UserLab)
+      .execute();
+  }
 }

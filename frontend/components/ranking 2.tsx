@@ -23,6 +23,9 @@ export function RankingGeneral() {
           },
         });
 
+        console.log("=== DEBUG RANKING GENERAL ===");
+        console.log("Total user-labs en BD:", data.length);
+
         // Agrupar por userId (no por user.id) y sumar scores de TODOS los labs
         const userScores: Record<string, { user: User; score: number }> = {};
 
@@ -44,6 +47,16 @@ export function RankingGeneral() {
         const rankingArr = Object.values(userScores).sort(
           (a, b) => b.score - a.score
         );
+
+        console.log(`📊 Ranking General: ${rankingArr.length} usuarios únicos`);
+        console.table(
+          rankingArr.map((r, idx) => ({
+            posición: idx + 1,
+            usuario: r.user.username,
+            "puntos totales": r.score,
+          }))
+        );
+        console.log("=========================");
 
         setRanking(rankingArr);
       } catch (err) {
@@ -146,9 +159,42 @@ export function RankingLab({ labId }: { labId?: string }) {
           "Content-Type": "application/json",
         },
       });
+
+      console.log("=== DEBUG RANKING LAB ===");
+      console.log("Total user-labs en BD:", data.length);
+
       // Mostrar TODOS los labs con sus usuarios
+      const allLabsInfo = data.reduce<Record<string, unknown[]>>((acc, item) => {
+        const labName = item.lab?.name || item.labId;
+        if (!acc[labName]) acc[labName] = [];
+        acc[labName].push({
+          usuario: item.user.username,
+          score: item.score,
+          userId: item.user.id,
+        });
+        return acc;
+      }, {});
+      console.log("📋 Todos los laboratorios y usuarios:");
+      console.table(allLabsInfo);
+
+      console.log("Filtrando por labId:", labId);
+
       // FILTRAR EN EL FRONTEND por el labId específico
       const filteredData = data.filter((item) => item.labId === labId);
+
+      console.log(
+        `✅ User-labs encontrados para este lab: ${filteredData.length}`
+      );
+      console.table(
+        filteredData.map((item) => ({
+          id: item.id,
+          usuario: item.user.username,
+          userId: item.user.id,
+          score: item.score,
+          progress: item.progress,
+          isFinished: item.isFinished,
+        }))
+      );
 
       // Mostrar cada usuario UNA SOLA VEZ
       // La clave es userId (no username) para identificar usuarios únicos
@@ -166,7 +212,7 @@ export function RankingLab({ labId }: { labId?: string }) {
         } else {
           // Si ya existe el mismo userId, es un duplicado REAL
           console.warn(
-            `Duplicado REAL encontrado para userId ${userId} (${item.user.username}) en lab ${labId}`
+            `⚠️ Duplicado REAL encontrado para userId ${userId} (${item.user.username}) en lab ${labId}`
           );
           const currentScore = Number(userScores[userId].score) || 0;
           const newScore = Number(item.score) || 0;
@@ -184,6 +230,19 @@ export function RankingLab({ labId }: { labId?: string }) {
       const rankingArr = Object.values(userScores).sort(
         (a, b) => (Number(b.score) || 0) - (Number(a.score) || 0)
       );
+
+      console.log(`📊 Ranking final: ${rankingArr.length} usuarios únicos`);
+      console.table(
+        rankingArr.map((r, idx) => ({
+          posición: idx + 1,
+          usuario: r.user.username,
+          userId: r.user.id,
+          score: r.score,
+          progress: r.progress + "%",
+          finalizado: r.isFinished ? "Sí" : "No",
+        }))
+      );
+      console.log("=========================");
       setRanking(rankingArr);
     } catch (err) {
       console.error("Error al obtener el ranking:", err);

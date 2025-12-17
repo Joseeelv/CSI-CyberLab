@@ -54,16 +54,18 @@ export class AuthService {
       console.error("Error hashing password");
       throw new BadRequestException("Failed to hash password");
     }
+    console.log("Register data", registerData);
 
-    const newUser = {
-      username: user.username,
-      fullName: user.username,
-      email: user.email,
-      password: user.password,
-      roleId: 2, // Asignar rol de estudiante por defecto
-      createdAt: new Date(),
-    };
-    return this.userService.createUser(newUser);
+    if (registerData?.roleId === 3) {
+      user.roleId = { id: 3, name: "teacher" }; // Asignar rol de docente
+    } else {
+      user.roleId = { id: 2, name: "student" }; // Asignar rol de estudiante por defecto
+    }
+    user.fullName = registerData.fullName ?? "";
+
+    // Ya tienes el objeto user construido y con los campos correctos
+    user.created = new Date();
+    return this.userService.createUser(user);
   }
 
   // Función para login

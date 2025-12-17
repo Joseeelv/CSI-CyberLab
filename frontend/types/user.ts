@@ -3,8 +3,14 @@ interface User {
   email: string;
   username: string;
   fullName?: string;
-  role?: string;
+  role?: Role | string | number;
+  roleId?: Role | string | number;
   points?: number;
+}
+
+interface Role {
+  id: number;
+  name: string;
 }
 
 export type { User };

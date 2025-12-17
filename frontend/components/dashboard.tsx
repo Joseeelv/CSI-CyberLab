@@ -191,7 +191,7 @@ export default function Dashboard() {
   useEffect(() => {
     const loadLabs = async () => {
       try {
-        const data = await fetcher("/labs", {
+        const data = await fetcher("/labs/activated", {
           method: "GET",
           credentials: "include",
           headers: {

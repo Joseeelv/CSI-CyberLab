@@ -17,6 +17,20 @@ export class LabService {
     private readonly labRepository: Repository<Lab>,
   ) {}
 
+  async getActivatedLabs(): Promise<Lab[]> {
+    return this.labRepository.find({
+      where: { status: { id: 2 } },
+      relations: [
+        "difficulty",
+        "operatingSystem",
+        "category",
+        "status",
+        "containers",
+        "flagSubmissions",
+      ],
+    });
+  }
+
   async getAllLabs(): Promise<Lab[]> {
     return this.labRepository.find({
       relations: [
@@ -120,6 +134,13 @@ export class LabService {
       lab.tags = this.parseTags((updateData as any).tags);
     }
 
+    // Si se le pasa el statusId o status, actualizarlo
+    if ((updateData as any).statusId) {
+      lab.status = { id: (updateData as any).statusId } as any;
+    } else if ((updateData as any).status) {
+      lab.status = { id: (updateData as any).status } as any;
+    }
+
     Object.assign(lab, updateData);
 
     const savedLab = await this.labRepository.save(lab);
@@ -165,5 +186,13 @@ export class LabService {
       }
     }
     return [];
+  }
+
+  async setLabStatus(labId: string, statusId: number): Promise<Lab> {
+    const lab = await this.findById(labId);
+    lab.status = { id: statusId } as any;
+    console.log(`Setting status of lab ${labId} to ${statusId}`);
+    const savedLab = await this.labRepository.save(lab);
+    return await this.findById(savedLab.uuid);
   }
 }

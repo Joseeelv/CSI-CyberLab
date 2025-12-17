@@ -66,4 +66,10 @@ export class UserLabController {
   async delete(@Param("id", ParseIntPipe) id: number): Promise<void> {
     return this.userLabService.delete(id);
   }
+
+  @Delete()
+  @UseGuards(JwtAuthGuard)
+  async deleteAll(): Promise<void> {
+    return this.userLabService.deleteAll();
+  }
 }

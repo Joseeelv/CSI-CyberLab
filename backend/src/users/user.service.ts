@@ -7,7 +7,6 @@ import {
 import { Repository } from "typeorm";
 import { User } from "./user.entity";
 import { Role } from "src/role/role.entity";
-import { RegisterUserDto } from "../auth/register.dto";
 import { InjectRepository } from "@nestjs/typeorm";
 import { UserDto } from "./user.dto";
 import { UserBasicDto } from "./basicUserDto.dto";
@@ -25,9 +24,9 @@ export class UserService {
   ) {}
 
   // Crear un nuevo usuario
-  async createUser(userDto: RegisterUserDto): Promise<User> {
+  async createUser(userData: Partial<User>): Promise<User> {
     try {
-      const user = this.userRepository.create(userDto);
+      const user = this.userRepository.create(userData);
       return await this.userRepository.save(user);
     } catch (error) {
       throw new ConflictException("Error creating user");
@@ -72,11 +71,26 @@ export class UserService {
     }
   }
 
+  async getAllStudents(): Promise<User[]> {
+    return await this.userRepository.find({
+      where: { roleId: { id: 2 } },
+      relations: ["roleId", "containers"],
+    });
+  }
+
   // Obtener todos los usuarios
   async getAllUsers(): Promise<User[]> {
     return await this.userRepository.find({
-      relations: ["roleId", "containers"],
+      relations: ["roleId"],
+      order: { id: "ASC" },
     });
+  }
+
+  async find(id: number): Promise<string | null> {
+    const user = await this.userRepository.findOne({
+      where: { id },
+    });
+    return user ? user.documentId : null;
   }
 
   //Obtener el conteo de usuarios (estudiantes)
@@ -87,6 +101,13 @@ export class UserService {
   // Actualizar un usuario por su ID
   async updateUser(documentId: string, updateData: UserDto): Promise<any> {
     // Buscar el usuario por ID
+    console.log(
+      "Updating user with documentId:",
+      documentId,
+      "Data:",
+      updateData,
+    );
+
     const user = await this.userRepository.findOne({ where: { documentId } });
     if (!user) {
       throw new NotFoundException("User not found");
@@ -181,5 +202,19 @@ export class UserService {
   // Guardar usuario (para refresh token)
   async saveUser(user: User): Promise<User> {
     return await this.userRepository.save(user);
+  }
+
+  // Eliminar docente
+  async remove(id: number): Promise<void> {
+    const user = await this.userRepository.findOne({ where: { id } });
+    if (!user) {
+      throw new NotFoundException("Teacher not found");
+    }
+    await this.userRepository
+      .createQueryBuilder()
+      .delete()
+      .from(User)
+      .where("id = :id", { id })
+      .execute();
   }
 }
