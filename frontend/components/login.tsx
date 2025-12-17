@@ -1,17 +1,17 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import Image from 'next/image';
-import Home from '@/app/page';
-import { fetcher } from '@/lib/api';
-import { motion } from 'framer-motion';
-import { Button } from './ui/button';
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import Image from "next/image";
+import Home from "@/app/page";
+import { fetcher } from "@/lib/api";
+import { motion } from "framer-motion";
+import { Button } from "./ui/button";
 
 export default function Login() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [, setIsVisible] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -25,39 +25,42 @@ export default function Login() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault(); // Evita el comportamiento predeterminado del formulario
     setIsLoading(true);
-    setError('');
+    setError("");
 
     // Validar campos vacíos
     if (!email || !password) {
-      setError('Por favor completa todos los campos');
+      setError("Por favor completa todos los campos");
       setIsLoading(false);
       return; // Detener el flujo si hay errores
     }
-    
+
     try {
-      const data = await fetcher('/auth/login', {
-        method: 'POST',
-        credentials: 'include',
+      const data = await fetcher("/auth/login", {
+        method: "POST",
+        credentials: "include",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ email, password }),
       });
 
-      localStorage.setItem('accessToken', data.accessToken);
-      localStorage.setItem('refreshToken', data.refreshToken);
-      localStorage.setItem('documentId', data.documentId);
+      localStorage.setItem("accessToken", data.accessToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("documentId", data.documentId);
 
       // Comprobar el rol y redirigir en consecuencia
       if (data && data.role) {
-        if (data.role === 'student') router.push('/dashboard');
-        else if (data.role === 'admin') router.push('/admin');
-        else router.push('/dashboard');
+        console.log("Usuario autenticado con rol:", data.role);
+        if (data.role === "student" || data.role === "teacher")
+          router.push("/dashboard");
+        else if (data.role === "admin") router.push("/admin");
       } else {
-        setError('Respuesta del servidor inválida.');
+        setError("Respuesta del servidor inválida.");
       }
     } catch {
-      setError('Error al iniciar sesión. Por favor, verifica tus credenciales.');
+      setError(
+        "Error al iniciar sesión. Por favor, verifica tus credenciales."
+      );
     } finally {
       setIsLoading(false);
     }
@@ -68,7 +71,7 @@ export default function Login() {
     setIsClosing(true);
 
     setTimeout(() => {
-      router.push('/');
+      router.push("/");
     }, 100);
   };
 
@@ -99,7 +102,7 @@ export default function Login() {
           className="w-full max-w-lg rounded-xl shadow-2xl relative z-10 space-y-6 overflow-hidden"
           onSubmit={handleSubmit}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') {
+            if (e.key === "Enter") {
               handleSubmit(e); // Llama al método handleSubmit
             }
           }}
@@ -139,17 +142,31 @@ export default function Login() {
               {error && (
                 <div className="mb-6 rounded-lg bg-red-500/10 p-4 border border-red-500/30 backdrop-blur-sm">
                   <div className="flex items-start gap-3">
-                    <svg className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    <svg
+                      className="h-5 w-5 text-red-400 flex-shrink-0 mt-0.5"
+                      xmlns="http://www.w3.org/2000/svg"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
                     </svg>
-                    <h3 className="text-sm font-medium text-red-300">{error}</h3>
+                    <h3 className="text-sm font-medium text-red-300">
+                      {error}
+                    </h3>
                   </div>
                 </div>
               )}
 
               <div className="space-y-6">
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Email
                   </label>
                   <div className="relative group">
@@ -167,7 +184,10 @@ export default function Login() {
                 </div>
 
                 <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-gray-300 mb-2">
+                  <label
+                    htmlFor="password"
+                    className="block text-sm font-medium text-gray-300 mb-2"
+                  >
                     Contraseña
                   </label>
                   <div className="relative group">
@@ -186,7 +206,10 @@ export default function Login() {
 
                 <div className="flex items-center justify-between">
                   <div className="text-sm">
-                    <a href="#" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                    <a
+                      href="#"
+                      className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                    >
                       ¿Olvidaste la contraseña?
                     </a>
                   </div>
@@ -201,7 +224,7 @@ export default function Login() {
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 transition-transform duration-300 group-hover:scale-110" />
                     <span className="absolute inset-0 bg-gradient-to-r from-cyan-400 to-blue-500 blur-lg opacity-50 group-hover:opacity-75 transition-opacity duration-300" />
                     <span className="relative z-10 text-[#0a0e1a] font-bold">
-                      {isLoading ? 'Entrando...' : 'Iniciar Sesión'}
+                      {isLoading ? "Entrando..." : "Iniciar Sesión"}
                     </span>
                   </button>
                 </div>
@@ -209,8 +232,11 @@ export default function Login() {
 
               <div className="mt-6 text-center">
                 <p className="text-sm text-gray-400">
-                  ¿No tienes cuenta?{' '}
-                  <a href="/register" className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors">
+                  ¿No tienes cuenta?{" "}
+                  <a
+                    href="/register"
+                    className="font-medium text-cyan-400 hover:text-cyan-300 transition-colors"
+                  >
                     Regístrate aquí
                   </a>
                 </p>

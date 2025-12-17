@@ -8,6 +8,12 @@ export interface Lab {
   points: number;
   estimatedTime: number; // in minutes
   tags: string[];
+  status?: {
+    id: number;
+    name: string;
+  };
+  statusId?: number | string;
+
 }
 
 export interface ActiveLab {
