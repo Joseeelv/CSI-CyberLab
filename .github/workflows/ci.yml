@@ -1,0 +1,240 @@
+name: Full Stack Checks (Debug)
+
+on:
+  push:
+    branches:
+      - testing
+  pull_request:
+    branches:
+      - testing
+
+jobs:
+  frontend-checks:
+    name: Frontend Validation
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+          run_install: false
+
+      - name: Debug - Check directory structure
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Files in root:"
+          ls -la
+          echo "Files in frontend:"
+          ls -la frontend/
+          echo "Checking for pnpm-lock.yaml:"
+          find . -name "pnpm-lock.yaml" -type f
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: |
+          echo "Installing dependencies in frontend: $(pwd)"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo ""
+          echo "Checking for pnpm-lock.yaml..."
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "❌ pnpm-lock.yaml NOT found - this is el problema!"
+            echo "Files in current directory:"
+            ls -la
+            echo ""
+            echo "Creating pnpm-lock.yaml..."
+            pnpm install --no-frozen-lockfile
+          else
+            echo "✓ pnpm-lock.yaml found"
+            echo ""
+            echo "Running pnpm install --frozen-lockfile..."
+            pnpm install --frozen-lockfile --verbose
+          fi
+          echo ""
+          echo "Installation completed with exit code: $?"
+
+      - name: Debug node_modules after install
+        working-directory: ./frontend
+        run: |
+          echo "Contenido de node_modules tras instalar:"
+          ls -la node_modules || echo "node_modules no existe"
+          echo "Contenido de node_modules/.bin:"
+          ls -la node_modules/.bin || echo "node_modules/.bin no existe"
+
+      - name: Verify installation
+        working-directory: ./frontend
+        run: |
+          echo "Checking node_modules..."
+          if [ -d "node_modules" ]; then
+            echo "✓ node_modules exists"
+            echo "Checking for eslint..."
+            if [ -f "node_modules/.bin/eslint" ]; then
+              echo "✓ eslint binary found"
+            else
+              echo "✗ eslint binary NOT found"
+              echo "Contents of node_modules/.bin:"
+              ls -la node_modules/.bin/ || echo "node_modules/.bin does not exist"
+            fi
+          else
+            echo "✗ node_modules does NOT exist"
+            exit 1
+          fi
+
+      - name: List package.json scripts
+        working-directory: ./frontend
+        run: |
+          echo "Scripts available:"
+          cat package.json | grep -A 20 '"scripts"'
+
+      - name: Lint Frontend
+        working-directory: ./frontend
+        run: pnpm lint
+
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: pnpm build
+        env:
+          NODE_ENV: production
+          NEXT_TELEMETRY_DISABLED: 1
+
+  backend-checks:
+    name: Backend Validation
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:15-alpine
+        env:
+          POSTGRES_DB: test_db
+          POSTGRES_USER: test_user
+          POSTGRES_PASSWORD: test_pass
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    env:
+      DATABASE_HOST: localhost
+      DATABASE_PORT: 5432
+      DATABASE_NAME: test_db
+      DATABASE_USER: test_user
+      DATABASE_PASSWORD: test_pass
+      JWT_SECRET: test-jwt-secret-key-for-ci
+      SALT_ROUNDS: 10
+      NODE_ENV: test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22.x'
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10.22.0
+          run_install: false
+
+      - name: Get pnpm store directory
+        shell: bash
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: |
+          echo "Installing dependencies in: $(pwd)"
+          echo "Node version: $(node --version)"
+          echo "pnpm version: $(pnpm --version)"
+          echo ""
+          echo "Checking for pnpm-lock.yaml..."
+          if [ ! -f "pnpm-lock.yaml" ]; then
+            echo "❌ pnpm-lock.yaml NOT found - this is the problem!"
+            echo "Files in current directory:"
+            ls -la
+            echo ""
+            echo "Creating pnpm-lock.yaml..."
+            pnpm install --no-frozen-lockfile
+          else
+            echo "✓ pnpm-lock.yaml found"
+            echo ""
+            echo "Running pnpm install --frozen-lockfile..."
+            pnpm install --frozen-lockfile --verbose
+          fi
+          echo ""
+          echo "Installation completed with exit code: $?"
+
+      - name: Verify installation
+        working-directory: ./backend
+        run: |
+          if [ -d "node_modules" ]; then
+            echo "✓ node_modules exists"
+          else
+            echo "✗ node_modules does NOT exist"
+            exit 1
+          fi
+
+      - name: Lint Backend
+        working-directory: ./backend
+        run: pnpm lint
+
+      - name: Run Tests
+        working-directory: ./backend
+        run: pnpm test
+
+      - name: Build Backend
+        working-directory: ./backend
+        run: pnpm build
+        env:
+          NODE_ENV: production
+
+  all-checks:
+    name: All Checks Passed
+    runs-on: ubuntu-latest
+    needs: [frontend-checks, backend-checks]
+    if: always()
+    steps:
+      - name: Check all jobs
+        run: |
+          if [ "${{ needs.frontend-checks.result }}" != "success" ] || [ "${{ needs.backend-checks.result }}" != "success" ]; then
+            echo "❌ One or more checks failed"
+            echo "Frontend: ${{ needs.frontend-checks.result }}"
+            echo "Backend: ${{ needs.backend-checks.result }}"
+            exit 1
+          fi
+          echo "✅ All checks passed successfully!"

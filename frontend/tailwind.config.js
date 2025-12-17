@@ -16,6 +16,43 @@ module.exports = {
         background: "var(--background)",
         foreground: "var(--foreground)",
       },
+      keyframes: {
+        fadeInSlideUp: {
+          "0%": {
+            opacity: "0",
+            transform: "translateY(40px)",
+          },
+          "100%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+        },
+        fadeOutSlideDown: {
+          "0%": {
+            opacity: "1",
+            transform: "translateY(0)",
+          },
+          "100%": {
+            opacity: "0",
+            transform: "translateY(40px)",
+          },
+        },
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "50%": { opacity: "0.5" },
+          "100%": { opacity: "1" },
+        },
+      },
+      animation: {
+        fadeInSlideUp: "fadeInSlideUp 0.1s ease-out forwards",
+        fadeOutSlideDown: "fadeOutSlideDown 0.1s ease-out forwards",
+        fadeIn: "fadeIn 0.3s ease-out",
+      },
+      animation: {
+        fadeInSlideUp: "fadeInSlideUp 0.1s ease-out forwards",
+        fadeOutSlideDown: "fadeOutSlideDown 0.1s ease-out forwards",
+        fadeIn: "fadeIn 0.3s ease-out",
+      },
     },
   },
   plugins: [],

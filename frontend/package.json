@@ -3,24 +3,34 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 8001",
+    "dev": "next dev --port=3001 --hostname=0.0.0.0 --turbopack",
     "build": "next build",
-    "start": "next start --port 8001",
-    "lint": "eslint"
+    "start": "next start --port=3001 --hostname=0.0.0.0",
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix .",
+    "format": "prettier --write .",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "next": "16.0.3",
+    "next": "16.0.10",
     "react": "19.2.0",
     "react-dom": "19.2.0"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "eslint": "^9",
+    "@typescript-eslint/eslint-plugin": "^8.50.0",
+    "@typescript-eslint/parser": "^8.50.0",
+    "autoprefixer": "^10.4.22",
+    "eslint": "^9.39.2",
     "eslint-config-next": "16.0.3",
-    "tailwindcss": "^4",
-    "typescript": "^5"
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "framer-motion": "^12.23.26",
+    "lucide-react": "^0.468.0",
+    "postcss": "^8.5.6",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.9.3"
   }
 }

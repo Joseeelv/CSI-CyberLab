@@ -1,12 +1,15 @@
-import { Injectable, UnauthorizedException, BadRequestException, Req } from '@nestjs/common';
-import { UserService } from '../users/user.service';
-import { User } from '../users/user.entity';
-import { RegisterUserDto } from './register.dto';
-import * as bcrypt from 'bcrypt';
-import { ConfigService } from '@nestjs/config';
-import { error } from 'console';
-import { LoginUserDto } from './login.dto';
-import { JwtService } from '@nestjs/jwt';
+import {
+  Injectable,
+  UnauthorizedException,
+  BadRequestException,
+} from "@nestjs/common";
+import { UserService } from "src/users/user.service";
+import { User } from "src/users/user.entity";
+import { RegisterUserDto } from "./register.dto";
+import * as bcrypt from "bcrypt";
+import { ConfigService } from "@nestjs/config";
+import { LoginUserDto } from "./login.dto";
+import { JwtService } from "@nestjs/jwt";
 
 @Injectable()
 export class AuthService {
@@ -14,82 +17,112 @@ export class AuthService {
     private readonly userService: UserService,
     private readonly configService: ConfigService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
   // Función para registrar un nuevo usuario
   async register(registerData: RegisterUserDto): Promise<any> {
     if (!registerData.password) {
-      console.log('Password is required', error);
-      throw new BadRequestException('Password is required');
+      console.error("Password is required");
+      throw new BadRequestException("Password is required");
     }
 
     const existingUser = await this.userService.findByEmail(registerData.email);
     if (existingUser) {
-      console.log('Email already exists');
-      throw new BadRequestException('Email already exists');
+      console.error("Email already exists");
+      throw new BadRequestException("Email already exists");
     }
 
     const user = new User();
     user.username = registerData.username;
     user.email = registerData.email;
 
-    const saltRounds = Number(this.configService.get<string>('SALT_ROUNDS'));
+    const saltRounds = Number(
+      this.configService.get<string>("SALT_ROUNDS") || 10,
+    );
     if (!saltRounds) {
-      console.error('SALT_ROUNDS environment variable is not defined:');
-      throw new BadRequestException('SALT_ROUNDS environment variable is not defined');
+      console.error("SALT_ROUNDS environment variable is not defined:");
+      throw new BadRequestException(
+        "SALT_ROUNDS environment variable is not defined",
+      );
     }
 
-    const validPassword = user.password = await bcrypt.hash(registerData.password, saltRounds);
+    const validPassword = (user.password = await bcrypt.hash(
+      registerData.password,
+      saltRounds,
+    ));
     if (!validPassword) {
-      console.error('Error hashing password:', error);
-      throw new BadRequestException('Failed to hash password');
+      console.error("Error hashing password");
+      throw new BadRequestException("Failed to hash password");
     }
+    console.log("Register data", registerData);
 
-    const newUser = {
-      username: user.username,
-      fullName: user.username, // Assuming full
-      email: user.email,
-      password: user.password,
-      isPremium: false,
-      role: 'student', // Default role
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-    return this.userService.createUser(newUser);
+    if (registerData?.roleId === 3) {
+      user.roleId = { id: 3, name: "teacher" }; // Asignar rol de docente
+    } else {
+      user.roleId = { id: 2, name: "student" }; // Asignar rol de estudiante por defecto
+    }
+    user.fullName = registerData.fullName ?? "";
+
+    // Ya tienes el objeto user construido y con los campos correctos
+    user.created = new Date();
+    return this.userService.createUser(user);
   }
 
   // Función para login
-  async login(email: string, password: string): Promise<any> {
-    const user = await this.userService.findByEmail(email);
+  async login(loginData: LoginUserDto): Promise<any> {
+    const user = await this.userService.findByEmail(loginData.email);
     if (!user) {
-      // Avoid leaking whether the user exists
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException("Credenciales inválidas");
     }
-
-    const isPasswordValid = await bcrypt.compare(password, user.password);
+    const isPasswordValid = await bcrypt.compare(
+      loginData.password,
+      user.password,
+    );
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credenciales inválidas');
+      throw new UnauthorizedException("Credenciales inválidas");
     }
-
-    // Build a minimal payload (do not include sensitive data)
-    const payload = { name: user.username, email: user.email, role: user.role };
-    const accessToken = this.jwtService.sign(payload);
-    return { accessToken, role: user.role };
+    const payload = {
+      id: user.documentId,
+      email: user.email,
+      role: user.roleId.name,
+    };
+    try {
+      const accessToken = this.jwtService.sign(payload, { expiresIn: "15m" });
+      const refreshToken = this.jwtService.sign(payload, { expiresIn: "7d" });
+      // Guardar el refreshToken en la base de datos
+      user.refreshToken = refreshToken;
+      await this.userService.saveUser(user);
+      return {
+        accessToken,
+        refreshToken,
+        role: payload.role,
+        documentId: user.documentId,
+      };
+    } catch (error) {
+      throw new UnauthorizedException("Error generando token");
+    }
   }
 
-  //Funcion para logout
-  async logout(@Req() req): Promise<any> {
-    //Implementar la lógica de cierre de sesión
+  //Funcion para logout seguro (revoca refresh token)
+  async logout(req): Promise<any> {
     try {
-      // Lógica para eliminar la cookie de sesión
-      req.res.clearCookie('jwt', {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === 'production',
-        sameSite: 'lax',
-      });
-      return { message: 'Logout successful' };
+      const user = req.user;
+      if (!user || !user.email) {
+        throw new UnauthorizedException("Usuario no autenticado");
+      }
+      const dbUser = await this.userService.findByEmail(user.email);
+      if (dbUser) {
+        dbUser.refreshToken = null;
+        await this.userService.saveUser(dbUser);
+      }
+      return { message: "Logout successful" };
     } catch (error) {
       return { error: error.message };
     }
+  }
+
+  // Permitir buscar usuario por email desde el controlador
+  async findUserByEmail(email: string) {
+    return this.userService.findByEmail(email);
   }
 }

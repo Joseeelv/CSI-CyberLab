@@ -21,7 +21,12 @@ lerna-debug.log*
 
 .DS_Store
 
-# temp directory
+
+# Coverage reports
+coverage/
+
+# Coverage reports
+coverage/
 .temp
 .tmp
 
@@ -34,3 +39,5 @@ lerna-debug.log*
 .vscode/
 .idea/
 .continue/
+
+*.text

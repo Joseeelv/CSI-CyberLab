@@ -1,6 +1,6 @@
 // app.controller.ts
-import { Controller, Get, HttpException, HttpStatus } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, HttpException, HttpStatus } from "@nestjs/common";
+import { AppService } from "./app.service";
 
 @Controller()
 export class AppController {
@@ -13,7 +13,7 @@ export class AppController {
     };
   }
 
-  @Get('status')
+  @Get("status")
   async getStatus(): Promise<{ status: string; timestamp: string }> {
     try {
       const status = await this.appService.getDatabaseStatus();
@@ -23,7 +23,7 @@ export class AppController {
       };
     } catch (error) {
       throw new HttpException(
-        'Error al conectar con la base de datos',
+        "Error al conectar con la base de datos",
         HttpStatus.SERVICE_UNAVAILABLE,
       );
     }

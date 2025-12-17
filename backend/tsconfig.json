@@ -13,7 +13,17 @@
     "outDir": "./dist",
     "rootDir": "./",
     "baseUrl": "./",
+    "paths": {
+      "src/*": [
+        "src/*"
+      ]
+    },
     "skipLibCheck": true,
-    "incremental": true
-  }
+    "incremental": true,
+  },
+  "exclude": [
+    "node_modules",
+    ".next",
+    "dist"
+  ]
 }

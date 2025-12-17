@@ -1,24 +1,58 @@
 services:
   postgres:
-    image: postgres:18
-    restart: always
-    networks:
-      - app-network
+    image: postgres:15-alpine # Alpine es más ligero
+    platform: linux/arm64/v8
+    container_name: postgres
     environment:
       POSTGRES_DB: ${DATABASE_NAME}
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_INITDB_ARGS: "--encoding=UTF8 --lc-collate=C --lc-ctype=C" # Reduce overhead
     ports:
       - "5432:5432"
     volumes:
-      - postgres-data:/var/lib/postgresql
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    # Límites de recursos para PostgreSQL
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 512M
+        reservations:
+          cpus: "0.5"
+          memory: 256M
+    # Configuración optimizada de PostgreSQL
+    command: >
+      postgres
+      -c shared_buffers=128MB
+      -c effective_cache_size=256MB
+      -c maintenance_work_mem=64MB
+      -c checkpoint_completion_target=0.9
+      -c wal_buffers=16MB
+      -c default_statistics_target=100
+      -c random_page_cost=1.1
+      -c effective_io_concurrency=200
+      -c work_mem=4MB
+      -c max_connections=50
 
-  
   backend:
+    container_name: backend
+    platform: linux/arm64/v8
     build:
       context: ./backend
       dockerfile: Dockerfile
-    restart: always
+      args:
+        NODE_ENV: development
+    working_dir: /app
+    volumes:
+      - ./backend/src:/app/src:cached
+      - ./backend/package.json:/app/package.json:ro
+      - ./backend/tsconfig.json:/app/tsconfig.json:ro
+      - ./backend/tsconfig.build.json:/app/tsconfig.build.json:ro
+      - ./backend/nest-cli.json:/app/nest-cli.json:ro
+      - backend-node-modules:/app/node_modules
     networks:
       - app-network
     environment:
@@ -27,31 +61,80 @@ services:
       DATABASE_NAME: ${DATABASE_NAME}
       DATABASE_USER: ${DATABASE_USER}
       DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      SALT_ROUNDS: ${SALT_ROUNDS}
       JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
+      NODE_ENV: development
+      # Optimizaciones de Node.js
+      NODE_OPTIONS: "--max-old-space-size=512"
     ports:
       - "3000:3000"
     depends_on:
       - postgres
+    # Límites de recursos para Backend
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 768M
+        reservations:
+          cpus: "0.5"
+          memory: 384M
+
   frontend:
+    container_name: frontend
+    platform: linux/arm64/v8
     build:
       context: ./frontend
       dockerfile: Dockerfile
-    restart: always
+      args:
+        NODE_ENV: development
+    working_dir: /app
+    volumes:
+      # Código fuente - montaje en tiempo real
+      - ./frontend/app:/app/app:cached
+      - ./frontend/components:/app/components:cached
+      - ./frontend/hooks:/app/hooks:cached
+      - ./frontend/lib:/app/lib:cached
+      - ./frontend/public:/app/public:cached
+
+      # Archivos de configuración - solo lectura
+      - ./frontend/package.json:/app/package.json:ro
+      - ./frontend/next.config.ts:/app/next.config.ts:ro
+      - ./frontend/tsconfig.json:/app/tsconfig.json:ro
+      - ./frontend/tailwind.config.js:/app/tailwind.config.js:ro
+
+      # Volúmenes nombrados para mejor rendimiento
+      - frontend-node-modules:/app/node_modules
+      - frontend-next:/app/.next
     networks:
       - app-network
     environment:
-      NEXT_PUBLIC_BACKEND_URL: http://localhost:3000
       PORT: 3001
+      HOSTNAME: 0.0.0.0
+      NEXT_TELEMETRY_DISABLED: 1
+      NODE_ENV: development
+      # Optimizaciones de Next.js
+      NODE_OPTIONS: "--max-old-space-size=768"
     ports:
       - "3001:3001"
     depends_on:
       - backend
-
+    # Límites de recursos para Frontend
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: 1024M
+        reservations:
+          cpus: "0.5"
+          memory: 512M
 
   nginx:
-    image: nginx:latest
-    restart: always
+    image: nginx:alpine # Alpine es mucho más ligero
+    container_name: nginx
+    platform: linux/arm64/v8
+    restart: unless-stopped # Mejor que always
     networks:
       - app-network
     ports:
@@ -60,10 +143,30 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - frontend
+    # Límites de recursos para Nginx
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 128M
+        reservations:
+          cpus: "0.1"
+          memory: 64M
 
 volumes:
   postgres-data:
+    driver: local
+  backend-node-modules:
+    driver: local
+  backend-dist:
+    driver: local
+  frontend-node-modules:
+    driver: local
+  frontend-next:
+    driver: local
 
 networks:
   app-network:
     driver: bridge
+    driver_opts:
+      com.docker.network.driver.mtu: 1500

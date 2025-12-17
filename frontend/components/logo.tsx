@@ -2,7 +2,6 @@
 'use client';
 
 import React from 'react';
-import Link from 'next/link';
 
 interface LogoProps {
   variant?: 'default' | 'glow' | 'gradient';
@@ -10,10 +9,10 @@ interface LogoProps {
   showText?: boolean;
 }
 
-export const Logo: React.FC<LogoProps> = ({ 
-  variant = 'gradient', 
+export const Logo: React.FC<LogoProps> = ({
+  variant = 'gradient',
   size = 'md',
-  showText = true 
+  showText = true
 }) => {
   const sizes = {
     sm: { height: 32, fontSize: 'text-xl' },
@@ -27,8 +26,8 @@ export const Logo: React.FC<LogoProps> = ({
     <div className="flex items-center gap-3">
       {/* Usa tu logo como imagen */}
       <div className={`relative ${glowClass}`} style={{ height: sizes[size].height }}>
-        <svg 
-          viewBox="0 0 100 100" 
+        <svg
+          viewBox="0 0 100 100"
           style={{ height: sizes[size].height, width: 'auto' }}
           className="transition-all duration-300 hover:scale-105"
         >
@@ -43,7 +42,7 @@ export const Logo: React.FC<LogoProps> = ({
           {/* Por ahora, usa la imagen directamente */}
         </svg>
       </div>
-      
+
       {showText && (
         <span className={`font-bold tracking-tight bg-gradient-to-r from-[var(--accent-primary)] via-[var(--accent-info)] to-[var(--accent-purple)] bg-clip-text text-transparent ${sizes[size].fontSize}`}>
           CyberLabs

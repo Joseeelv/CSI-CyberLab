@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Card, CardHeader, CardTitle, CardDescription } from './ui/card';
+import Image from 'next/image';
 
 interface FeatureProps {
   icon: React.ReactNode;
@@ -61,17 +61,33 @@ const FeatureCard: React.FC<FeatureProps> = ({ icon, title, description, delay =
 export const Features: React.FC = () => {
   const features = [
     {
-      icon: "⭐️",
+      icon: <Image
+        src="target-user.svg"
+        alt="targer-user"
+        width={40}
+        height={40}
+      ></Image>,
       title: "Retos Prácticos",
       description: "Aprende haciendo con desafíos reales de pentesting y CTF"
     },
     {
-      icon: "💻",
+      icon: <Image
+        src="hack-files.svg"
+        alt="laboratory"
+        width={40}
+        height={40}
+      ></Image>,
       title: "Laboratorios Estructurados",
       description: "Contenido organizado desde nivel básico hasta avanzado"
     },
     {
-      icon: "🔒",
+      icon: <Image
+        src="security.svg"
+        alt="security"
+        width={40}
+        height={40}
+      >
+      </Image>,
       title: "Seguridad Real",
       description: "Técnicas actualizadas usadas por profesionales"
     }

@@ -1,63 +1,133 @@
-import { Body, Controller, Post, Req, Res, Get, HttpCode, HttpStatus, UnauthorizedException } from '@nestjs/common';
-import { Response, Request } from 'express';
-import { AuthService } from './auth.service';
-import { RegisterUserDto } from './register.dto';
-import { LoginUserDto } from './login.dto';
-import { JwtService } from '@nestjs/jwt';
+import {
+  Body,
+  Controller,
+  Post,
+  Req,
+  Get,
+  HttpCode,
+  HttpStatus,
+  UnauthorizedException,
+  BadRequestException,
+  UseGuards,
+  Res,
+} from "@nestjs/common";
+import { Request, Response } from "express";
+import { AuthService } from "./auth.service";
+import { RegisterUserDto } from "./register.dto";
+import { LoginUserDto } from "./login.dto";
+import { JwtService } from "@nestjs/jwt";
+import { JwtAuthGuard } from "./jwt-auth.guard";
 
-@Controller('auth')
+@Controller("auth")
 export class AuthController {
   constructor(
     private readonly authService: AuthService,
     private readonly jwtService: JwtService,
-  ) { }
+  ) {}
 
-  @Post('register')
+  @Post("register")
   @HttpCode(HttpStatus.CREATED)
   async register(@Body() registerData: RegisterUserDto) {
     if (!registerData.password) {
-      throw new Error('Password is required');
+      throw new BadRequestException("Password is required");
     }
-    return this.authService.register(registerData);
+    try {
+      return await this.authService.register(registerData);
+    } catch (error) {
+      throw new BadRequestException(error.message || "Registration failed");
+    }
   }
 
-  @Post('login')
+  @Post("login")
   @HttpCode(HttpStatus.OK)
-  async login(@Body() loginData: LoginUserDto, @Res({ passthrough: true }) res: Response) {
-    const { accessToken, role } = await this.authService.login(loginData.email, loginData.password);
-    // Set cookie
-    res.cookie('jwt', accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      maxAge: 3600000,
-    });
-    return { message: 'Login successful', accessToken, role };
+  async login(
+    @Body() loginData: LoginUserDto,
+    @Res({ passthrough: true }) res: Response,
+  ) {
+    try {
+      if (!loginData.email || !loginData.password) {
+        throw new BadRequestException("Credentials are required");
+      }
+      const { accessToken, refreshToken, role, documentId } =
+        await this.authService.login(loginData);
+      // Enviar tokens como cookies HTTP-only
+      res.cookie("accessToken", accessToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 15 * 60 * 1000,
+      });
+      res.cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === "production",
+        sameSite: "lax",
+        maxAge: 7 * 24 * 60 * 60 * 1000,
+      });
+      return { message: "Login successful", role, documentId };
+    } catch (error) {
+      throw new UnauthorizedException("Invalid credentials");
+    }
   }
 
-  @Get('me')
+  @Get("me")
   @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
   async me(@Req() req: Request) {
-    const token = req.cookies?.jwt;
+    // Leer accessToken de cookies
+    const token = req.cookies["accessToken"];
     if (!token) {
-      throw new UnauthorizedException('No token');
+      throw new UnauthorizedException("No token provided");
     }
     try {
       const payload = this.jwtService.verify(token);
       return { authenticated: true, payload };
     } catch (err) {
-      throw new UnauthorizedException('Invalid token');
+      throw new UnauthorizedException("Invalid or expired token");
     }
   }
 
-  @Post('logout')
+  @Post("logout")
   @HttpCode(HttpStatus.OK)
-  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response): Promise<any> {
+  @UseGuards(JwtAuthGuard)
+  async logout(@Req() req: Request, @Res({ passthrough: true }) res: Response) {
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    return await this.authService.logout(req);
+  }
+
+  @Post("refresh")
+  @HttpCode(HttpStatus.OK)
+  async refresh(@Body("refreshToken") refreshToken: string, ...args: any[]) {
+    // Leer refreshToken de cookies si no viene en el body
+    const req = args[0]?.req || args[1]?.req;
+    const res = args[0]?.res || args[1]?.res;
+    const token =
+      refreshToken || (req && req.cookies && req.cookies["refreshToken"]);
+    if (!token) {
+      throw new UnauthorizedException("No refresh token provided");
+    }
     try {
-      res.clearCookie('jwt', { httpOnly: true, sameSite: 'lax', secure: process.env.NODE_ENV === 'production' });
-      return { message: 'Logout successful' };
-    } catch (error) {
-      return { error: error.message };
+      const oldPayload = this.jwtService.verify(token);
+      const { email, ...payload } = oldPayload;
+      const user = await this.authService.findUserByEmail(email);
+      if (!user || user.refreshToken !== token) {
+        throw new UnauthorizedException("Refresh token inválido");
+      }
+      const newAccessToken = this.jwtService.sign(payload, {
+        expiresIn: "15m",
+      });
+      // Setear nuevo accessToken en cookie
+      if (res) {
+        res.cookie("accessToken", newAccessToken, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "lax",
+          maxAge: 15 * 60 * 1000,
+        });
+      }
+      return { message: "Token refreshed" };
+    } catch (err) {
+      throw new UnauthorizedException("Invalid or expired refresh token");
     }
   }
 }
