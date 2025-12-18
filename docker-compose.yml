@@ -44,7 +44,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
       args:
-        NODE_ENV: development
+        NODE_ENV: production
     working_dir: /app
     volumes:
       - ./backend/src:/app/src:cached
@@ -64,7 +64,9 @@ services:
       SALT_ROUNDS: ${SALT_ROUNDS}
       JWT_SECRET: ${JWT_SECRET}
       PORT: 3000
-      NODE_ENV: development
+      # Public frontend URL (Cloudflare) used by backend CORS
+      FRONTEND_URL: https://marco-utilities-spiritual-premiere.trycloudflare.com
+      NODE_ENV: production
       # Optimizaciones de Node.js
       NODE_OPTIONS: "--max-old-space-size=512"
     ports:
@@ -88,7 +90,7 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NODE_ENV: development
+        NODE_ENV: production
     working_dir: /app
     volumes:
       # Código fuente - montaje en tiempo real
@@ -113,7 +115,10 @@ services:
       PORT: 3001
       HOSTNAME: 0.0.0.0
       NEXT_TELEMETRY_DISABLED: 1
-      NODE_ENV: development
+      NODE_ENV: production
+      # Make frontend use relative /api and point rewrites to backend container
+      NEXT_PUBLIC_API_URL: /api
+      BACKEND_INTERNAL_URL: http://backend:3000
       # Optimizaciones de Next.js
       NODE_OPTIONS: "--max-old-space-size=768"
     ports:
@@ -143,6 +148,20 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - frontend
+    # Añadir un túnel Cloudflare como contenedor para exponer frontend públicamente
+
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflared
+    platform: linux/arm64/v8
+    restart: unless-stopped
+    networks:
+      - app-network
+    depends_on:
+      - frontend
+    # Para un túnel persistente monta la credencial del tunnel en /etc/cloudflared
+    # command de ejemplo para túnel rápido apuntando al frontend interno
+    command: tunnel --url http://nginx:80
     # Límites de recursos para Nginx
     deploy:
       resources:

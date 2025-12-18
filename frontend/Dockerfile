@@ -16,6 +16,9 @@ RUN pnpm install
 # Copy source code
 COPY . .
 
+# Build Next.js app
+RUN pnpm run build
+
 EXPOSE 3001
 
-CMD ["pnpm", "run", "dev"]
+CMD ["pnpm", "run", "start"]
