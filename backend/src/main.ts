@@ -30,6 +30,7 @@ async function bootstrap() {
     "http://localhost",
     "http://localhost:3001",
     process.env.FRONTEND_URL,
+    "https://marco-utilities-spiritual-premiere.trycloudflare.com",
   ].filter(Boolean);
   // Puedes usar app.getLogger() o simplemente console.log
   console.log(`CORS allowed origins: ${allowedOrigins.join(", ")}`);
@@ -48,12 +49,28 @@ async function bootstrap() {
 
   app.enableCors({
     origin: (origin, callback) => {
-      // Permitir peticiones sin origen (como Postman) o si está en la lista
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true);
-      } else {
-        callback(new Error("No permitido por CORS: " + origin));
+      // Permitir peticiones sin origen (como Postman)
+      if (!origin) {
+        return callback(null, true);
       }
+
+      // Permitir orígenes exactos en la lista
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      // Permitir subdominios dinámicos de trycloudflare.com (quick tunnels)
+      try {
+        const url = new URL(origin);
+        if (url.hostname.endsWith(".trycloudflare.com")) {
+          return callback(null, true);
+        }
+      } catch (e) {
+        // ignore parse errors
+      }
+
+      // Rechazar por defecto
+      return callback(new Error("No per`mitido por CORS: " + origin));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
