@@ -1,4 +1,7 @@
 import type { NextConfig } from "next";
+import withPWA from 'next-pwa';
+
+const BACKEND_INTERNAL = process.env.BACKEND_INTERNAL_URL || 'http://localhost:3000';
 
 const BACKEND_INTERNAL = process.env.BACKEND_INTERNAL_URL || 'http://localhost:3000';
 
@@ -11,14 +14,14 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'kijiji-measured-auction-entity.trycloudflare.com',
+        hostname: '*.trycloudflare.com',
       },
     ],
   },
   // Allow the Cloudflare Tunnel domain to access dev server resources
   // and proxy API calls to the local backend running on port 3000.
   allowedDevOrigins: [
-    'https://marco-utilities-spiritual-premiere.trycloudflare.com',
+    'https://*.trycloudflare.com',
   ],
   async headers() {
     return [
@@ -27,7 +30,7 @@ const nextConfig: NextConfig = {
         headers: [
           {
             key: 'Access-Control-Allow-Origin',
-            value: 'https://marco-utilities-spiritual-premiere.trycloudflare.com',
+            value: 'https://*.trycloudflare.com',
           },
         ],
       },
@@ -43,4 +46,9 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+export default withPWA({
+  dest: 'public',
+  register: true,
+  skipWaiting: true,
+  disable: process.env.NODE_ENV === 'development'
+})(nextConfig);
