@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Orbitron } from "next/font/google";
 import "./globals.css";
+import { SessionKeepAliveClient } from "../components/SessionKeepAliveClient";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,11 +26,28 @@ export const metadata: Metadata = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="en">
+    <html lang="es">
+      <head>
+        <link rel="manifest" href="/manifest.json" />
+        <link rel="icon" href="/Logo.png" />
+        <meta name="theme-color" content="#0eccff" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
+        />
+        <meta name="apple-mobile-web-app-title" content="CyberLab" />
+        <link rel="apple-touch-icon" href="/Logo.png" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta
+          name="viewport"
+          content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
+        />
+      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased`}
         style={{ fontFamily: "var(--font-geist-sans), var(--font-geist-mono), var(--font-orbitron)" }}

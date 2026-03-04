@@ -1,0 +1,30 @@
+{
+  "name": "CyberLab - Ciberseguridad para todos",
+  "short_name": "CyberLab",
+  "description": "Plataforma educativa en ciberseguridad diseñada para personas de todas las edades y niveles de experiencia",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0e1a",
+  "theme_color": "#0eccff",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/Logo.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/logoTitle.png",
+      "sizes": "any",
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [],
+  "categories": [
+    "education",
+    "security"
+  ],
+  "lang": "es"
+}
