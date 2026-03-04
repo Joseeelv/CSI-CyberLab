@@ -9,6 +9,7 @@ import { UserController } from "./user.controller";
 import { FlagSubmission } from "src/flag-submission/flag-submission.entity";
 import { AuthModule } from "src/auth/auth.module";
 import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
+
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role, Container, Lab, FlagSubmission]),
@@ -16,6 +17,6 @@ import { JwtAuthGuard } from "src/auth/jwt-auth.guard";
   ],
   providers: [UserService, JwtAuthGuard],
   controllers: [UserController],
-  exports: [UserService],
+  exports: [UserService, TypeOrmModule],
 })
 export class UserModule {}

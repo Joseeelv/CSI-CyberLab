@@ -11,16 +11,16 @@ export const Hero: React.FC = () => {
 
   return (
     <section className="relative overflow-hidden py-24 px-5">
-
       {/* Grid background pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0"
+        <div
+          className="absolute inset-0"
           style={{
             backgroundImage: `
               linear-gradient(rgba(0, 212, 255, 0.1) 1px, transparent 1px),
               linear-gradient(90deg, rgba(0, 212, 255, 0.1) 1px, transparent 1px)
             `,
-            backgroundSize: '50px 50px'
+            backgroundSize: '50px 50px',
           }}
         />
       </div>
@@ -28,13 +28,19 @@ export const Hero: React.FC = () => {
       {/* Glowing orbs */}
       <div
         className="absolute top-20 left-10 w-64 h-64 rounded-full blur-10xl animate-pulse"
-        style={{ background: 'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)' }}
+        style={{
+          background:
+            'radial-gradient(circle, rgba(14, 204, 233, 0.4) 0%, transparent 70%)',
+        }}
       />
       <div
         className="absolute bottom-20 right-10 w-96 h-96 rounded-full blur-2xl animate-pulse"
-        style={{ background: 'radial-gradient(circle, rgba(134, 59, 246, 0.4) 0%, transparent 70%)', animationDelay: '1s' }}
+        style={{
+          background:
+            'radial-gradient(circle, rgba(134, 59, 246, 0.4) 0%, transparent 70%)',
+          animationDelay: '1s',
+        }}
       />
-
 
       <div className="max-w-7xl mx-auto text-center relative z-10">
         <h1 className="text-5xl md:text-7xl font-black mb-6 leading-tight tracking-tight">
@@ -68,7 +74,8 @@ export const Hero: React.FC = () => {
 
       <style jsx>{`
         @keyframes scan {
-          0%, 100% {
+          0%,
+          100% {
             transform: translateY(0);
             opacity: 0;
           }
@@ -79,7 +86,8 @@ export const Hero: React.FC = () => {
         }
 
         @keyframes gradient {
-          0%, 100% {
+          0%,
+          100% {
             background-position: 0% 50%;
           }
           50% {

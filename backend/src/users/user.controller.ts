@@ -14,9 +14,9 @@ export class UserController {
     private readonly jwtService: JwtService,
   ) {}
 
-  // Endpoint para obtener todos los usuarios
   @Get()
-  async getAllUsers() {
+  @UseGuards(JwtAuthGuard)
+  async getAllUsers(): Promise<User[]> {
     return await this.userService.getAllUsers();
   }
 
@@ -83,7 +83,12 @@ export class UserController {
   @Post()
   @UseGuards(JwtAuthGuard)
   async createUser(@Body() userDto: UserDto): Promise<User> {
-    return await this.userService.createUser(userDto);
+    // Supongamos que userDto.roleId es un número
+    const user: Partial<User> = {
+      ...userDto,
+      roleId: { id: userDto.roleId, name: userDto.roleName ?? "student" }, // Valor por defecto
+    };
+    return await this.userService.createUser(user);
   }
 
   // Endpoint para eliminar un usuario por su ID

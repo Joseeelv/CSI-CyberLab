@@ -13,7 +13,7 @@ export class UserLabService {
   constructor(
     @InjectRepository(UserLab)
     private readonly userLabRepository: Repository<UserLab>,
-  ) { }
+  ) {}
 
   async findAll(): Promise<UserLab[]> {
     return this.userLabRepository.find({ relations: ["user", "lab"] });
@@ -73,5 +73,20 @@ export class UserLabService {
       throw new NotFoundException(`UserLab with id ${id} does not exist`);
     }
     await this.userLabRepository.delete(id);
+  }
+
+  async findByLabUuid(labUuid: string): Promise<UserLab[]> {
+    return this.userLabRepository.find({
+      where: { labId: labUuid },
+      relations: ["user", "lab"],
+    });
+  }
+
+  async deleteAll(): Promise<void> {
+    await this.userLabRepository
+      .createQueryBuilder()
+      .delete()
+      .from(UserLab)
+      .execute();
   }
 }

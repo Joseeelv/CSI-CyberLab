@@ -3,6 +3,8 @@ import withPWA from 'next-pwa';
 
 const BACKEND_INTERNAL = process.env.BACKEND_INTERNAL_URL || 'http://localhost:3000';
 
+const BACKEND_INTERNAL = process.env.BACKEND_INTERNAL_URL || 'http://localhost:3000';
+
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   typescript: {

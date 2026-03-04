@@ -50,9 +50,12 @@ export default function RootLayout({
       </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${orbitron.variable} antialiased`}
-        style={{ fontFamily: "var(--font-geist-sans), var(--font-geist-mono), var(--font-orbitron)" }}
+        style={{
+          fontFamily:
+            "var(--font-geist-sans), var(--font-geist-mono), var(--font-orbitron)",
+        }}
       >
-
+        <SessionKeepAliveClient />
         {children}
       </body>
     </html>

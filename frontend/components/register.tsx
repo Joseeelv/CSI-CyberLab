@@ -49,7 +49,7 @@ export function Register() {
     try {
       await fetcher('/auth/register', {
         method: 'POST',
-        include: 'credentials',
+        credentials: 'include',
         body: JSON.stringify({ username, email, password }),
       });
       router.push('/login');
@@ -122,6 +122,7 @@ export function Register() {
               handleSubmit(e); // Llama al método handleSubmit
             }
           }}
+          autoComplete="off"
         >
 
           <div className="bg-gradient-to-br from-gray-900/90 to-gray-800/90 backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden border border-cyan-500/20">

@@ -16,6 +16,8 @@ import { RoleModule } from "./role/role.module";
 import { SeederModule } from "./database/seeder.module";
 import { FlagSubmissionModule } from "./flag-submission/flag-submission.module";
 import { UserLabModule } from "./user-lab/user-lab.module";
+import { AdminModule } from "./admin/admin.module";
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -52,6 +54,7 @@ import { UserLabModule } from "./user-lab/user-lab.module";
     SeederModule,
     FlagSubmissionModule,
     UserLabModule,
+    AdminModule,
   ],
   controllers: [AppController],
   providers: [AppService],
